@@ -34,7 +34,7 @@ class CommonText {
     );
   }
 
-  static textBoldWight600(
+  static Widget textBoldWight600(
       {required String text,
       double? fontSize,
       Color? color,
