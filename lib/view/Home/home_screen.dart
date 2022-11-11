@@ -2,11 +2,11 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
-import 'package:finwizz/constant/const_size.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
@@ -21,32 +21,368 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
+  TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
-
+  List platFormIcon = [
+    ImageConst.twiterIcon,
+    ImageConst.linkedinIcon,
+    ImageConst.telegramIcon
+  ];
+  List listOfNews = [
+    {
+      'image': ImageConst.newsIcon,
+      'title': 'News',
+      'text': 'News that moves stocks'
+    },
+    {
+      'image': ImageConst.bagIcon,
+      'title': 'Portfolio protection',
+      'text': 'Invest on information. Sell on information'
+    }
+  ];
+  List drawerDataList = [
+    {'icon': ImageConst.bellIcon, 'text': 'Notifications'},
+    {'icon': ImageConst.userPlus, 'text': 'Referrals'},
+    {'icon': ImageConst.googlePlayIcon, 'text': 'Rate us on play \nstore'},
+    {'icon': ImageConst.chatIcon, 'text': 'Contact us'},
+    {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
+    {'icon': ImageConst.signOutICON, 'text': 'Logout'},
+  ];
+  bool isOpen = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Container(
+          width: 220,
+          color: Colors.white,
+          child: SafeArea(
+            child: Column(children: [
+              CommonWidget.commonSizedBox(height: 10),
+              Image.asset(
+                ImageConst.iconWidget,
+                scale: 3,
+              ),
+              CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
+              CommonWidget.commonSizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: Divider(color: CommonColor.amberBlackColor072D4B),
+              ),
+              Spacer(),
+              Column(
+                children: List.generate(
+                    drawerDataList.length,
+                    (index) => Padding(
+                          padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                  height: 24.sp,
+                                  width: 24.sp,
+                                  child: Image.asset(
+                                      drawerDataList[index]['icon'])),
+                              CommonWidget.commonSizedBox(width: 10),
+                              CommonText.textBoldWight400(
+                                  text: drawerDataList[index]['text'])
+                            ],
+                          ),
+                        )),
+              ),
+              Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 20),
+                child: Divider(color: CommonColor.amberBlackColor072D4B),
+              ),
+              CommonText.textBoldWight400(
+                  text: 'Follow us on',
+                  color: CommonColor.amberBlackColor072D4B),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                    platFormIcon.length,
+                    (index) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 24.sp,
+                            height: 24.sp,
+                            child: Image.asset(platFormIcon[index]),
+                          ),
+                        )),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 10),
+                child: Divider(color: CommonColor.amberBlackColor072D4B),
+              ),
+              CommonText.textBoldWight400(
+                  text: '2022 FinWizz',
+                  color: CommonColor.amberBlackColor072D4B),
+              CommonWidget.commonSizedBox(height: 20),
+            ]),
+          )),
       key: globalKey,
       body: SafeArea(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          CommonWidget.commonSizedBox(height: 10),
           appWidget(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CommonWidget.commonSizedBox(height: 30),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: CommonText.textBoldWight600(
-                    text: TextConst.latestMovers,
-                    fontSize: 16.sp,
-                    color: CommonColor.themDarkColor6E5DE7),
-              ),
-              CommonWidget.commonSizedBox(height: 30),
-              bannerWidget(),
-              PageIndicator(pagerIndex: pagerIndex, totalPages: 3),
-            ],
-          )
+          isOpen
+              ? scrollWidget()
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+                      margin: EdgeInsets.only(left: 60, right: 30, top: 40),
+                      child: CommonText.textBoldWight400(
+                          text:
+                              'Invite 3 friends to FinWizz and unlock all features for free'),
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: Offset(4, 6),
+                                spreadRadius: 1)
+                          ],
+                          borderRadius: BorderRadius.circular(10),
+                          color: CommonColor.lightBlueColorCADCF8),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.dialog(SimpleDialog(
+                          alignment: Alignment.center,
+                          children: [
+                            Column(
+                              children: [
+                                CommonWidget.commonSizedBox(height: 12),
+                                CommonText.textBoldWight600(
+                                    text: 'Your opinion matters!',
+                                    fontSize: 16.sp),
+                                CommonWidget.commonSizedBox(height: 9),
+                                RatingBar(
+                                  initialRating: 0,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemSize: 28,
+                                  itemCount: 5,
+                                  ratingWidget: RatingWidget(
+                                    full: Icon(Icons.star,
+                                        color: CommonColor.yellowColorFFC633),
+                                    half: Icon(Icons.star_half,
+                                        color: CommonColor.yellowColorFFC633),
+                                    empty: Icon(
+                                      Icons.star_border_outlined,
+                                    ),
+                                  ),
+                                  itemPadding:
+                                      EdgeInsets.symmetric(horizontal: 4.0),
+                                  onRatingUpdate: (rating) {
+                                    print(rating);
+                                  },
+                                ),
+                                CommonWidget.commonSizedBox(height: 9),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CommonText.textBoldWight400(
+                                      text:
+                                          'Please tell us how we can improve ',
+                                    ),
+                                    CommonText.textBoldWight400(
+                                        text: '*',
+                                        color: CommonColor.redColorFF2950),
+                                  ],
+                                ),
+                                CommonWidget.commonSizedBox(height: 9),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: TextFormField(
+                                    maxLines: 3,
+                                    controller: _submitController,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: TextConst.fontFamily,
+                                    ),
+                                    cursorColor: Colors.black,
+                                    decoration: InputDecoration(
+                                      fillColor: Colors.white,
+                                      contentPadding: EdgeInsets.only(
+                                          top: 7.sp, left: 12.sp),
+                                      filled: true,
+                                      //fillColor: CommonColor.textFiledColorFAFAFA,
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: new BorderSide(
+                                            color: CommonColor.geryColorC9C5C5),
+                                        borderRadius:
+                                            new BorderRadius.circular(25.7),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: new BorderSide(
+                                            color: CommonColor.geryColorC9C5C5),
+                                        borderRadius:
+                                            new BorderRadius.circular(25.7),
+                                      ),
+                                      // border: OutlineInputBorder(
+                                      //     borderSide: BorderSide.none,
+                                      //     borderRadius:
+                                      //         BorderRadius.circular(10))
+                                    ),
+                                  ),
+                                ),
+                                CommonWidget.commonSizedBox(height: 20),
+                                InkWell(
+                                  onTap: () {
+                                    Get.back();
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 9),
+                                    child: CommonText.textBoldWight400(
+                                        text: 'Submit', color: Colors.white),
+                                    decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: CommonColor
+                                                  .themDarkColor6E5DE7,
+                                              //blurRadius: 10,
+                                              offset: Offset(3, 5),
+                                              spreadRadius: 1)
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(1010),
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                CommonWidget.commonSizedBox(height: 12),
+                              ],
+                            )
+                          ],
+                        ));
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 13),
+                        margin: EdgeInsets.only(left: 60, top: 40),
+                        child: CommonText.textBoldWight400(
+                            text: 'Refer now', color: Colors.white),
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: CommonColor.themDarkColor6E5DE7,
+                                  //blurRadius: 10,
+                                  offset: Offset(3, 5),
+                                  spreadRadius: 1)
+                            ],
+                            borderRadius: BorderRadius.circular(1010),
+                            color: Colors.black),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40, top: 40),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CommonText.textBoldWight600(
+                              text: 'Your opinion matters!', fontSize: 16.sp),
+                          CommonWidget.commonSizedBox(height: 9),
+                          CommonText.textBoldWight400(
+                            text: 'Are you enjoying FinWizz?',
+                          ),
+                          CommonWidget.commonSizedBox(height: 9),
+                          RatingBar(
+                            initialRating: 0,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemSize: 28,
+                            itemCount: 5,
+                            ratingWidget: RatingWidget(
+                              full: Icon(Icons.star,
+                                  color: CommonColor.yellowColorFFC633),
+                              half: Icon(Icons.star_half,
+                                  color: CommonColor.yellowColorFFC633),
+                              empty: Icon(
+                                Icons.star_border_outlined,
+                              ),
+                            ),
+                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                            onRatingUpdate: (rating) {
+                              print(rating);
+                            },
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                )
         ]),
+      ),
+    );
+  }
+
+  Expanded scrollWidget() {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CommonWidget.commonSizedBox(height: 30),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: CommonText.textBoldWight600(
+                  text: TextConst.latestMovers,
+                  fontSize: 16.sp,
+                  color: CommonColor.themDarkColor6E5DE7),
+            ),
+            CommonWidget.commonSizedBox(height: 30),
+            bannerWidget(),
+            CommonWidget.commonSizedBox(height: 35),
+            PageIndicator(pagerIndex: pagerIndex, totalPages: 3),
+            CommonWidget.commonSizedBox(height: 30),
+            ListView.builder(
+              itemCount: listOfNews.length,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: CommonColor.greyColorEFEDF2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CommonWidget.commonSizedBox(width: 15),
+                        SizedBox(
+                          height: 90.sp,
+                          width: 50.sp,
+                          child: Image.asset(
+                            listOfNews[index]['image'],
+                            fit: index == 0 ? BoxFit.cover : BoxFit.contain,
+                            scale: 5,
+                          ),
+                        ),
+                        CommonWidget.commonSizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonText.textBoldWight600(
+                                  text: listOfNews[index]['title'],
+                                  fontSize: 16.sp),
+                              CommonWidget.commonSizedBox(height: 8),
+                              CommonText.textBoldWight400(
+                                  text: listOfNews[index]['text']),
+                            ],
+                          ),
+                        )
+                      ],
+                    ));
+              },
+            )
+          ],
+        ),
       ),
     );
   }
@@ -112,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
         options: CarouselOptions(
           height: 180,
           aspectRatio: 16 / 9,
-          viewportFraction: 0.8,
+          viewportFraction: 0.85,
           pageSnapping: true,
           initialPage: 0,
           enableInfiniteScroll: true,
