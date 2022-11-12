@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../components/indicatorWidget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,11 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
   TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
-  List platFormIcon = [
-    ImageConst.twiterIcon,
-    ImageConst.linkedinIcon,
-    ImageConst.telegramIcon
-  ];
+
   List listOfNews = [
     {
       'image': ImageConst.newsIcon,
@@ -40,85 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
       'text': 'Invest on information. Sell on information'
     }
   ];
-  List drawerDataList = [
-    {'icon': ImageConst.bellIcon, 'text': 'Notifications'},
-    {'icon': ImageConst.userPlus, 'text': 'Referrals'},
-    {'icon': ImageConst.googlePlayIcon, 'text': 'Rate us on play \nstore'},
-    {'icon': ImageConst.chatIcon, 'text': 'Contact us'},
-    {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
-    {'icon': ImageConst.signOutICON, 'text': 'Logout'},
-  ];
+
   bool isOpen = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Container(
-          width: 220,
-          color: Colors.white,
-          child: SafeArea(
-            child: Column(children: [
-              CommonWidget.commonSizedBox(height: 10),
-              Image.asset(
-                ImageConst.iconWidget,
-                scale: 3,
-              ),
-              CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
-              CommonWidget.commonSizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: Divider(color: CommonColor.amberBlackColor072D4B),
-              ),
-              Spacer(),
-              Column(
-                children: List.generate(
-                    drawerDataList.length,
-                    (index) => Padding(
-                          padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                  height: 24.sp,
-                                  width: 24.sp,
-                                  child: Image.asset(
-                                      drawerDataList[index]['icon'])),
-                              CommonWidget.commonSizedBox(width: 10),
-                              CommonText.textBoldWight400(
-                                  text: drawerDataList[index]['text'])
-                            ],
-                          ),
-                        )),
-              ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(right: 20, bottom: 20),
-                child: Divider(color: CommonColor.amberBlackColor072D4B),
-              ),
-              CommonText.textBoldWight400(
-                  text: 'Follow us on',
-                  color: CommonColor.amberBlackColor072D4B),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                    platFormIcon.length,
-                    (index) => Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 24.sp,
-                            height: 24.sp,
-                            child: Image.asset(platFormIcon[index]),
-                          ),
-                        )),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 20, bottom: 10),
-                child: Divider(color: CommonColor.amberBlackColor072D4B),
-              ),
-              CommonText.textBoldWight400(
-                  text: '2022 FinWizz',
-                  color: CommonColor.amberBlackColor072D4B),
-              CommonWidget.commonSizedBox(height: 20),
-            ]),
-          )),
+      drawer: DrawerWidget(),
       key: globalKey,
       body: SafeArea(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -509,5 +430,93 @@ class _HomeScreenState extends State<HomeScreen> {
         CommonWidget.commonSizedBox(width: 10)
       ],
     );
+  }
+}
+
+class DrawerWidget extends StatelessWidget {
+  DrawerWidget({Key? key}) : super(key: key);
+
+  List drawerDataList = [
+    {'icon': ImageConst.bellIcon, 'text': 'Notifications'},
+    {'icon': ImageConst.userPlus, 'text': 'Referrals'},
+    {'icon': ImageConst.googlePlayIcon, 'text': 'Rate us on play \nstore'},
+    {'icon': ImageConst.chatIcon, 'text': 'Contact us'},
+    {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
+    {'icon': ImageConst.signOutICON, 'text': 'Logout'},
+  ];
+
+  List platFormIcon = [
+    ImageConst.twiterIcon,
+    ImageConst.linkedinIcon,
+    ImageConst.telegramIcon
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 220,
+        color: Colors.white,
+        child: SafeArea(
+          child: Column(children: [
+            CommonWidget.commonSizedBox(height: 10),
+            Image.asset(
+              ImageConst.iconWidget,
+              scale: 3,
+            ),
+            CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
+            CommonWidget.commonSizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Divider(color: CommonColor.amberBlackColor072D4B),
+            ),
+            Spacer(),
+            Column(
+              children: List.generate(
+                  drawerDataList.length,
+                  (index) => Padding(
+                        padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                height: 24.sp,
+                                width: 24.sp,
+                                child:
+                                    Image.asset(drawerDataList[index]['icon'])),
+                            CommonWidget.commonSizedBox(width: 10),
+                            CommonText.textBoldWight400(
+                                text: drawerDataList[index]['text'])
+                          ],
+                        ),
+                      )),
+            ),
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(right: 20, bottom: 20),
+              child: Divider(color: CommonColor.amberBlackColor072D4B),
+            ),
+            CommonText.textBoldWight400(
+                text: 'Follow us on', color: CommonColor.amberBlackColor072D4B),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                  platFormIcon.length,
+                  (index) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: 24.sp,
+                          height: 24.sp,
+                          child: Image.asset(platFormIcon[index]),
+                        ),
+                      )),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 20, bottom: 10),
+              child: Divider(color: CommonColor.amberBlackColor072D4B),
+            ),
+            CommonText.textBoldWight400(
+                text: '2022 FinWizz', color: CommonColor.amberBlackColor072D4B),
+            CommonWidget.commonSizedBox(height: 20),
+          ]),
+        ));
   }
 }

@@ -1,4 +1,4 @@
 class TextConst {
-  static String fontFamily = 'DMSans-Regular';
+  static String fontFamily = 'Poppins-Regular';
   static String latestMovers = 'Latest Movers';
 }
