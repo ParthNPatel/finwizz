@@ -1,10 +1,13 @@
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../constant/color_const.dart';
 import '../../constant/image_const.dart';
+import 'package:get/get.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);
@@ -189,9 +192,15 @@ class _NewsScreenState extends State<NewsScreen> {
                             Spacer(),
                             InkResponse(
                               onTap: () {
-                                setState(() {
-                                  isFavourite1 = !isFavourite1;
-                                });
+                                if (GetStorageServices
+                                        .getUserLoggedInStatus() ==
+                                    true) {
+                                  setState(() {
+                                    isFavourite1 = !isFavourite1;
+                                  });
+                                } else {
+                                  Get.to(() => SignUpScreen());
+                                }
                               },
                               child: Icon(
                                 isFavourite1 == true

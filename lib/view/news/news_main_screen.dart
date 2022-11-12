@@ -1,9 +1,13 @@
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../components/common_widget.dart';
+import '../../constant/image_const.dart';
 import '../Home/home_screen.dart';
+import '../SignUp_SignIn/sign_up_screen.dart';
+import 'movers_screen.dart';
 import 'news_screen.dart';
 
 class NewsMainScreen extends StatefulWidget {
@@ -37,7 +41,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
             CommonWidget.commonSizedBox(height: 10),
             Container(
                 padding:
-                    EdgeInsets.only(top: 13, bottom: 13, left: 30, right: 15),
+                    EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
                 margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 decoration: BoxDecoration(
                   color: CommonColor.whiteColorF4F6F9,
@@ -97,12 +101,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 controller: tabController,
                 children: [
                   NewsScreen(),
-                  Center(
-                    child: Text(
-                      "Movers",
-                      textScaleFactor: 1,
-                    ),
-                  )
+                  MoversScreen(),
                 ],
               ),
             )
@@ -126,13 +125,17 @@ class _NewsMainScreenState extends State<NewsMainScreen>
             )),
         CommonText.textBoldWight700(text: 'Good evening  🙌', fontSize: 16.sp),
         Spacer(),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: CommonText.textBoldWight400(text: 'Login'),
-          decoration: BoxDecoration(
-              border: Border.all(color: CommonColor.themDarkColor6E5DE7),
-              borderRadius: BorderRadius.circular(100)),
-        ),
+        GetStorageServices.getUserLoggedInStatus() == true
+            ? CommonWidget.commonSvgPitcher(
+                image: ImageConst.bookMark,
+              )
+            : Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: CommonText.textBoldWight400(text: 'Login'),
+                decoration: BoxDecoration(
+                    border: Border.all(color: CommonColor.themDarkColor6E5DE7),
+                    borderRadius: BorderRadius.circular(100)),
+              ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
             padding: EdgeInsets.all(10),

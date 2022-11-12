@@ -20,6 +20,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   int pagerIndex = 0;
   int currentRadio = 0;
   bool isSkip = false;
+
   _pageChange(int index) {
     if (!isSkip) {
       print("Page changed : $index");

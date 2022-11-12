@@ -14,10 +14,11 @@ class ImageConst {
   static String twiterIcon = 'assets/png/twiter.png';
   static String linkedinIcon = 'assets/png/_Linkedin.png';
   static String telegramIcon = 'assets/png/_Telegram.png';
+  static String bookMark = 'assets/svg/bookmark.svg';
+  static String calender = 'assets/svg/calender.svg';
 
   /// BottomBar:
   static String home = 'assets/svg/home.svg';
   static String news = 'assets/svg/news.svg';
   static String portfolio = 'assets/svg/portfolio.svg';
-  static String calender = 'assets/svg/calender.svg';
 }

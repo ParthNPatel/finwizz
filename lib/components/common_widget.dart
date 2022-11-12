@@ -24,33 +24,37 @@ class CommonWidget {
       Widget? prefix,
       Widget? suffix}) {
     return SizedBox(
-      height: 43.sp,
-      child: TextFormField(
-        obscureText: isObscured,
-        inputFormatters: inpuFormator,
-        maxLength: maxLength,
-        controller: controller,
-        keyboardType: keyBoardType,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontFamily: TextConst.fontFamily,
+      height: 45.sp,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: TextFormField(
+          obscureText: isObscured,
+          inputFormatters: inpuFormator,
+          maxLength: maxLength,
+          controller: controller,
+          keyboardType: keyBoardType,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontFamily: TextConst.fontFamily,
+          ),
+          cursorColor: Colors.black,
+          decoration: InputDecoration(
+              counterText: "",
+              prefixIcon: prefix,
+              contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
+              suffixIcon: suffix,
+              filled: true,
+              //fillColor: CommonColor.textFiledColorFAFAFA,
+              hintText: hintText,
+              hintStyle: TextStyle(
+                fontFamily: TextConst.fontFamily,
+                fontWeight: FontWeight.w400,
+                // color: CommonColor.hinTextColor
+              ),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10))),
         ),
-        cursorColor: Colors.black,
-        decoration: InputDecoration(
-            prefixIcon: prefix,
-            contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
-            suffixIcon: suffix,
-            filled: true,
-            //fillColor: CommonColor.textFiledColorFAFAFA,
-            hintText: hintText,
-            hintStyle: TextStyle(
-              fontFamily: TextConst.fontFamily,
-              fontWeight: FontWeight.w500,
-              // color: CommonColor.hinTextColor
-            ),
-            border: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(10))),
       ),
     );
   }
@@ -88,7 +92,7 @@ class CommonWidget {
   }
 
   static Widget commonSvgPitcher(
-      {required String image, required double height, required double width}) {
+      {required String image, double? height, double? width}) {
     return SvgPicture.asset(
       image,
       height: height,
