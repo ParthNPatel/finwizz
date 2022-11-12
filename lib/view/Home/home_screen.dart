@@ -367,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }),
         options: CarouselOptions(
-          height: 180,
+          //  height: 180,
           aspectRatio: 16 / 9,
           viewportFraction: 0.85,
           pageSnapping: true,
