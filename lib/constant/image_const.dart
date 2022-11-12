@@ -14,6 +14,8 @@ class ImageConst {
   static String twiterIcon = 'assets/png/twiter.png';
   static String linkedinIcon = 'assets/png/_Linkedin.png';
   static String telegramIcon = 'assets/png/_Telegram.png';
+  static String plusIcon = 'assets/svg/+.svg';
+  static String deleteIcon = 'assets/svg/delete.svg';
   static String bookMark = 'assets/svg/bookmark.svg';
   static String calender = 'assets/svg/calender.svg';
 

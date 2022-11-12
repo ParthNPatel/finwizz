@@ -3,6 +3,8 @@ import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/OnBoarding/on_boarding.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
+import 'package:finwizz/view/portfolio/portfolio_screen.dart';
+import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
