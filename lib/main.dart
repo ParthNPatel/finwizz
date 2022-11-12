@@ -1,5 +1,6 @@
 import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/OnBoarding/on_boarding.dart';
+import 'package:finwizz/view/new/news_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, deviceType) => GetMaterialApp(
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
-        home: HomeScreen(),
+        home: NewsScreen(),
+        // home: HomeScreen(),
       ),
     );
   }
