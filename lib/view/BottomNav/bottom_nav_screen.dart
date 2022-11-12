@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 
+import '../portfolio/portfolio_screen.dart';
+
 class BottomNavScreen extends StatefulWidget {
   const BottomNavScreen({Key? key}) : super(key: key);
 
@@ -29,12 +31,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
           ? HomeScreen()
           : selected == 1
               ? NewsMainScreen()
-              : Center(
-                  child: Text(
-                    "Portfolio",
-                    textScaleFactor: 1,
-                  ),
-                ),
+              : PortfolioScreen(),
       bottomNavigationBar: Container(
         height: 50.sp,
         width: double.infinity,
