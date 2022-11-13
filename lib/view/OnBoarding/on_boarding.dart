@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import '../../components/indicatorWidget.dart';
+import '../BottomNav/bottom_nav_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -84,6 +85,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ]
     },
   ];
+  int yearSelected = -1;
 
   @override
   initState() {
@@ -113,7 +115,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.06),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -122,6 +124,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 GestureDetector(
                   onTap: () {
                     _pageChange(pagerIndex + 1);
+                    if (pagerIndex == 3) {
+                      Get.offAll(
+                        () => BottomNavScreen(
+                          selectedIndex: 0,
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     height: 40,
@@ -158,14 +167,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         Image.asset(items[index]['image'], scale: 4.2),
         CommonWidget.commonSizedBox(height: 10),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 26, vertical: 20.sp),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CommonText.textBoldWight700(
-                    text: items[index]['title'], fontSize: 14.sp),
+                child: CommonText.textBoldWight600(
+                    text: items[index]['title'], fontSize: 13.sp),
               ),
               CommonWidget.commonSizedBox(height: 10),
               Column(
@@ -173,7 +182,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   items[index]['question'].length,
                   (indexList) => Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
                       margin: EdgeInsets.all(6),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -287,16 +296,26 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             items[index]['years'][indexList].length,
                             (indexOfYears) => Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    width: 60,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white),
-                                    child: Center(
-                                      child: CommonText.textBoldWight400(
-                                          text: items[index]['years'][indexList]
-                                              [indexOfYears]),
+                                  child: InkWell(
+                                    onTap: () {
+                                      // setState(() {
+                                      //   yearSelected = index;
+                                      // });
+                                    },
+                                    child: Container(
+                                      width: 60,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: yearSelected == index
+                                              ? Color(0xff9295E2)
+                                              : Colors.white),
+                                      child: Center(
+                                        child: CommonText.textBoldWight400(
+                                            text: items[index]['years']
+                                                [indexList][indexOfYears]),
+                                      ),
                                     ),
                                   ),
                                 )),

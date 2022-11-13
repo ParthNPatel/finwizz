@@ -185,7 +185,83 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                           : SizedBox(),
                       InkWell(
                         onTap: () {
-                          Get.to(() => SearchScreen());
+                          if (controller.isDelete) {
+                            showModalBottomSheet(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              context: context,
+                              builder: (context) => Container(
+                                height: 150.sp,
+                                decoration: BoxDecoration(
+                                  color: Color(0xfff4f4f4),
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(30),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: CommonText.textBoldWight500(
+                                          text:
+                                              "Are you sure you want to delete ?"),
+                                    ),
+                                    CommonWidget.commonSizedBox(height: 30),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            Get.back();
+                                          },
+                                          child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 10, horizontal: 30),
+                                              child:
+                                                  CommonText.textBoldWight700(
+                                                      text: "CANCEL",
+                                                      fontSize: 10.sp,
+                                                      color: Colors.white),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  color: CommonColor
+                                                      .themColor9295E2)),
+                                        ),
+                                        SizedBox(
+                                          width: 30,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            Get.back();
+                                          },
+                                          child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 10, horizontal: 30),
+                                              child:
+                                                  CommonText.textBoldWight700(
+                                                      text: "YES, DELETE",
+                                                      fontSize: 10.sp,
+                                                      color: Colors.white),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  color: CommonColor
+                                                      .themColor9295E2)),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else {
+                            Get.to(() => SearchScreen());
+                          }
                         },
                         child: Container(
                             padding: EdgeInsets.symmetric(

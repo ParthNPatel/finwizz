@@ -112,6 +112,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   if (phoneController.text.isNotEmpty &&
                       otpController.text.isNotEmpty) {
                     GetStorageServices.setUserLoggedIn();
+                    Get.back();
                   } else {
                     CommonWidget.getSnackBar(
                         color: Colors.red,

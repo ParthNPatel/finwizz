@@ -1,3 +1,4 @@
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/OnBoarding/on_boarding.dart';
@@ -39,7 +40,9 @@ class MyApp extends StatelessWidget {
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
         // home: SearchScreen(),
-        home: BottomNavScreen(selectedIndex: 0),
+        home: GetStorageServices.getUserLoggedInStatus() == true
+            ? BottomNavScreen(selectedIndex: 0)
+            : OnBoardingScreen(),
         // home: HomeScreen(),
       ),
     );

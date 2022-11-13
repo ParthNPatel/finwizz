@@ -8,6 +8,7 @@ import '../../components/common_widget.dart';
 import '../../constant/image_const.dart';
 import '../BookMark/book_mark_screen.dart';
 import '../Home/home_screen.dart';
+import '../SignUp_SignIn/sign_in_screen.dart';
 import '../SignUp_SignIn/sign_up_screen.dart';
 import 'movers_screen.dart';
 import 'news_screen.dart';
@@ -143,12 +144,17 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                   image: ImageConst.bookMark,
                 ),
               )
-            : Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: CommonText.textBoldWight400(text: 'Login'),
-                decoration: BoxDecoration(
-                  border: Border.all(color: CommonColor.themDarkColor6E5DE7),
-                  borderRadius: BorderRadius.circular(100),
+            : GestureDetector(
+                onTap: () {
+                  Get.to(() => SignInScreen());
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: CommonText.textBoldWight400(text: 'Login'),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: CommonColor.themDarkColor6E5DE7),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
                 ),
               ),
         CommonWidget.commonSizedBox(width: 10),

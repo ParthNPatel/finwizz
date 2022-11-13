@@ -5,6 +5,8 @@ import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
@@ -408,12 +410,18 @@ class _HomeScreenState extends State<HomeScreen> {
         Spacer(),
         GetStorageServices.getUserLoggedInStatus() == true
             ? SizedBox()
-            : Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: CommonText.textBoldWight400(text: 'Login'),
-                decoration: BoxDecoration(
-                    border: Border.all(color: CommonColor.themDarkColor6E5DE7),
-                    borderRadius: BorderRadius.circular(100)),
+            : GestureDetector(
+                onTap: () {
+                  Get.to(() => SignInScreen());
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: CommonText.textBoldWight400(text: 'Login'),
+                  decoration: BoxDecoration(
+                      border:
+                          Border.all(color: CommonColor.themDarkColor6E5DE7),
+                      borderRadius: BorderRadius.circular(100)),
+                ),
               ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
@@ -439,9 +447,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class DrawerWidget extends StatelessWidget {
+class DrawerWidget extends StatefulWidget {
   DrawerWidget({Key? key}) : super(key: key);
 
+  @override
+  State<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
   List drawerDataList = [
     {'icon': ImageConst.bellIcon, 'text': 'Notifications'},
     {'icon': ImageConst.userPlus, 'text': 'Referrals'},
@@ -456,6 +469,16 @@ class DrawerWidget extends StatelessWidget {
     ImageConst.linkedinIcon,
     ImageConst.telegramIcon
   ];
+
+  final name = TextEditingController();
+
+  final email = TextEditingController();
+
+  final message = TextEditingController();
+
+  bool icChecked = false;
+
+  bool icChecked1 = false;
 
   @override
   Widget build(BuildContext context) {
@@ -483,124 +506,99 @@ class DrawerWidget extends StatelessWidget {
                         padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
                         child: InkWell(
                           onTap: () {
-                            Get.dialog(Dialog(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Center(
-                                      child: CommonText.textBoldWight500(
-                                          text: "Referrals",
-                                          fontSize: 18.sp,
-                                          color: Colors.black),
-                                    ),
-                                    CommonWidget.commonSizedBox(height: 20),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                            if (index == 1) {
+                              Get.dialog(referrals());
+                            } else if (index == 3) {
+                              Get.dialog(contactUs());
+                            } else if (index == 0) {
+                              Get.dialog(StatefulBuilder(
+                                builder: (context, setState) => Dialog(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(40.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Column(
+                                        Center(
+                                          child: CommonText.textBoldWight600(
+                                              text: "Notifications",
+                                              fontSize: 18.sp,
+                                              color: Colors.black),
+                                        ),
+                                        CommonWidget.commonSizedBox(height: 20),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            CommonText.textBoldWight400(
-                                                text: "Pending referrals",
-                                                fontSize: 10.sp,
-                                                color: Colors.black),
-                                            CommonText.textBoldWight400(
-                                                text: "1",
-                                                fontSize: 10.sp,
-                                                color: Colors.grey),
+                                            SizedBox(
+                                              width: 100.sp,
+                                              child:
+                                                  CommonText.textBoldWight500(
+                                                      text: "News",
+                                                      fontSize: 13.sp,
+                                                      color: Colors.black),
+                                            ),
+                                            SizedBox(
+                                              width: 30,
+                                            ),
+                                            CupertinoSwitch(
+                                              activeColor:
+                                                  CommonColor.primaryColor,
+                                              value: icChecked,
+                                              onChanged: (value) {
+                                                setState(
+                                                  () {
+                                                    icChecked = value;
+                                                  },
+                                                );
+                                              },
+                                            )
                                           ],
                                         ),
-                                        Column(
+                                        CommonWidget.commonSizedBox(
+                                            height: 20.sp),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            CommonText.textBoldWight400(
-                                                text: "Successful referrals",
-                                                fontSize: 10.sp,
-                                                color: Colors.black),
-                                            CommonText.textBoldWight400(
-                                                text: "2",
-                                                fontSize: 10.sp,
-                                                color: Colors.grey),
+                                            SizedBox(
+                                              width: 100.sp,
+                                              child:
+                                                  CommonText.textBoldWight500(
+                                                      text: "Portfolio alerts ",
+                                                      fontSize: 13.sp,
+                                                      color: Colors.black),
+                                            ),
+                                            SizedBox(
+                                              width: 30,
+                                            ),
+                                            CupertinoSwitch(
+                                              activeColor:
+                                                  CommonColor.primaryColor,
+                                              value: icChecked1,
+                                              onChanged: (value) {
+                                                setState(
+                                                  () {
+                                                    icChecked1 = value;
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                            Icon(
+                                              Icons.lock_outline,
+                                              color: CommonColor.primaryColor,
+                                            )
                                           ],
                                         ),
+                                        CommonWidget.commonSizedBox(
+                                            height: 20.sp),
                                       ],
                                     ),
-                                    CommonWidget.commonSizedBox(height: 20.sp),
-                                    Divider(),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.lock_open_outlined,
-                                          color: CommonColor.primaryColor,
-                                        ),
-                                        SizedBox(
-                                          width: 3,
-                                        ),
-                                        CommonText.textBoldWight500(
-                                            text:
-                                                "Unlock all features with 3 successful referrals",
-                                            fontSize: 8.sp,
-                                            color: Colors.black),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Divider(),
-                                    CommonWidget.commonSizedBox(height: 20.sp),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CommonText.textBoldWight600(
-                                            text: "FW1234",
-                                            fontSize: 12.sp,
-                                            color: Colors.black),
-                                        SizedBox(
-                                          width: 3,
-                                        ),
-                                        Icon(
-                                          Icons.copy,
-                                          color: CommonColor.primaryColor,
-                                        ),
-                                        Spacer(),
-                                        InkWell(
-                                          onTap: () {},
-                                          child: Image.asset(
-                                            ImageConst.whatsApp,
-                                            height: 20.sp,
-                                            width: 20.sp,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        InkWell(
-                                          onTap: () {},
-                                          child: Image.asset(
-                                            ImageConst.twitter,
-                                            height: 20.sp,
-                                            width: 20.sp,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Icon(
-                                          Icons.share,
-                                          color: CommonColor.primaryColor,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ));
+                              ));
+                            }
                           },
                           child: Row(
                             children: [
@@ -647,5 +645,232 @@ class DrawerWidget extends StatelessWidget {
             CommonWidget.commonSizedBox(height: 20),
           ]),
         ));
+  }
+
+  Dialog contactUs() {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: CommonText.textBoldWight500(
+                  text: "Contact Us", fontSize: 18.sp, color: Colors.black),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            CommonText.textBoldWight500(
+                text: "Name", fontSize: 12.sp, color: Colors.black),
+            CommonWidget.commonSizedBox(height: 10),
+            SizedBox(
+              height: 35.sp,
+              width: 130.sp,
+              child: SizedBox(
+                child: TextFormField(
+                  controller: name,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.only(bottom: 3, left: 15),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(
+                        color: Color(0xffC9C5C5),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(
+                        color: Color(0xffC9C5C5),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            CommonText.textBoldWight500(
+                text: "Email", fontSize: 12.sp, color: Colors.black),
+            CommonWidget.commonSizedBox(height: 10),
+            SizedBox(
+              height: 35.sp,
+              child: SizedBox(
+                child: TextFormField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.only(bottom: 3, left: 15),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(
+                        color: Color(0xffC9C5C5),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(
+                        color: Color(0xffC9C5C5),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            CommonText.textBoldWight500(
+                text: "Message", fontSize: 12.sp, color: Colors.black),
+            CommonWidget.commonSizedBox(height: 10),
+            TextFormField(
+              maxLines: 7,
+              controller: email,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.only(bottom: 3, left: 15),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(
+                    color: Color(0xffC9C5C5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(40),
+                  borderSide: BorderSide(
+                    color: Color(0xffC9C5C5),
+                  ),
+                ),
+              ),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            Center(
+              child: MaterialButton(
+                  elevation: 0,
+                  onPressed: () {
+                    Get.back();
+                  },
+                  color: Color(0xff9295E2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 55.sp, vertical: 8.sp),
+                    child: CommonText.textBoldWight600(
+                      text: "SUBMIT",
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget referrals() {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: CommonText.textBoldWight500(
+                  text: "Referrals", fontSize: 18.sp, color: Colors.black),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    CommonText.textBoldWight400(
+                        text: "Pending referrals",
+                        fontSize: 10.sp,
+                        color: Colors.black),
+                    CommonText.textBoldWight400(
+                        text: "1", fontSize: 10.sp, color: Colors.grey),
+                  ],
+                ),
+                Column(
+                  children: [
+                    CommonText.textBoldWight400(
+                        text: "Successful referrals",
+                        fontSize: 10.sp,
+                        color: Colors.black),
+                    CommonText.textBoldWight400(
+                        text: "2", fontSize: 10.sp, color: Colors.grey),
+                  ],
+                ),
+              ],
+            ),
+            CommonWidget.commonSizedBox(height: 20.sp),
+            Divider(),
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              children: [
+                Icon(
+                  Icons.lock_open_outlined,
+                  color: CommonColor.primaryColor,
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                CommonText.textBoldWight500(
+                    text: "Unlock all features with 3 successful referrals",
+                    fontSize: 8.sp,
+                    color: Colors.black),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Divider(),
+            CommonWidget.commonSizedBox(height: 20.sp),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CommonText.textBoldWight600(
+                    text: "FW1234", fontSize: 12.sp, color: Colors.black),
+                SizedBox(
+                  width: 5,
+                ),
+                Icon(
+                  Icons.copy,
+                  color: CommonColor.primaryColor,
+                ),
+                Spacer(),
+                InkWell(
+                  onTap: () {},
+                  child: Image.asset(
+                    ImageConst.whatsApp,
+                    height: 20.sp,
+                    width: 20.sp,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: Image.asset(
+                    ImageConst.twitter,
+                    height: 20.sp,
+                    width: 20.sp,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                Icon(
+                  Icons.share,
+                  color: CommonColor.primaryColor,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

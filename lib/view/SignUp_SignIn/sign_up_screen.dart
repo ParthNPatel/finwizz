@@ -152,6 +152,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 if (phoneController.text.isNotEmpty &&
                     otpController.text.isNotEmpty) {
                   GetStorageServices.setUserLoggedIn();
+                  Get.back();
                 } else {
                   CommonWidget.getSnackBar(
                       color: Colors.red,
