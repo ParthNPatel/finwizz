@@ -11,7 +11,9 @@ import '../portfolio/portfolio_screen.dart';
 import 'package:get/get.dart';
 
 class BottomNavScreen extends StatefulWidget {
-  const BottomNavScreen({Key? key}) : super(key: key);
+  final int selectedIndex;
+  const BottomNavScreen({Key? key, required this.selectedIndex})
+      : super(key: key);
 
   @override
   State<BottomNavScreen> createState() => _BottomNavScreenState();
@@ -23,10 +25,16 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     {"icon": ImageConst.news, 'label': "News"},
     {"icon": ImageConst.portfolio, 'label': "Portfolio"},
   ];
-
   int selected = 0;
 
   HandleScreenController controller = Get.find();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selected = widget.selectedIndex;
+  }
 
   @override
   Widget build(BuildContext context) {

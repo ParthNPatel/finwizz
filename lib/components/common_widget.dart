@@ -90,11 +90,12 @@ class CommonWidget {
   }
 
   static Widget commonSvgPitcher(
-      {required String image, double? height, double? width}) {
+      {required String image, double? height, double? width, Color? color}) {
     return SvgPicture.asset(
       image,
       height: height,
       width: width,
+      color: color,
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:finwizz/view/BookMark/book_mark_screen.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/OnBoarding/on_boarding.dart';
@@ -13,6 +12,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
 
 import 'controller/handle_screen_controller.dart';
+
+import 'controllers/portfolio_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
         initialBinding: BaseBindings(),
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
-        home: BottomNavScreen(),
+        // home: SearchScreen(),
+        home: BottomNavScreen(selectedIndex: 0),
         // home: HomeScreen(),
       ),
     );
@@ -48,5 +50,6 @@ class BaseBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => HandleScreenController(), fenix: true);
+    Get.lazyPut(() => PortFolioController(), fenix: true);
   }
 }

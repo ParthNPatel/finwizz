@@ -1,13 +1,18 @@
 import 'package:finwizz/constant/image_const.dart';
+import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../components/common_widget.dart';
 import '../../constant/color_const.dart';
 import '../../constant/text_styel.dart';
+import '../../controllers/portfolio_controller.dart';
 
 class PortfolioScreen extends StatefulWidget {
-  const PortfolioScreen({Key? key}) : super(key: key);
+  const PortfolioScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<PortfolioScreen> createState() => _PortfolioScreenState();
@@ -30,6 +35,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
       'updates': [],
     }
   ];
+  PortFolioController _portFolioController = Get.find();
   @override
   void initState() {
     // TODO: implement initState
@@ -40,127 +46,180 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Column(children: [
-        appWidget(),
-        Stack(
-          fit: StackFit.passthrough,
-          alignment: Alignment.bottomCenter,
-          children: <Widget>[
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Color(0xffDADEE3), width: 1),
-                ),
-              ),
-            ),
-            tabBarTitleWidget(),
-          ],
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: tabController,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  CommonWidget.commonSizedBox(height: 26),
-                  ListView.builder(
-                    itemCount: listOfStocks.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: CommonText.textBoldWight400(
-                                      text: listOfStocks[index]['title']),
-                                ),
-                                Spacer(),
-                                listOfStocks[index]['updates'].length == 0
-                                    ? CommonText.textBoldWight400(
-                                        text: 'No recent updates ')
-                                    : Row(
-                                        children: List.generate(
-                                            listOfStocks[index]['updates']
-                                                .length, (indexOf) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Container(
-                                              width: 30.sp,
-                                              alignment: Alignment.center,
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: 8,
-                                              ),
-                                              child:
-                                                  CommonText.textBoldWight400(
-                                                      text: listOfStocks[index]
-                                                                  ['updates']
-                                                              [indexOf]
-                                                          .toString()),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  color: listOfStocks[index][
-                                                                      'updates']
-                                                                  .length ==
-                                                              2 &&
-                                                          indexOf == 0
-                                                      ? CommonColor
-                                                          .greenColor2ECC71
-                                                          .withOpacity(0.5)
-                                                      : CommonColor
-                                                          .lightRedColor3D3D3D
-                                                          .withOpacity(0.5)),
-                                            ),
-                                          );
-                                        }),
-                                      )
-                              ],
-                            ),
-                            CommonWidget.commonSizedBox(height: 6),
-                            Divider(
-                              color: CommonColor.greyColorD1CDCD,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+      body: GetBuilder<PortFolioController>(
+        builder: (controller) {
+          return SafeArea(
+              child: Column(children: [
+            appWidget(controller),
+            Stack(
+              fit: StackFit.passthrough,
+              alignment: Alignment.bottomCenter,
+              children: <Widget>[
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xffDADEE3), width: 1),
+                    ),
                   ),
-                  CommonWidget.commonSizedBox(height: 32),
-                  Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                      child: CommonText.textBoldWight700(
-                          text: 'ADD STOCKS',
-                          fontSize: 10.sp,
-                          color: Colors.white),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: CommonColor.themColor9295E2)),
+                ),
+                tabBarTitleWidget(),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  Column(
+                    mainAxisAlignment: controller.isAddShare
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
+                    children: [
+                      controller.isAddShare
+                          ? CommonWidget.commonSizedBox(height: 26)
+                          : SizedBox(),
+                      controller.isAddShare
+                          ? ListView.builder(
+                              itemCount: listOfStocks.length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          //assets/svg/empty_check_box.svg
+                                          controller.isDelete
+                                              ? InkWell(
+                                                  onTap: () {
+                                                    controller
+                                                        .setListOfPortFolio(
+                                                            shareName:
+                                                                listOfStocks[
+                                                                        index]
+                                                                    ['title']);
+                                                  },
+                                                  child: CommonWidget.commonSvgPitcher(
+                                                      image: controller
+                                                              .listOfDeletePortFolio
+                                                              .contains(
+                                                                  listOfStocks[
+                                                                          index]
+                                                                      ['title'])
+                                                          ? 'assets/svg/check_box.svg'
+                                                          : 'assets/svg/empty_check_box.svg'),
+                                                )
+                                              : SizedBox(),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: CommonText.textBoldWight400(
+                                                text: listOfStocks[index]
+                                                    ['title']),
+                                          ),
+                                          Spacer(),
+                                          listOfStocks[index]['updates']
+                                                      .length ==
+                                                  0
+                                              ? CommonText.textBoldWight400(
+                                                  text: 'No recent updates ')
+                                              : Row(
+                                                  children: List.generate(
+                                                      listOfStocks[index]
+                                                              ['updates']
+                                                          .length, (indexOf) {
+                                                    return Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Container(
+                                                        width: 30.sp,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          vertical: 8,
+                                                        ),
+                                                        child: CommonText.textBoldWight400(
+                                                            text: listOfStocks[
+                                                                            index]
+                                                                        [
+                                                                        'updates']
+                                                                    [indexOf]
+                                                                .toString()),
+                                                        decoration: BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                            color: listOfStocks[index]['updates']
+                                                                            .length ==
+                                                                        2 &&
+                                                                    indexOf == 0
+                                                                ? CommonColor
+                                                                    .greenColor2ECC71
+                                                                    .withOpacity(
+                                                                        0.5)
+                                                                : CommonColor
+                                                                    .lightRedColor3D3D3D
+                                                                    .withOpacity(
+                                                                        0.5)),
+                                                      ),
+                                                    );
+                                                  }),
+                                                )
+                                        ],
+                                      ),
+                                      CommonWidget.commonSizedBox(height: 6),
+                                      Divider(
+                                        color: CommonColor.greyColorD1CDCD,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            )
+                          : SizedBox(),
+                      _portFolioController.isAddShare
+                          ? CommonWidget.commonSizedBox(height: 32)
+                          : SizedBox(),
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => SearchScreen());
+                        },
+                        child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 50),
+                            child: CommonText.textBoldWight700(
+                                text: controller.isDelete
+                                    ? 'DELETE'
+                                    : 'ADD STOCKS',
+                                fontSize: 10.sp,
+                                color: Colors.white),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: CommonColor.themColor9295E2)),
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: Text(
+                      "News",
+                      textScaleFactor: 1,
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      "Insider",
+                      textScaleFactor: 1,
+                    ),
+                  )
                 ],
               ),
-              Center(
-                child: Text(
-                  "News",
-                  textScaleFactor: 1,
-                ),
-              ),
-              Center(
-                child: Text(
-                  "Insider",
-                  textScaleFactor: 1,
-                ),
-              )
-            ],
-          ),
-        )
-      ])),
+            )
+          ]));
+        },
+      ),
     );
   }
 
@@ -200,7 +259,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
     );
   }
 
-  Widget appWidget() {
+  Widget appWidget(PortFolioController controller) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       child: Row(
@@ -208,23 +267,38 @@ class _PortfolioScreenState extends State<PortfolioScreen>
           CommonText.textBoldWight700(text: 'Hello Tia🙌', fontSize: 16.sp),
           Spacer(),
           CommonWidget.commonSizedBox(width: 10),
-          Container(
-              padding: EdgeInsets.all(10),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: CommonColor.greyColorB0A7A7.withOpacity(0.2)),
-              child: CommonWidget.commonSvgPitcher(image: ImageConst.plusIcon)),
+          InkWell(
+            onTap: () {
+              Get.to(() => SearchScreen());
+            },
+            child: Container(
+                padding: EdgeInsets.all(10),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: CommonColor.greyColorB0A7A7.withOpacity(0.2)),
+                child: CommonWidget.commonSvgPitcher(
+                  image: ImageConst.plusIcon,
+                )),
+          ),
           CommonWidget.commonSizedBox(width: 10),
-          Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.all(6),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: CommonColor.greyColorB0A7A7.withOpacity(0.2)),
-              child:
-                  CommonWidget.commonSvgPitcher(image: ImageConst.deleteIcon)),
+          InkWell(
+            onTap: () {
+              controller.isDelete = true;
+            },
+            child: Container(
+                padding: EdgeInsets.all(12),
+                margin: EdgeInsets.all(6),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: CommonColor.greyColorB0A7A7.withOpacity(0.2)),
+                child: CommonWidget.commonSvgPitcher(
+                    image: ImageConst.deleteIcon,
+                    color: controller.isDelete
+                        ? CommonColor.themDarkColor6E5DE7
+                        : Colors.black)),
+          ),
         ],
       ),
     );

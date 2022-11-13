@@ -15,6 +15,7 @@ class CommonColor {
   static Color amberBlackColor072D4B = const Color(0xff072D4B);
   static Color whiteColorF4F6F9 = const Color(0xffF4F6F9);
   static Color greyColorB0A7A7 = const Color(0xffB0A7A7);
+  static Color greyColorA3A3A3 = const Color(0xffA3A3A3);
   static Color greyColorD1CDCD = const Color(0xffD1CDCD);
   static Color greenColor2ECC71 = const Color(0xff2ECC71);
   static Color lightRedColor3D3D3D = const Color.fromRGBO(244, 55, 55, 0.53);
