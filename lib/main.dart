@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import 'controllers/portfolio_controller.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -19,12 +21,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Sizer(
       builder: (context, orientation, deviceType) => GetMaterialApp(
-        title: 'FinWizz',
+        title: 'FinWizz', initialBinding: BaseBindings(),
         debugShowCheckedModeBanner: false,
-        home: SearchScreen(),
-        // home: BottomNavScreen(),
+        // home: SearchScreen(),
+        home: BottomNavScreen(selectedIndex: 0),
         // home: HomeScreen(),
       ),
     );
+  }
+}
+
+class BaseBindings extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut(() => PortFolioController(), fenix: true);
   }
 }

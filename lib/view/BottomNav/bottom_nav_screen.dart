@@ -9,7 +9,9 @@ import 'package:sizer/sizer.dart';
 import '../portfolio/portfolio_screen.dart';
 
 class BottomNavScreen extends StatefulWidget {
-  const BottomNavScreen({Key? key}) : super(key: key);
+  final int selectedIndex;
+  const BottomNavScreen({Key? key, required this.selectedIndex})
+      : super(key: key);
 
   @override
   State<BottomNavScreen> createState() => _BottomNavScreenState();
@@ -21,8 +23,14 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     {"icon": ImageConst.news, 'label': "News"},
     {"icon": ImageConst.portfolio, 'label': "Portfolio"},
   ];
-
   int selected = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selected = widget.selectedIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
