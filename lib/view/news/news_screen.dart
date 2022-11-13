@@ -26,6 +26,9 @@ class _NewsScreenState extends State<NewsScreen> {
 
   int selected = 0;
 
+  bool isFavourite = true;
+  bool isFavourite1 = true;
+
   List listOfNews = [
     {
       'image': ImageConst.newsIcon,
@@ -52,9 +55,6 @@ class _NewsScreenState extends State<NewsScreen> {
       'title': 'Wed, 05 Sep 2022',
     }
   ];
-
-  bool isFavourite = true;
-  bool isFavourite1 = true;
 
   @override
   Widget build(BuildContext context) {
@@ -192,15 +192,9 @@ class _NewsScreenState extends State<NewsScreen> {
                             Spacer(),
                             InkResponse(
                               onTap: () {
-                                if (GetStorageServices
-                                        .getUserLoggedInStatus() ==
-                                    true) {
-                                  setState(() {
-                                    isFavourite1 = !isFavourite1;
-                                  });
-                                } else {
-                                  Get.to(() => SignUpScreen());
-                                }
+                                setState(() {
+                                  isFavourite1 = !isFavourite1;
+                                });
                               },
                               child: Icon(
                                 isFavourite1 == true
@@ -233,7 +227,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ],
             ),
             itemCount: 3,
-          )
+          ),
         ],
       ),
     );

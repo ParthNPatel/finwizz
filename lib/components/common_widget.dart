@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import 'package:sizer/sizer.dart';
 import 'package:flutter_svg/svg.dart';
-
 import '../constant/color_const.dart';
 import '../constant/text_const.dart';
 import '../constant/text_styel.dart';

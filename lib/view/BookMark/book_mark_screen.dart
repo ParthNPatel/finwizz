@@ -1,24 +1,27 @@
+import 'package:finwizz/constant/color_const.dart';
+import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../components/common_widget.dart';
-import '../../constant/color_const.dart';
 import '../../constant/image_const.dart';
-import '../../constant/text_styel.dart';
-import '../../get_storage_services/get_storage_service.dart';
+import '../../controller/handle_screen_controller.dart';
+import '../Home/home_screen.dart';
 import '../SignUp_SignIn/sign_up_screen.dart';
+import '../news/news_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
-class MoversScreen extends StatefulWidget {
-  const MoversScreen({Key? key}) : super(key: key);
+class BookMarkScreen extends StatefulWidget {
+  const BookMarkScreen({Key? key}) : super(key: key);
 
   @override
-  State<MoversScreen> createState() => _MoversScreenState();
+  State<BookMarkScreen> createState() => _BookMarkScreenState();
 }
 
-class _MoversScreenState extends State<MoversScreen> {
-  bool isFavourite = true;
-  bool isFavourite1 = true;
+class _BookMarkScreenState extends State<BookMarkScreen>
+    with SingleTickerProviderStateMixin {
+  final globalKey = GlobalKey<ScaffoldState>();
 
   List listOfNews = [
     {
@@ -47,17 +50,30 @@ class _MoversScreenState extends State<MoversScreen> {
     }
   ];
 
+  bool isFavourite = true;
+  bool isFavourite1 = true;
+
+  HandleScreenController controller = Get.find();
+
   @override
   Widget build(BuildContext context) {
-    return GetStorageServices.getUserLoggedInStatus() == true
-        ? SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                CommonWidget.commonSizedBox(height: 20),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+    return WillPopScope(
+      onWillPop: () async {
+        controller.changeTapped(false);
+        return false;
+      },
+      child: Scaffold(
+        key: globalKey,
+        drawer: DrawerWidget(),
+        body: SafeArea(
+          child: Column(
+            children: [
+              CommonWidget.commonSizedBox(height: 10),
+              appWidget(),
+              CommonWidget.commonSizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
                   itemBuilder: (context, index) => Column(
                     children: [
                       Padding(
@@ -189,12 +205,51 @@ class _MoversScreenState extends State<MoversScreen> {
                   ),
                   itemCount: 3,
                 ),
-              ],
-            ),
-          )
-        : Padding(
-            padding: EdgeInsets.only(top: 30),
-            child: CreateAccount(),
-          );
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Row appWidget() {
+    return Row(
+      children: [
+        IconButton(
+            onPressed: () {
+              globalKey.currentState!.openDrawer();
+            },
+            icon: Icon(
+              Icons.menu_outlined,
+              size: 28.sp,
+              color: CommonColor.themColor9295E2,
+            )),
+        CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 16.sp),
+        Spacer(),
+        CommonWidget.commonSvgPitcher(
+          image: ImageConst.bookMarkFilled,
+        ),
+        CommonWidget.commonSizedBox(width: 10),
+        Container(
+            padding: EdgeInsets.all(10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.center,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xff6E5DE7).withOpacity(0.8),
+                      Color(0xff6E5DE7).withOpacity(0.8),
+                    ]),
+                shape: BoxShape.circle,
+                color: CommonColor.themColor9295E2),
+            child: Image.asset(
+              'assets/png/notification.png',
+              scale: 2.6,
+            )),
+        CommonWidget.commonSizedBox(width: 10)
+      ],
+    );
   }
 }

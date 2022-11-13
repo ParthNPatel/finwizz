@@ -1,14 +1,17 @@
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../components/common_widget.dart';
 import '../../constant/image_const.dart';
+import '../BookMark/book_mark_screen.dart';
 import '../Home/home_screen.dart';
 import '../SignUp_SignIn/sign_up_screen.dart';
 import 'movers_screen.dart';
 import 'news_screen.dart';
+import 'package:get/get.dart';
 
 class NewsMainScreen extends StatefulWidget {
   const NewsMainScreen({Key? key}) : super(key: key);
@@ -21,6 +24,8 @@ class _NewsMainScreenState extends State<NewsMainScreen>
     with SingleTickerProviderStateMixin {
   final globalKey = GlobalKey<ScaffoldState>();
   TabController? tabController;
+
+  HandleScreenController controller = Get.find();
 
   @override
   void initState() {
@@ -115,26 +120,36 @@ class _NewsMainScreenState extends State<NewsMainScreen>
     return Row(
       children: [
         IconButton(
-            onPressed: () {
-              globalKey.currentState!.openDrawer();
-            },
-            icon: Icon(
-              Icons.menu_outlined,
-              size: 28.sp,
-              color: CommonColor.themColor9295E2,
-            )),
-        CommonText.textBoldWight700(text: 'Good evening  🙌', fontSize: 16.sp),
+          onPressed: () {
+            globalKey.currentState!.openDrawer();
+          },
+          icon: Icon(
+            Icons.menu_outlined,
+            size: 28.sp,
+            color: CommonColor.themColor9295E2,
+          ),
+        ),
+        GetStorageServices.getUserLoggedInStatus() == true
+            ? CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 16.sp)
+            : CommonText.textBoldWight700(
+                text: 'Good evening  🙌', fontSize: 16.sp),
         Spacer(),
         GetStorageServices.getUserLoggedInStatus() == true
-            ? CommonWidget.commonSvgPitcher(
-                image: ImageConst.bookMark,
+            ? InkWell(
+                onTap: () {
+                  controller.changeTapped(true);
+                },
+                child: CommonWidget.commonSvgPitcher(
+                  image: ImageConst.bookMark,
+                ),
               )
             : Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: CommonText.textBoldWight400(text: 'Login'),
                 decoration: BoxDecoration(
-                    border: Border.all(color: CommonColor.themDarkColor6E5DE7),
-                    borderRadius: BorderRadius.circular(100)),
+                  border: Border.all(color: CommonColor.themDarkColor6E5DE7),
+                  borderRadius: BorderRadius.circular(100),
+                ),
               ),
         CommonWidget.commonSizedBox(width: 10),
         Container(

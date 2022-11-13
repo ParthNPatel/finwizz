@@ -1,3 +1,4 @@
+import 'package:finwizz/view/BookMark/book_mark_screen.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/OnBoarding/on_boarding.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
+
+import 'controller/handle_screen_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,11 +34,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Sizer(
       builder: (context, orientation, deviceType) => GetMaterialApp(
+        initialBinding: BaseBindings(),
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
         home: BottomNavScreen(),
         // home: HomeScreen(),
       ),
     );
+  }
+}
+
+class BaseBindings extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut(() => HandleScreenController(), fenix: true);
   }
 }

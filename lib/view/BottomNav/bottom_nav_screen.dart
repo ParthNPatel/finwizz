@@ -1,12 +1,14 @@
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/image_const.dart';
+import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/news/news_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
-
+import '../BookMark/book_mark_screen.dart';
 import '../portfolio/portfolio_screen.dart';
+import 'package:get/get.dart';
 
 class BottomNavScreen extends StatefulWidget {
   const BottomNavScreen({Key? key}) : super(key: key);
@@ -24,14 +26,20 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
 
   int selected = 0;
 
+  HandleScreenController controller = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: selected == 0
-          ? HomeScreen()
-          : selected == 1
-              ? NewsMainScreen()
-              : PortfolioScreen(),
+      body: GetBuilder<HandleScreenController>(
+        builder: (controller) => selected == 0
+            ? HomeScreen()
+            : selected == 1
+                ? controller.isTapped == true
+                    ? BookMarkScreen()
+                    : NewsMainScreen()
+                : PortfolioScreen(),
+      ),
       bottomNavigationBar: Container(
         height: 50.sp,
         width: double.infinity,
@@ -68,7 +76,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                       color:
                           selected == index ? Colors.black : Color(0xffA6A6A6),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

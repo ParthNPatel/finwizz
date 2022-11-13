@@ -4,6 +4,7 @@ import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
@@ -400,15 +401,20 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 28.sp,
               color: CommonColor.themColor9295E2,
             )),
-        CommonText.textBoldWight700(text: 'Good evening  🙌', fontSize: 16.sp),
+        GetStorageServices.getUserLoggedInStatus() == true
+            ? CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 16.sp)
+            : CommonText.textBoldWight700(
+                text: 'Good evening  🙌', fontSize: 16.sp),
         Spacer(),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: CommonText.textBoldWight400(text: 'Login'),
-          decoration: BoxDecoration(
-              border: Border.all(color: CommonColor.themDarkColor6E5DE7),
-              borderRadius: BorderRadius.circular(100)),
-        ),
+        GetStorageServices.getUserLoggedInStatus() == true
+            ? SizedBox()
+            : Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: CommonText.textBoldWight400(text: 'Login'),
+                decoration: BoxDecoration(
+                    border: Border.all(color: CommonColor.themDarkColor6E5DE7),
+                    borderRadius: BorderRadius.circular(100)),
+              ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
             padding: EdgeInsets.all(10),
@@ -475,17 +481,139 @@ class DrawerWidget extends StatelessWidget {
                   drawerDataList.length,
                   (index) => Padding(
                         padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                height: 24.sp,
-                                width: 24.sp,
-                                child:
-                                    Image.asset(drawerDataList[index]['icon'])),
-                            CommonWidget.commonSizedBox(width: 10),
-                            CommonText.textBoldWight400(
-                                text: drawerDataList[index]['text'])
-                          ],
+                        child: InkWell(
+                          onTap: () {
+                            Get.dialog(Dialog(
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Center(
+                                      child: CommonText.textBoldWight500(
+                                          text: "Referrals",
+                                          fontSize: 18.sp,
+                                          color: Colors.black),
+                                    ),
+                                    CommonWidget.commonSizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            CommonText.textBoldWight400(
+                                                text: "Pending referrals",
+                                                fontSize: 10.sp,
+                                                color: Colors.black),
+                                            CommonText.textBoldWight400(
+                                                text: "1",
+                                                fontSize: 10.sp,
+                                                color: Colors.grey),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            CommonText.textBoldWight400(
+                                                text: "Successful referrals",
+                                                fontSize: 10.sp,
+                                                color: Colors.black),
+                                            CommonText.textBoldWight400(
+                                                text: "2",
+                                                fontSize: 10.sp,
+                                                color: Colors.grey),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    CommonWidget.commonSizedBox(height: 20.sp),
+                                    Divider(),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.lock_open_outlined,
+                                          color: CommonColor.primaryColor,
+                                        ),
+                                        SizedBox(
+                                          width: 3,
+                                        ),
+                                        CommonText.textBoldWight500(
+                                            text:
+                                                "Unlock all features with 3 successful referrals",
+                                            fontSize: 8.sp,
+                                            color: Colors.black),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Divider(),
+                                    CommonWidget.commonSizedBox(height: 20.sp),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        CommonText.textBoldWight600(
+                                            text: "FW1234",
+                                            fontSize: 12.sp,
+                                            color: Colors.black),
+                                        SizedBox(
+                                          width: 3,
+                                        ),
+                                        Icon(
+                                          Icons.copy,
+                                          color: CommonColor.primaryColor,
+                                        ),
+                                        Spacer(),
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Image.asset(
+                                            ImageConst.whatsApp,
+                                            height: 20.sp,
+                                            width: 20.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Image.asset(
+                                            ImageConst.twitter,
+                                            height: 20.sp,
+                                            width: 20.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Icon(
+                                          Icons.share,
+                                          color: CommonColor.primaryColor,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ));
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                  height: 24.sp,
+                                  width: 24.sp,
+                                  child: Image.asset(
+                                      drawerDataList[index]['icon'])),
+                              CommonWidget.commonSizedBox(width: 10),
+                              CommonText.textBoldWight400(
+                                  text: drawerDataList[index]['text'])
+                            ],
+                          ),
                         ),
                       )),
             ),
@@ -499,15 +627,16 @@ class DrawerWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                  platFormIcon.length,
-                  (index) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: 24.sp,
-                          height: 24.sp,
-                          child: Image.asset(platFormIcon[index]),
-                        ),
-                      )),
+                platFormIcon.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 24.sp,
+                    height: 24.sp,
+                    child: Image.asset(platFormIcon[index]),
+                  ),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 20, bottom: 10),
