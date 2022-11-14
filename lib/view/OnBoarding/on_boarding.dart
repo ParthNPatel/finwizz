@@ -21,7 +21,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   int pagerIndex = 0;
   int currentRadio = 0;
   bool isSkip = false;
-
+  String tapValue = '';
   _pageChange(int index) {
     if (!isSkip) {
       print("Page changed : $index");
@@ -206,9 +206,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                         CommonColor.themColor9295E2,
                                     primaryColor: CommonColor.themColor9295E2),
                                 child: Radio(
-                                    // focusColor: CommonColor.themColor9295E2,
-                                    // hoverColor: CommonColor.themColor9295E2,
-                                    // activeColor: CommonColor.themColor9295E2,
                                     value: currentRadio == indexList
                                         ? indexList
                                         : 5,
@@ -298,6 +295,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: InkWell(
                                     onTap: () {
+                                      tapValue = items[index]['years']
+                                          [indexList][indexOfYears];
+                                      setState(() {});
                                       // setState(() {
                                       //   yearSelected = index;
                                       // });
@@ -308,7 +308,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          color: yearSelected == index
+                                          color: tapValue ==
+                                                  items[index]['years']
+                                                      [indexList][indexOfYears]
                                               ? Color(0xff9295E2)
                                               : Colors.white),
                                       child: Center(

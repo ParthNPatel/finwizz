@@ -15,6 +15,7 @@ import 'package:sizer/sizer.dart';
 import 'controller/handle_screen_controller.dart';
 
 import 'controllers/portfolio_controller.dart';
+import 'view/portfolio/insider_tab_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,17 +26,11 @@ void main() {
   );
 
   GetStorage.init();
-
-  final isLoggedIn = GetStorageServices.getUserLoggedInStatus();
-  runApp(MyApp(
-    isLoggedIn: isLoggedIn,
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final isLoggedIn;
-
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -45,11 +40,10 @@ class MyApp extends StatelessWidget {
         initialBinding: BaseBindings(),
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
-        // home: SearchScreen(),
-        home: isLoggedIn == true
+        //home: InsiderTabScreen(),
+        home: GetStorageServices.getUserLoggedInStatus() == true
             ? BottomNavScreen(selectedIndex: 0)
             : OnBoardingScreen(),
-        // home: HomeScreen(),
       ),
     );
   }

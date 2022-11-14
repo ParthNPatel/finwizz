@@ -98,4 +98,11 @@ class CommonWidget {
       color: color,
     );
   }
+
+  static Widget commonDivider() {
+    return Divider(
+      color: CommonColor.greyColorD1CDCD,
+      thickness: 1,
+    );
+  }
 }
