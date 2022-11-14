@@ -25,11 +25,17 @@ void main() {
   );
 
   GetStorage.init();
-  runApp(const MyApp());
+
+  final isLoggedIn = GetStorageServices.getUserLoggedInStatus();
+  runApp(MyApp(
+    isLoggedIn: isLoggedIn,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   // This widget is the root of your application.
   @override
@@ -40,7 +46,7 @@ class MyApp extends StatelessWidget {
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
         // home: SearchScreen(),
-        home: GetStorageServices.getUserLoggedInStatus() == true
+        home: isLoggedIn == true
             ? BottomNavScreen(selectedIndex: 0)
             : OnBoardingScreen(),
         // home: HomeScreen(),

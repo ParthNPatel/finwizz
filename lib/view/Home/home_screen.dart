@@ -25,6 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
 
+  List colors = [
+    Color(0xffEB7777),
+    CommonColor.themColor9295E2,
+    Color(0xff7AA0DA),
+  ];
+
   List listOfNews = [
     {
       'image': ImageConst.newsIcon,
@@ -318,8 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-                color: CommonColor.themColor9295E2,
-                borderRadius: BorderRadius.circular(14)),
+                color: colors[index], borderRadius: BorderRadius.circular(14)),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CommonText.textBoldWight400(
