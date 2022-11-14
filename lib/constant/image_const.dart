@@ -16,11 +16,15 @@ class ImageConst {
   static String telegramIcon = 'assets/png/_Telegram.png';
   static String plusIcon = 'assets/svg/+.svg';
   static String deleteIcon = 'assets/svg/delete.svg';
+  static String filterIcon = 'assets/svg/filter_icon.svg';
   static String bookMark = 'assets/svg/bookmark.svg';
   static String bookMarkFilled = 'assets/svg/bookmark_filled.svg';
   static String calender = 'assets/svg/calender.svg';
   static String twitter = 'assets/png/twitter.png';
   static String whatsApp = 'assets/png/whatsapp.png';
+  static String personIconApp = 'assets/svg/person_icon.svg';
+  static String postIconApp = 'assets/svg/post_image_icon.svg';
+  static String tableImage = 'assets/png/table_image.png';
 
   /// BottomBar:
   static String home = 'assets/svg/home.svg';

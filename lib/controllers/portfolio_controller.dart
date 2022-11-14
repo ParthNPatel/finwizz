@@ -20,4 +20,13 @@ class PortFolioController extends GetxController {
     }
     update();
   }
+
+  int _selected = 0;
+
+  int get selected => _selected;
+
+  set selected(int value) {
+    _selected = value;
+    update();
+  }
 }

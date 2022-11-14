@@ -15,6 +15,7 @@ import 'package:sizer/sizer.dart';
 import 'controller/handle_screen_controller.dart';
 
 import 'controllers/portfolio_controller.dart';
+import 'view/portfolio/insider_tab_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,11 +40,10 @@ class MyApp extends StatelessWidget {
         initialBinding: BaseBindings(),
         title: 'FinWizz',
         debugShowCheckedModeBanner: false,
-        // home: SearchScreen(),
+        //home: InsiderTabScreen(),
         home: GetStorageServices.getUserLoggedInStatus() == true
             ? BottomNavScreen(selectedIndex: 0)
             : OnBoardingScreen(),
-        // home: HomeScreen(),
       ),
     );
   }
