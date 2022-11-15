@@ -18,7 +18,7 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   List<String> categories = [
-    'Company\nupdates',
+    'Company \nupdates',
     'Results',
     'Sectoral',
     'Economic',
@@ -78,9 +78,11 @@ class _NewsScreenState extends State<NewsScreen> {
                   });
                 },
                 child: Container(
-                  margin: EdgeInsets.only(right: 15),
-                  height: 40.sp,
-                  width: 80.sp,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  // height: 40.sp,
+                  // width: 80.sp,
                   decoration: BoxDecoration(
                     color: selected == index
                         ? Color(0xffdddef6)
@@ -88,10 +90,8 @@ class _NewsScreenState extends State<NewsScreen> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Color(0xffdddef6), width: 1),
                   ),
-                  child: Center(
-                    child: CommonText.textBoldWight500(
-                        text: categories[index], fontSize: 10.sp),
-                  ),
+                  child: CommonText.textBoldWight500(
+                      text: categories[index], fontSize: 9.sp),
                 ),
               ),
             ),
@@ -119,9 +119,7 @@ class _NewsScreenState extends State<NewsScreen> {
                               image: ImageConst.calender,
                               height: 20.sp,
                               width: 20.sp),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10),
                           CommonText.textBoldWight500(
                               text: listOfNews1[index]['title'])
                         ],

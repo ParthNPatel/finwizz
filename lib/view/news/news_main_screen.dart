@@ -45,24 +45,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
             CommonWidget.commonSizedBox(height: 10),
             appWidget(),
             CommonWidget.commonSizedBox(height: 10),
-            Container(
-                padding:
-                    EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
-                margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: CommonColor.whiteColorF4F6F9,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  children: [
-                    CommonText.textBoldWight400(text: 'Search'),
-                    Spacer(),
-                    Icon(
-                      Icons.search,
-                      color: Color(0xff858C94),
-                    )
-                  ],
-                )),
+            searchWidget(),
             Stack(
               fit: StackFit.passthrough,
               alignment: Alignment.bottomCenter,
@@ -117,6 +100,26 @@ class _NewsMainScreenState extends State<NewsMainScreen>
     );
   }
 
+  Container searchWidget() {
+    return Container(
+        padding: EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
+        margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+        decoration: BoxDecoration(
+          color: CommonColor.whiteColorF4F6F9,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            CommonText.textBoldWight400(text: 'Search'),
+            Spacer(),
+            Icon(
+              Icons.search,
+              color: Color(0xff858C94),
+            )
+          ],
+        ));
+  }
+
   Row appWidget() {
     return Row(
       children: [
@@ -131,9 +134,9 @@ class _NewsMainScreenState extends State<NewsMainScreen>
           ),
         ),
         GetStorageServices.getUserLoggedInStatus() == true
-            ? CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 16.sp)
+            ? CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 14.sp)
             : CommonText.textBoldWight700(
-                text: 'Good evening  🙌', fontSize: 16.sp),
+                text: 'Good evening  🙌', fontSize: 14.sp),
         Spacer(),
         GetStorageServices.getUserLoggedInStatus() == true
             ? InkWell(
@@ -149,7 +152,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                   Get.to(() => SignInScreen());
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   child: CommonText.textBoldWight400(text: 'Login'),
                   decoration: BoxDecoration(
                     border: Border.all(color: CommonColor.themDarkColor6E5DE7),
@@ -159,7 +162,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
               ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(8),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 gradient: LinearGradient(

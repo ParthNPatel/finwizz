@@ -1,6 +1,5 @@
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
-import 'package:finwizz/constant/const_size.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:flutter/material.dart';
@@ -20,24 +19,27 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   PageController controller = PageController();
   int pagerIndex = 0;
   int currentRadio = 0;
-  bool isSkip = false;
   String tapValue = '';
   _pageChange(int index) {
-    if (!isSkip) {
-      print("Page changed : $index");
-      setState(() {
-        pagerIndex = index;
+    print("Page changed : $index");
+    setState(() {
+      pagerIndex = index;
+
+      if (index != 4) {
         controller.animateToPage(index,
-            duration: const Duration(milliseconds: 500), curve: Curves.ease);
-      });
-    } else {
-      isSkip = false;
-    }
+            duration: const Duration(milliseconds: 200), curve: Curves.ease);
+      } else {
+        // Get.offAll(
+        //   () => BottomNavScreen(
+        //     selectedIndex: 0,
+        //   ),
+        // );
+      }
+    });
   }
 
   _navigateToLastPage() {
     print("Navigate last page");
-    isSkip = true;
     setState(() {
       pagerIndex = 3;
       controller.jumpToPage(3);
@@ -88,11 +90,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   int yearSelected = -1;
 
   @override
-  initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -123,7 +120,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 Spacer(),
                 GestureDetector(
                   onTap: () {
-                    _pageChange(pagerIndex + 1);
                     if (pagerIndex == 3) {
                       Get.offAll(
                         () => BottomNavScreen(
@@ -131,6 +127,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         ),
                       );
                     }
+                    _pageChange(pagerIndex + 1);
                   },
                   child: Container(
                     height: 40,
@@ -182,7 +179,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   items[index]['question'].length,
                   (indexList) => Container(
                       width: double.infinity,
-                      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                      padding: EdgeInsets.only(left: 10, bottom: 8),
                       margin: EdgeInsets.all(6),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -206,6 +203,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                         CommonColor.themColor9295E2,
                                     primaryColor: CommonColor.themColor9295E2),
                                 child: Radio(
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     value: currentRadio == indexList
                                         ? indexList
                                         : 5,
@@ -238,7 +237,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       children: [
         SizedBox(height: 70.sp),
         Image.asset(
-          items[index]['image'], scale: 4.2,
+          items[index]['image'], scale: 4.4,
           // height: height * 0.15,
           // width: height * 0.15,
         ),
@@ -246,8 +245,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           height: height * 0.06,
         ),
         Container(
-            padding: EdgeInsets.all(20),
-            margin: EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            margin: EdgeInsets.symmetric(vertical: 20, horizontal: 34),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CommonColor.greyColorEFEDF2),

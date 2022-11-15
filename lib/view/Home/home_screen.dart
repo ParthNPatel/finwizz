@@ -79,116 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Get.dialog(SimpleDialog(
-                          alignment: Alignment.center,
-                          children: [
-                            Column(
-                              children: [
-                                CommonWidget.commonSizedBox(height: 12),
-                                CommonText.textBoldWight600(
-                                    text: 'Your opinion matters!',
-                                    fontSize: 16.sp),
-                                CommonWidget.commonSizedBox(height: 9),
-                                RatingBar(
-                                  initialRating: 0,
-                                  direction: Axis.horizontal,
-                                  allowHalfRating: true,
-                                  itemSize: 28,
-                                  itemCount: 5,
-                                  ratingWidget: RatingWidget(
-                                    full: Icon(Icons.star,
-                                        color: CommonColor.yellowColorFFC633),
-                                    half: Icon(Icons.star_half,
-                                        color: CommonColor.yellowColorFFC633),
-                                    empty: Icon(
-                                      Icons.star_border_outlined,
-                                    ),
-                                  ),
-                                  itemPadding:
-                                      EdgeInsets.symmetric(horizontal: 4.0),
-                                  onRatingUpdate: (rating) {
-                                    print(rating);
-                                  },
-                                ),
-                                CommonWidget.commonSizedBox(height: 9),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CommonText.textBoldWight400(
-                                      text:
-                                          'Please tell us how we can improve ',
-                                    ),
-                                    CommonText.textBoldWight400(
-                                        text: '*',
-                                        color: CommonColor.redColorFF2950),
-                                  ],
-                                ),
-                                CommonWidget.commonSizedBox(height: 9),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 10),
-                                  child: TextFormField(
-                                    maxLines: 3,
-                                    controller: _submitController,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: TextConst.fontFamily,
-                                    ),
-                                    cursorColor: Colors.black,
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      contentPadding: EdgeInsets.only(
-                                          top: 7.sp, left: 12.sp),
-                                      filled: true,
-                                      //fillColor: CommonColor.textFiledColorFAFAFA,
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: new BorderSide(
-                                            color: CommonColor.geryColorC9C5C5),
-                                        borderRadius:
-                                            new BorderRadius.circular(25.7),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: new BorderSide(
-                                            color: CommonColor.geryColorC9C5C5),
-                                        borderRadius:
-                                            new BorderRadius.circular(25.7),
-                                      ),
-                                      // border: OutlineInputBorder(
-                                      //     borderSide: BorderSide.none,
-                                      //     borderRadius:
-                                      //         BorderRadius.circular(10))
-                                    ),
-                                  ),
-                                ),
-                                CommonWidget.commonSizedBox(height: 20),
-                                InkWell(
-                                  onTap: () {
-                                    Get.back();
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 9),
-                                    child: CommonText.textBoldWight400(
-                                        text: 'Submit', color: Colors.white),
-                                    decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: CommonColor
-                                                  .themDarkColor6E5DE7,
-                                              //blurRadius: 10,
-                                              offset: Offset(3, 5),
-                                              spreadRadius: 1)
-                                        ],
-                                        borderRadius:
-                                            BorderRadius.circular(1010),
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                CommonWidget.commonSizedBox(height: 12),
-                              ],
-                            )
-                          ],
-                        ));
+                        isOpen = true;
+                        setState(() {});
                       },
                       child: Container(
                         padding:
@@ -237,6 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                             onRatingUpdate: (rating) {
+                              if (rating <= 4) {
+                                Get.dialog(buildSimpleDialog());
+                              }
                               print(rating);
                             },
                           ),
@@ -247,6 +142,107 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
         ]),
       ),
+    );
+  }
+
+  SimpleDialog buildSimpleDialog() {
+    return SimpleDialog(
+      alignment: Alignment.center,
+      children: [
+        Column(
+          children: [
+            CommonWidget.commonSizedBox(height: 12),
+            CommonText.textBoldWight600(
+                text: 'Your opinion matters!', fontSize: 16.sp),
+            CommonWidget.commonSizedBox(height: 9),
+            RatingBar(
+              initialRating: 0,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemSize: 28,
+              itemCount: 5,
+              ratingWidget: RatingWidget(
+                full: Icon(Icons.star, color: CommonColor.yellowColorFFC633),
+                half:
+                    Icon(Icons.star_half, color: CommonColor.yellowColorFFC633),
+                empty: Icon(
+                  Icons.star_border_outlined,
+                ),
+              ),
+              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+              onRatingUpdate: (rating) {
+                print(rating);
+              },
+            ),
+            CommonWidget.commonSizedBox(height: 9),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CommonText.textBoldWight400(
+                  text: 'Please tell us how we can improve ',
+                ),
+                CommonText.textBoldWight400(
+                    text: '*', color: CommonColor.redColorFF2950),
+              ],
+            ),
+            CommonWidget.commonSizedBox(height: 9),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: TextFormField(
+                maxLines: 3,
+                controller: _submitController,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: TextConst.fontFamily,
+                ),
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
+                  filled: true,
+                  //fillColor: CommonColor.textFiledColorFAFAFA,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        new BorderSide(color: CommonColor.geryColorC9C5C5),
+                    borderRadius: new BorderRadius.circular(25.7),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        new BorderSide(color: CommonColor.geryColorC9C5C5),
+                    borderRadius: new BorderRadius.circular(25.7),
+                  ),
+                  // border: OutlineInputBorder(
+                  //     borderSide: BorderSide.none,
+                  //     borderRadius:
+                  //         BorderRadius.circular(10))
+                ),
+              ),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            InkWell(
+              onTap: () {
+                Get.back();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+                child: CommonText.textBoldWight400(
+                    text: 'Submit', color: Colors.white),
+                decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          color: CommonColor.themDarkColor6E5DE7,
+                          //blurRadius: 10,
+                          offset: Offset(3, 5),
+                          spreadRadius: 1)
+                    ],
+                    borderRadius: BorderRadius.circular(1010),
+                    color: Colors.black),
+              ),
+            ),
+            CommonWidget.commonSizedBox(height: 12),
+          ],
+        )
+      ],
     );
   }
 
@@ -274,41 +270,48 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: CommonColor.greyColorEFEDF2),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CommonWidget.commonSizedBox(width: 15),
-                        SizedBox(
-                          height: 90.sp,
-                          width: 50.sp,
-                          child: Image.asset(
-                            listOfNews[index]['image'],
-                            fit: index == 0 ? BoxFit.cover : BoxFit.contain,
-                            scale: 5,
+                return GestureDetector(
+                  onTap: () {
+                    isOpen = false;
+                    setState(() {});
+                  },
+                  child: Container(
+                      width: double.infinity,
+                      margin:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: CommonColor.greyColorEFEDF2),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CommonWidget.commonSizedBox(width: 15),
+                          SizedBox(
+                            height: 90.sp,
+                            width: 50.sp,
+                            child: Image.asset(
+                              listOfNews[index]['image'],
+                              fit: index == 0 ? BoxFit.cover : BoxFit.contain,
+                              scale: 5,
+                            ),
                           ),
-                        ),
-                        CommonWidget.commonSizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CommonText.textBoldWight600(
-                                  text: listOfNews[index]['title'],
-                                  fontSize: 16.sp),
-                              CommonWidget.commonSizedBox(height: 8),
-                              CommonText.textBoldWight400(
-                                  text: listOfNews[index]['text']),
-                            ],
-                          ),
-                        )
-                      ],
-                    ));
+                          CommonWidget.commonSizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CommonText.textBoldWight600(
+                                    text: listOfNews[index]['title'],
+                                    fontSize: 16.sp),
+                                CommonWidget.commonSizedBox(height: 8),
+                                CommonText.textBoldWight400(
+                                    text: listOfNews[index]['text']),
+                              ],
+                            ),
+                          )
+                        ],
+                      )),
+                );
               },
             )
           ],
@@ -409,9 +412,9 @@ class _HomeScreenState extends State<HomeScreen> {
               color: CommonColor.themColor9295E2,
             )),
         GetStorageServices.getUserLoggedInStatus() == true
-            ? CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 16.sp)
+            ? CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 14.sp)
             : CommonText.textBoldWight700(
-                text: 'Good evening  🙌', fontSize: 16.sp),
+                text: 'Good evening  🙌', fontSize: 14.sp),
         Spacer(),
         GetStorageServices.getUserLoggedInStatus() == true
             ? SizedBox()
@@ -420,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Get.to(() => SignInScreen());
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   child: CommonText.textBoldWight400(text: 'Login'),
                   decoration: BoxDecoration(
                       border:
@@ -430,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(8),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -512,10 +515,15 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         child: InkWell(
                           onTap: () {
                             if (index == 1) {
+                              Get.back();
                               Get.dialog(referrals());
                             } else if (index == 3) {
+                              Get.back();
+
                               Get.dialog(contactUs());
                             } else if (index == 0) {
+                              Get.back();
+
                               Get.dialog(StatefulBuilder(
                                 builder: (context, setState) => Dialog(
                                   child: Padding(
@@ -544,12 +552,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                                       fontSize: 13.sp,
                                                       color: Colors.black),
                                             ),
-                                            SizedBox(
-                                              width: 30,
-                                            ),
+                                            Spacer(),
                                             CupertinoSwitch(
                                               activeColor:
-                                                  CommonColor.primaryColor,
+                                                  CommonColor.themColor9295E2,
                                               value: icChecked,
                                               onChanged: (value) {
                                                 setState(
@@ -558,6 +564,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                                   },
                                                 );
                                               },
+                                            ),
+                                            Icon(
+                                              Icons.lock_outline,
+                                              color: Colors.transparent,
                                             )
                                           ],
                                         ),
@@ -575,12 +585,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                                       fontSize: 13.sp,
                                                       color: Colors.black),
                                             ),
-                                            SizedBox(
-                                              width: 30,
-                                            ),
+                                            Spacer(),
                                             CupertinoSwitch(
                                               activeColor:
-                                                  CommonColor.primaryColor,
+                                                  CommonColor.themColor9295E2,
                                               value: icChecked1,
                                               onChanged: (value) {
                                                 setState(
