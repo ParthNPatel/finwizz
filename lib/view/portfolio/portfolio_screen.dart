@@ -3,7 +3,6 @@ import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../components/common_widget.dart';
 import '../../constant/color_const.dart';
 import '../../constant/text_styel.dart';

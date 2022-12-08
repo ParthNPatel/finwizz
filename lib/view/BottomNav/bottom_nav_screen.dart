@@ -13,9 +13,8 @@ import '../portfolio/portfolio_screen.dart';
 import 'package:get/get.dart';
 
 class BottomNavScreen extends StatefulWidget {
-  final int selectedIndex;
-  const BottomNavScreen({Key? key, required this.selectedIndex})
-      : super(key: key);
+  final int? selectedIndex;
+  const BottomNavScreen({Key? key, this.selectedIndex = 0}) : super(key: key);
 
   @override
   State<BottomNavScreen> createState() => _BottomNavScreenState();
@@ -36,7 +35,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    selected = widget.selectedIndex;
+    selected = widget.selectedIndex!;
   }
 
   @override

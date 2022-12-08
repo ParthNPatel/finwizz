@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "165599820528",
+    "project_id": "finwizz--app-be058",
+    "storage_bucket": "finwizz--app-be058.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165599820528:android:f70c16dc15843a0855a035",
+        "android_client_info": {
+          "package_name": "com.finwizz.finwizz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "165599820528-olp17o400elmoaq5ba2k8vrpeh3kjd01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2Dx18pYG26dfjAQybCO2PdtgaKxRHhqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165599820528-olp17o400elmoaq5ba2k8vrpeh3kjd01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
