@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:finwizz/constant/api_const.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-
 import '../../get_storage_services/get_storage_service.dart';
 import 'app_exception.dart';
 
@@ -12,7 +11,6 @@ enum APIType { aPost, aGet, aPut }
 
 class APIService {
   var response;
-  String baseUrl = 'http://3.109.139.48:5000';
   // var request;
 
   @override
@@ -34,7 +32,7 @@ class APIService {
     try {
       if (apitype == APIType.aGet) {
         final result =
-            await http.get(Uri.parse(baseUrl + url), headers: headers);
+            await http.get(Uri.parse(APIConst.baseUrl + url), headers: headers);
         response = returnResponse(result.statusCode, result.body);
         log("RES status code ${result.statusCode}");
         log("res${result.body}");
@@ -42,7 +40,7 @@ class APIService {
         print("REQUEST PARAMETER url  $url");
         print("REQUEST PARAMETER $body");
 
-        final result = await http.post(Uri.parse(baseUrl + url),
+        final result = await http.post(Uri.parse(APIConst.baseUrl + url),
             body: json.encode(body), headers: headers);
         print("resp${result.body}");
         response = returnResponse(result.statusCode, result.body);
@@ -95,7 +93,7 @@ class APIService {
       print("REQUEST PARAMETER $body");
 
       final request =
-          await http.MultipartRequest("PUT", Uri.parse(baseUrl + url));
+          await http.MultipartRequest("PUT", Uri.parse(APIConst.baseUrl + url));
 
       request.headers.addAll(headers);
 
@@ -139,8 +137,8 @@ class APIService {
       print("REQUEST PARAMETER url  $url");
       print("REQUEST PARAMETER $body");
 
-      final request =
-          await http.MultipartRequest("POST", Uri.parse(baseUrl + url));
+      final request = await http.MultipartRequest(
+          "POST", Uri.parse(APIConst.baseUrl + url));
 
       request.headers.addAll(headers);
 
