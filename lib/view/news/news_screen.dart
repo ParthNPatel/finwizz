@@ -1,13 +1,18 @@
+import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/components/common_widget.dart';
+import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
-import 'package:finwizz/get_storage_services/get_storage_service.dart';
-import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
+import 'package:finwizz/viewModel/fav_unFav_view_model.dart';
+import 'package:finwizz/viewModel/get_all_news_view_model.dart';
+import 'package:finwizz/viewModel/like_unlike_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../constant/color_const.dart';
-import '../../constant/image_const.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:sizer/sizer.dart';
+
+import '../../constant/image_const.dart';
 
 class NewsScreen extends StatefulWidget {
   final bool? isCategoryVisible;
@@ -57,7 +62,17 @@ class _NewsScreenState extends State<NewsScreen> {
       'title': 'Wed, 05 Sep 2022',
     }
   ];
+  GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
+  LikeUnLikeViewModel likeUnLikeViewModel = Get.put(LikeUnLikeViewModel());
+  FavUnFavViewModel favUnFavViewModel = Get.put(FavUnFavViewModel());
 
+  @override
+  void initState() {
+    getAllNewsViewModel.getNewsViewModel();
+    super.initState();
+  }
+
+  List? showDate = [];
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -109,135 +124,494 @@ class _NewsScreenState extends State<NewsScreen> {
                 )
               : SizedBox(),
           CommonWidget.commonSizedBox(height: 10),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  child: Column(
-                    children: [
-                      Divider(
-                        color: Color(0xffD1CDCD),
-                        height: 0,
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Row(
+          GetBuilder<GetAllNewsViewModel>(
+            builder: (controller) {
+              if (controller.getNewsApiResponse.status == Status.LOADING) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (controller.getNewsApiResponse.status == Status.COMPLETE) {
+                GetAllNewsModel response = controller.getNewsApiResponse.data;
+                var notData = response.data;
+
+                notData!.forEach(
+                  (element) {
+                    if (showDate!.contains(
+                        element.createdAt.toString().split(' ').first)) {
+                    } else {
+                      showDate!
+                          .add(element.createdAt.toString().split(' ').first);
+                    }
+                  },
+                );
+                return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 9),
+                    itemCount: showDate!.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index1) {
+                      var dateData = showDate![index1];
+                      var currentDate =
+                          DateTime.now().toString().split(' ').first;
+                      var yesterday = DateTime.now()
+                          .subtract(Duration(days: 1))
+                          .toString()
+                          .split(' ')
+                          .first;
+
+                      return Column(
                         children: [
-                          CommonWidget.commonSvgPitcher(
-                              image: ImageConst.calender,
-                              height: 20.sp,
-                              width: 20.sp),
-                          SizedBox(width: 10),
-                          CommonText.textBoldWight500(
-                              text: listOfNews1[index]['title'])
+                          Divider(
+                            color: Color(0xffD1CDCD),
+                            height: 0,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              CommonWidget.commonSvgPitcher(
+                                  image: ImageConst.calender,
+                                  height: 20.sp,
+                                  width: 20.sp),
+                              SizedBox(width: 10),
+                              CommonText.textBoldWight500(
+                                text: dateData == currentDate
+                                    ? 'Today'
+                                    : dateData == yesterday
+                                        ? 'yesterday'
+                                        : '${dateData}',
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Divider(
+                            color: Color(0xffD1CDCD),
+                            height: 0,
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: response.data!.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              var time = DateFormat('kk:mm:a')
+                                  .format(response.data![index].createdAt!);
+                              var date = DateFormat.yMMMEd()
+                                  .format(response.data![index].createdAt!)
+                                  .toString()
+                                  .split(', ')[1];
+                              return response.data![index].createdAt
+                                          .toString()
+                                          .split(' ')
+                                          .first ==
+                                      showDate![index1]
+                                  ? Container(
+                                      margin: EdgeInsets.only(
+                                          left: 20, right: 20, bottom: 20),
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Color(0xffD1CDCD),
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                            CommonText.textBoldWight700(
+                                                text:
+                                                    '${response.data![index].title}',
+                                                color: Colors.black),
+                                            CommonWidget.commonSizedBox(
+                                                height: 15),
+                                            // CommonText.textBoldWight400(
+                                            //     text: 'TANLA', color: Colors.black),
+                                            CommonWidget.commonSizedBox(
+                                                height: 15),
+                                            CommonText.textBoldWight500(
+                                                color: Color(0xff394452),
+                                                fontSize: 10.sp,
+                                                text:
+                                                    "${response.data![index].description}"),
+                                            CommonWidget.commonSizedBox(
+                                                height: 6),
+                                            // CommonText.textBoldWight500(
+                                            //     fontSize: 10.sp,
+                                            //     color: Color(0xff394452),
+                                            //     text:
+                                            //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                            Row(
+                                              children: [
+                                                InkResponse(
+                                                  onTap: () async {
+                                                    // controller.updateLike(
+                                                    //     response.data![index].isLiked!);
+
+                                                    if (response.data![index]
+                                                            .isLiked ==
+                                                        false) {
+                                                      await likeUnLikeViewModel
+                                                          .likeUnLikeViewModel(
+                                                              body: {
+                                                            "type": "like",
+                                                            "newsId":
+                                                                "${response.data![index].id}"
+                                                          });
+
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    } else if (response
+                                                            .data![index]
+                                                            .isLiked ==
+                                                        true) {
+                                                      await likeUnLikeViewModel
+                                                          .likeUnLikeViewModel(
+                                                              body: {
+                                                            "type": "unlike",
+                                                            "newsId":
+                                                                "${response.data![index].id}"
+                                                          });
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    }
+                                                    await getAllNewsViewModel
+                                                        .getNewsViewModel(
+                                                            isLoading: false);
+                                                    if (getAllNewsViewModel
+                                                            .getNewsApiResponse
+                                                            .status ==
+                                                        Status.COMPLETE) {}
+                                                    if (getAllNewsViewModel
+                                                            .getNewsApiResponse
+                                                            .status ==
+                                                        Status.ERROR) {
+                                                      CommonWidget.getSnackBar(
+                                                          color: Colors.red,
+                                                          duration: 2,
+                                                          colorText:
+                                                              Colors.white,
+                                                          title: "Refresh Page",
+                                                          message:
+                                                              'Try Again.');
+                                                    }
+                                                  },
+                                                  child: Icon(
+                                                    response.data![index]
+                                                                .isLiked ==
+                                                            true
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border,
+                                                    color: CommonColor
+                                                        .yellowColorFFB800,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                CommonText.textBoldWight400(
+                                                    text: '120.1K',
+                                                    color: Colors.black),
+                                                Spacer(),
+                                                InkResponse(
+                                                  onTap: () async {
+                                                    if (response.data![index]
+                                                            .isFavourite ==
+                                                        false) {
+                                                      await favUnFavViewModel
+                                                          .favUnFavViewModel(
+                                                              body: {
+                                                            "type": "favourite",
+                                                            "newsId":
+                                                                "${response.data![index].id}"
+                                                          });
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    } else if (response
+                                                            .data![index]
+                                                            .isFavourite ==
+                                                        true) {
+                                                      await favUnFavViewModel
+                                                          .favUnFavViewModel(
+                                                              body: {
+                                                            "type":
+                                                                "unfavourite",
+                                                            "newsId":
+                                                                "${response.data![index].id}"
+                                                          });
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    }
+                                                    await getAllNewsViewModel
+                                                        .getNewsViewModel(
+                                                            isLoading: false);
+                                                    if (getAllNewsViewModel
+                                                            .getNewsApiResponse
+                                                            .status ==
+                                                        Status.COMPLETE) {}
+                                                    if (getAllNewsViewModel
+                                                            .getNewsApiResponse
+                                                            .status ==
+                                                        Status.ERROR) {
+                                                      CommonWidget.getSnackBar(
+                                                          color: Colors.red,
+                                                          duration: 2,
+                                                          colorText:
+                                                              Colors.white,
+                                                          title: "Refresh Page",
+                                                          message:
+                                                              'Try Again.');
+                                                    }
+                                                  },
+                                                  child: Icon(
+                                                    response.data![index]
+                                                                .isFavourite ==
+                                                            true
+                                                        ? Icons.bookmark
+                                                        : Icons
+                                                            .bookmark_outline_sharp,
+                                                    color: CommonColor
+                                                        .yellowColorFFB800,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                InkResponse(
+                                                  onTap: () {
+                                                    Share.share("Test");
+                                                  },
+                                                  child: Icon(
+                                                    Icons.share,
+                                                    color: CommonColor
+                                                        .yellowColorFFB800,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                            CommonText.textBoldWight400(
+                                                text:
+                                                    '${date},  ${time} ·| Source : BSE',
+                                                color: Colors.black),
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                          ]),
+                                    )
+                                  : SizedBox();
+                            },
+                          )
                         ],
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Divider(
-                        color: Color(0xffD1CDCD),
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color(0xffD1CDCD),
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CommonWidget.commonSizedBox(height: 10),
-                        CommonText.textBoldWight700(
-                            text: 'TANLA PLATFORMS considers equity buyback',
-                            color: Colors.black),
-                        CommonWidget.commonSizedBox(height: 15),
-                        CommonText.textBoldWight400(
-                            text: 'TANLA', color: Colors.black),
-                        CommonWidget.commonSizedBox(height: 15),
-                        CommonText.textBoldWight500(
-                            color: Color(0xff394452),
-                            fontSize: 10.sp,
-                            text:
-                                "✅ Company will consider a proposal for buybac of Equity Shares on Thursday September 08, 2022"),
-                        CommonWidget.commonSizedBox(height: 6),
-                        CommonText.textBoldWight500(
-                            fontSize: 10.sp,
-                            color: Color(0xff394452),
-                            text:
-                                "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                        CommonWidget.commonSizedBox(height: 10),
-                        Row(
-                          children: [
-                            InkResponse(
-                              onTap: () {
-                                setState(() {
-                                  isFavourite = !isFavourite;
-                                });
-                              },
-                              child: Icon(
-                                isFavourite == true
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: CommonColor.yellowColorFFB800,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            CommonText.textBoldWight400(
-                                text: '120.1K', color: Colors.black),
-                            Spacer(),
-                            InkResponse(
-                              onTap: () {
-                                setState(() {
-                                  isFavourite1 = !isFavourite1;
-                                });
-                              },
-                              child: Icon(
-                                isFavourite1 == true
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_outline_sharp,
-                                color: CommonColor.yellowColorFFB800,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            InkResponse(
-                              onTap: () {
-                                Share.share("Test");
-                              },
-                              child: Icon(
-                                Icons.share,
-                                color: CommonColor.yellowColorFFB800,
-                              ),
-                            ),
-                          ],
-                        ),
-                        CommonWidget.commonSizedBox(height: 10),
-                        CommonText.textBoldWight400(
-                            text: 'Sep 7,  12:38 ·| Source : BSE',
-                            color: Colors.black),
-                        CommonWidget.commonSizedBox(height: 10),
-                      ]),
-                ),
-              ],
-            ),
-            itemCount: 3,
-          ),
+                      );
+                      //   Column(
+                      //   children: [
+                      //     Padding(
+                      //       padding: EdgeInsets.symmetric(
+                      //           vertical: 20, horizontal: 20),
+                      //       child: Column(
+                      //         children: [
+                      //           Divider(
+                      //             color: Color(0xffD1CDCD),
+                      //             height: 0,
+                      //           ),
+                      //           SizedBox(
+                      //             height: 5,
+                      //           ),
+                      //           Row(
+                      //             children: [
+                      //               CommonWidget.commonSvgPitcher(
+                      //                   image: ImageConst.calender,
+                      //                   height: 20.sp,
+                      //                   width: 20.sp),
+                      //               SizedBox(width: 10),
+                      //               CommonText.textBoldWight500(text: 'Today')
+                      //             ],
+                      //           ),
+                      //           SizedBox(
+                      //             height: 5,
+                      //           ),
+                      //           Divider(
+                      //             color: Color(0xffD1CDCD),
+                      //             height: 0,
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //     Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 20),
+                      //       width: double.infinity,
+                      //       padding: EdgeInsets.symmetric(
+                      //           horizontal: 20, vertical: 10),
+                      //       decoration: BoxDecoration(
+                      //         border: Border.all(
+                      //           color: Color(0xffD1CDCD),
+                      //         ),
+                      //         borderRadius: BorderRadius.circular(14),
+                      //       ),
+                      //       child: Column(
+                      //           crossAxisAlignment: CrossAxisAlignment.start,
+                      //           children: [
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //             CommonText.textBoldWight700(
+                      //                 text: '${response.data![index1].title}',
+                      //                 color: Colors.black),
+                      //             CommonWidget.commonSizedBox(height: 15),
+                      //             // CommonText.textBoldWight400(
+                      //             //     text: 'TANLA', color: Colors.black),
+                      //             CommonWidget.commonSizedBox(height: 15),
+                      //             CommonText.textBoldWight500(
+                      //                 color: Color(0xff394452),
+                      //                 fontSize: 10.sp,
+                      //                 text:
+                      //                     "${response.data![index1].description}"),
+                      //             CommonWidget.commonSizedBox(height: 6),
+                      //             // CommonText.textBoldWight500(
+                      //             //     fontSize: 10.sp,
+                      //             //     color: Color(0xff394452),
+                      //             //     text:
+                      //             //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //             Row(
+                      //               children: [
+                      //                 InkResponse(
+                      //                   onTap: () {
+                      //                     setState(() {
+                      //                       isFavourite = !isFavourite;
+                      //                     });
+                      //                   },
+                      //                   child: Icon(
+                      //                     isFavourite == true
+                      //                         ? Icons.favorite
+                      //                         : Icons.favorite_border,
+                      //                     color: CommonColor.yellowColorFFB800,
+                      //                   ),
+                      //                 ),
+                      //                 SizedBox(
+                      //                   width: 10,
+                      //                 ),
+                      //                 CommonText.textBoldWight400(
+                      //                     text: '120.1K', color: Colors.black),
+                      //                 Spacer(),
+                      //                 InkResponse(
+                      //                   onTap: () {
+                      //                     setState(() {
+                      //                       isFavourite1 = !isFavourite1;
+                      //                     });
+                      //                   },
+                      //                   child: Icon(
+                      //                     isFavourite1 == true
+                      //                         ? Icons.bookmark
+                      //                         : Icons.bookmark_outline_sharp,
+                      //                     color: CommonColor.yellowColorFFB800,
+                      //                   ),
+                      //                 ),
+                      //                 SizedBox(
+                      //                   width: 10,
+                      //                 ),
+                      //                 InkResponse(
+                      //                   onTap: () {
+                      //                     Share.share("Test");
+                      //                   },
+                      //                   child: Icon(
+                      //                     Icons.share,
+                      //                     color: CommonColor.yellowColorFFB800,
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //             CommonText.textBoldWight400(
+                      //                 text: 'Sep 7,  12:38 ·| Source : BSE',
+                      //                 color: Colors.black),
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //           ]),
+                      //     ),
+                      //   ],
+                      // );
+                    });
+              }
+              return Center(
+                child: Text('Something went wrong'),
+              );
+            },
+          )
         ],
       ),
     );

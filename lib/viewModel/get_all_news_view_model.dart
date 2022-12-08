@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../Models/apis/api_response.dart';
 import '../Models/repo/get_all_news_repo.dart';
 import '../Models/responseModel/get_all_news_data.dart';
@@ -7,10 +8,24 @@ class GetAllNewsViewModel extends GetxController {
   ApiResponse _getNewsApiResponse =
       ApiResponse.initial(message: 'Initialization');
 
-  ApiResponse get getCommentApiResponse => _getNewsApiResponse;
+  ApiResponse get getNewsApiResponse => _getNewsApiResponse;
+  bool like = false;
+  updateLike(bool val) {
+    like = val;
+    update();
+  }
 
-  Future<void> getCommentViewModel() async {
-    _getNewsApiResponse = ApiResponse.loading(message: 'Loading');
+  bool isFavourite = false;
+  updateFavourite(bool val) {
+    isFavourite = val;
+    update();
+  }
+
+  Future<void> getNewsViewModel({bool isLoading = true}) async {
+    if (isLoading) {
+      _getNewsApiResponse = ApiResponse.loading(message: 'Loading');
+    }
+
     update();
     try {
       GetAllNewsModel response = await GetAllNewsRepo.getAllNewsRepo();
