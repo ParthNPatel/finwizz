@@ -48,6 +48,20 @@ class _MoversScreenState extends State<MoversScreen> {
     }
   ];
 
+  PageController? pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    pageController = PageController(initialPage: 0);
+    // pageController!.addListener(() {
+    //   setState(() {
+    //     _currentPage = pageController!.page!.toInt();
+    //   });
+    // });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetStorageServices.getUserLoggedInStatus() == true
@@ -58,6 +72,7 @@ class _MoversScreenState extends State<MoversScreen> {
                 CommonWidget.commonSizedBox(height: 20),
                 ListView.builder(
                   shrinkWrap: true,
+                  padding: EdgeInsets.only(left: 1),
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) => Column(
                     children: [
@@ -96,127 +111,29 @@ class _MoversScreenState extends State<MoversScreen> {
                       ),
                       Row(
                         children: [
-                          CommonWidget.commonSvgPitcher(
-                              image: 'assets/svg/left_arrow.svg'),
+                          InkWell(
+                            onTap: () {
+                              // pageController!.previousPage(
+                              //     duration: Duration(milliseconds: 600),
+                              //     curve: Curves.easeIn);
+                            },
+                            child: CommonWidget.commonSvgPitcher(
+                                image: 'assets/svg/left_arrow.svg'),
+                          ),
                           Container(
                             height: 300,
-                            width: Get.width - 60,
+                            width: Get.width - 50,
                             child: PageView.builder(
                               itemCount: 2,
+                              onPageChanged: (value) {
+                                setState(() {
+                                  _currentPage = value;
+                                });
+                              },
                               //scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
                                 return index == 0
                                     ? Container(
-                                        /* margin:
-                                          EdgeInsets.symmetric(horizontal: 20),*/
-                                        width: double.infinity,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Color(0xffD1CDCD),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(14),
-                                        ),
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              CommonText.textBoldWight700(
-                                                  text:
-                                                      'TANLA PLATFORMS considers equity buyback',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 15),
-                                              CommonText.textBoldWight400(
-                                                  text: 'TANLA',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 15),
-                                              CommonText.textBoldWight500(
-                                                  color: Color(0xff394452),
-                                                  fontSize: 10.sp,
-                                                  text:
-                                                      "✅ Company will consider a proposal for buybac of Equity Shares on Thursday September 08, 2022"),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 6),
-                                              CommonText.textBoldWight500(
-                                                  fontSize: 10.sp,
-                                                  color: Color(0xff394452),
-                                                  text:
-                                                      "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              Row(
-                                                children: [
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isFavourite =
-                                                            !isFavourite;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      isFavourite == true
-                                                          ? Icons.favorite
-                                                          : Icons
-                                                              .favorite_border,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  CommonText.textBoldWight400(
-                                                      text: '120.1K',
-                                                      color: Colors.black),
-                                                  Spacer(),
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isFavourite1 =
-                                                            !isFavourite1;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      isFavourite1 == true
-                                                          ? Icons.bookmark
-                                                          : Icons
-                                                              .bookmark_outline_sharp,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      Share.share("Test");
-                                                    },
-                                                    child: Icon(
-                                                      Icons.share,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              CommonText.textBoldWight400(
-                                                  text:
-                                                      'Sep 7,  12:38 ·| Source : BSE',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                            ]),
-                                      )
-                                    : Container(
                                         /* margin:
                                           EdgeInsets.symmetric(horizontal: 20),*/
                                         width: double.infinity,
@@ -348,12 +265,129 @@ class _MoversScreenState extends State<MoversScreen> {
                                               CommonWidget.commonSizedBox(
                                                   height: 10),
                                             ]),
+                                      )
+                                    : Container(
+                                        /* margin:
+                                          EdgeInsets.symmetric(horizontal: 20),*/
+                                        width: double.infinity,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Color(0xffD1CDCD),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                        ),
+                                        child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CommonWidget.commonSizedBox(
+                                                  height: 10),
+                                              CommonText.textBoldWight700(
+                                                  text:
+                                                      'TANLA PLATFORMS considers equity buyback',
+                                                  color: Colors.black),
+                                              CommonWidget.commonSizedBox(
+                                                  height: 15),
+                                              CommonText.textBoldWight400(
+                                                  text: 'TANLA',
+                                                  color: Colors.black),
+                                              CommonWidget.commonSizedBox(
+                                                  height: 15),
+                                              CommonText.textBoldWight500(
+                                                  color: Color(0xff394452),
+                                                  fontSize: 10.sp,
+                                                  text:
+                                                      "✅ Company will consider a proposal for buybac of Equity Shares on Thursday September 08, 2022"),
+                                              CommonWidget.commonSizedBox(
+                                                  height: 6),
+                                              CommonText.textBoldWight500(
+                                                  fontSize: 10.sp,
+                                                  color: Color(0xff394452),
+                                                  text:
+                                                      "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                                              CommonWidget.commonSizedBox(
+                                                  height: 10),
+                                              Row(
+                                                children: [
+                                                  InkResponse(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        isFavourite =
+                                                            !isFavourite;
+                                                      });
+                                                    },
+                                                    child: Icon(
+                                                      isFavourite == true
+                                                          ? Icons.favorite
+                                                          : Icons
+                                                              .favorite_border,
+                                                      color: CommonColor
+                                                          .yellowColorFFB800,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  CommonText.textBoldWight400(
+                                                      text: '120.1K',
+                                                      color: Colors.black),
+                                                  Spacer(),
+                                                  InkResponse(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        isFavourite1 =
+                                                            !isFavourite1;
+                                                      });
+                                                    },
+                                                    child: Icon(
+                                                      isFavourite1 == true
+                                                          ? Icons.bookmark
+                                                          : Icons
+                                                              .bookmark_outline_sharp,
+                                                      color: CommonColor
+                                                          .yellowColorFFB800,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  InkResponse(
+                                                    onTap: () {
+                                                      Share.share("Test");
+                                                    },
+                                                    child: Icon(
+                                                      Icons.share,
+                                                      color: CommonColor
+                                                          .yellowColorFFB800,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              CommonWidget.commonSizedBox(
+                                                  height: 10),
+                                              CommonText.textBoldWight400(
+                                                  text:
+                                                      'Sep 7,  12:38 ·| Source : BSE',
+                                                  color: Colors.black),
+                                              CommonWidget.commonSizedBox(
+                                                  height: 10),
+                                            ]),
                                       );
                               },
                             ),
                           ),
-                          CommonWidget.commonSvgPitcher(
-                              image: 'assets/svg/right_arrow.svg'),
+                          InkWell(
+                            onTap: () {
+                              // pageController!.nextPage(
+                              //     duration: Duration(milliseconds: 600),
+                              //     curve: Curves.easeIn);
+                            },
+                            child: CommonWidget.commonSvgPitcher(
+                                image: 'assets/svg/right_arrow.svg'),
+                          ),
                         ],
                       ),
                     ],

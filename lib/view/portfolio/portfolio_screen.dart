@@ -8,6 +8,7 @@ import '../../components/common_widget.dart';
 import '../../constant/color_const.dart';
 import '../../constant/text_styel.dart';
 import '../../controllers/portfolio_controller.dart';
+import '../news/news_screen.dart';
 import 'insider_tab_screen.dart';
 
 class PortfolioScreen extends StatefulWidget {
@@ -78,12 +79,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                 controller: tabController,
                 children: [
                   firstTabView(controller, context),
-                  Center(
-                    child: Text(
-                      "News",
-                      textScaleFactor: 1,
-                    ),
-                  ),
+                  NewsScreen(),
                   InsiderTabScreen()
                 ],
               ),
@@ -362,7 +358,30 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                 )
               : InkWell(
                   onTap: () {
-                    controller.isDelete = true;
+                    showMenu(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                        ),
+                      ),
+                      color: Color(0xffE4E3E3),
+                      context: context,
+                      position: RelativeRect.fromLTRB(Get.width, 0, 0, 0.0),
+                      items: [
+                        PopupMenuItem(
+                          child: Text("Positive"),
+                          value: 1,
+                        ),
+                        PopupMenuItem(
+                          child: Text("Negative"),
+                          value: 2,
+                        ),
+                        PopupMenuItem(
+                          child: Text("Neutral"),
+                          value: 3,
+                        ),
+                      ],
+                    );
                   },
                   child: Container(
                       padding: EdgeInsets.all(12),

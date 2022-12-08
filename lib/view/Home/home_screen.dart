@@ -5,6 +5,7 @@ import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -447,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 2.6,
+              scale: 2.4,
             )),
         CommonWidget.commonSizedBox(width: 10)
       ],
@@ -491,10 +492,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 220,
-        color: Colors.white,
-        child: SafeArea(
-          child: Column(children: [
+      width: 220,
+      color: Colors.white,
+      child: SafeArea(
+        child: Column(
+          children: [
             CommonWidget.commonSizedBox(height: 10),
             Image.asset(
               ImageConst.iconWidget,
@@ -611,6 +613,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                   ),
                                 ),
                               ));
+                            } else if (index == 5) {
+                              GetStorageServices.logOut();
+                              Get.offAll(
+                                  () => BottomNavScreen(selectedIndex: 0));
                             }
                           },
                           child: Row(
@@ -656,8 +662,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             CommonText.textBoldWight400(
                 text: '2022 FinWizz', color: CommonColor.amberBlackColor072D4B),
             CommonWidget.commonSizedBox(height: 20),
-          ]),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 
   Dialog contactUs() {

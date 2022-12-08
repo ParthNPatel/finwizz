@@ -1,5 +1,6 @@
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -112,7 +113,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   if (phoneController.text.isNotEmpty &&
                       otpController.text.isNotEmpty) {
                     GetStorageServices.setUserLoggedIn();
-                    Get.back();
+                    Get.offAll(() => BottomNavScreen(selectedIndex: 0));
                   } else {
                     CommonWidget.getSnackBar(
                         color: Colors.red,

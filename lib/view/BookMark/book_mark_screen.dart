@@ -225,14 +225,14 @@ class _BookMarkScreenState extends State<BookMarkScreen>
               size: 28.sp,
               color: CommonColor.themColor9295E2,
             )),
-        CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 16.sp),
+        CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 14.sp),
         Spacer(),
         CommonWidget.commonSvgPitcher(
           image: ImageConst.bookMarkFilled,
         ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(8),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 gradient: LinearGradient(

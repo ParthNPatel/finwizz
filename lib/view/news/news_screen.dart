@@ -10,7 +10,9 @@ import '../../constant/image_const.dart';
 import 'package:get/get.dart';
 
 class NewsScreen extends StatefulWidget {
-  const NewsScreen({Key? key}) : super(key: key);
+  final bool? isCategoryVisible;
+
+  const NewsScreen({super.key, this.isCategoryVisible = false});
 
   @override
   State<NewsScreen> createState() => _NewsScreenState();
@@ -62,40 +64,50 @@ class _NewsScreenState extends State<NewsScreen> {
       physics: BouncingScrollPhysics(),
       child: Column(
         children: [
-          CommonWidget.commonSizedBox(height: 20),
-          SizedBox(
-            height: 40.sp,
-            child: ListView.builder(
-              padding: EdgeInsets.only(left: 30),
-              itemCount: categories.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int index) => InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    selected = index;
-                  });
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  // height: 40.sp,
-                  // width: 80.sp,
-                  decoration: BoxDecoration(
-                    color: selected == index
-                        ? Color(0xffdddef6)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Color(0xffdddef6), width: 1),
-                  ),
-                  child: CommonText.textBoldWight500(
-                      text: categories[index], fontSize: 9.sp),
-                ),
-              ),
-            ),
-          ),
+          widget.isCategoryVisible == true
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonWidget.commonSizedBox(height: 20),
+                    SizedBox(
+                      height: 40.sp,
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(left: 30),
+                        itemCount: categories.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) =>
+                            InkWell(
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          onTap: () {
+                            setState(() {
+                              selected = index;
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
+                            // height: 40.sp,
+                            // width: 80.sp,
+                            decoration: BoxDecoration(
+                              color: selected == index
+                                  ? Color(0xffdddef6)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Color(0xffdddef6), width: 1),
+                            ),
+                            child: CommonText.textBoldWight500(
+                                text: categories[index], fontSize: 9.sp),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox(),
           CommonWidget.commonSizedBox(height: 10),
           ListView.builder(
             shrinkWrap: true,

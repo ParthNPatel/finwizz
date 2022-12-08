@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 
+import '../BottomNav/bottom_nav_screen.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
@@ -153,7 +155,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   if (phoneController.text.isNotEmpty &&
                       otpController.text.isNotEmpty) {
                     GetStorageServices.setUserLoggedIn();
-                    Get.back();
+                    Get.offAll(() => BottomNavScreen(selectedIndex: 0));
                   } else {
                     CommonWidget.getSnackBar(
                         color: Colors.red,

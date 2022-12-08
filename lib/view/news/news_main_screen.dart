@@ -89,7 +89,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
               child: TabBarView(
                 controller: tabController,
                 children: [
-                  NewsScreen(),
+                  NewsScreen(isCategoryVisible: true),
                   MoversScreen(),
                 ],
               ),
@@ -139,12 +139,15 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 text: 'Good evening  🙌', fontSize: 14.sp),
         Spacer(),
         GetStorageServices.getUserLoggedInStatus() == true
-            ? InkWell(
-                onTap: () {
-                  controller.changeTapped(true);
-                },
-                child: CommonWidget.commonSvgPitcher(
-                  image: ImageConst.bookMark,
+            ? GetBuilder<HandleScreenController>(
+                builder: (controller) => InkWell(
+                  onTap: () {
+                    setState(() {});
+                    controller.changeTapped(true);
+                  },
+                  child: CommonWidget.commonSvgPitcher(
+                    image: ImageConst.bookMark,
+                  ),
                 ),
               )
             : GestureDetector(
