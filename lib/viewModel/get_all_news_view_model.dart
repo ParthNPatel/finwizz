@@ -26,7 +26,7 @@ class GetAllNewsViewModel extends GetxController {
       _getNewsApiResponse = ApiResponse.loading(message: 'Loading');
     }
 
-    update();
+    // update();
     try {
       GetAllNewsModel response = await GetAllNewsRepo.getAllNewsRepo();
       print("GetNewsResponseModel==>$response");

@@ -7,10 +7,11 @@ import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:finwizz/view/news/news_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../BookMark/book_mark_screen.dart';
 import '../portfolio/portfolio_screen.dart';
-import 'package:get/get.dart';
 
 class BottomNavScreen extends StatefulWidget {
   final int? selectedIndex;

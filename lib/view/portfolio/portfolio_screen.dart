@@ -1,8 +1,13 @@
+import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/responseModel/stock_summary_res_model.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/view/portfolio/search_screen.dart';
+import 'package:finwizz/viewModel/stock_remove_view_model.dart';
+import 'package:finwizz/viewModel/stock_summary_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../components/common_widget.dart';
 import '../../constant/color_const.dart';
 import '../../constant/text_styel.dart';
@@ -22,24 +27,28 @@ class PortfolioScreen extends StatefulWidget {
 class _PortfolioScreenState extends State<PortfolioScreen>
     with SingleTickerProviderStateMixin {
   TabController? tabController;
-  List listOfStocks = [
-    {
-      'title': 'TANLA',
-      'updates': [1, 5]
-    },
-    {
-      'title': 'TATA MOTORS',
-      'updates': [2]
-    },
-    {
-      'title': 'RELIANCE',
-      'updates': [],
-    }
-  ];
+  // List listOfStocks = [
+  //   {
+  //     'title': 'TANLA',
+  //     'updates': [1, 5]
+  //   },
+  //   {
+  //     'title': 'TATA MOTORS',
+  //     'updates': [2]
+  //   },
+  //   {
+  //     'title': 'RELIANCE',
+  //     'updates': [],
+  //   }
+  // ];
   PortFolioController _portFolioController = Get.find();
+  StockSummaryViewModel stockSummaryViewModel =
+      Get.put(StockSummaryViewModel());
+  RemoveStockViewModel removeStockViewModel = Get.put(RemoveStockViewModel());
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
+    stockSummaryViewModel.stockSummaryViewModel();
     tabController!.animation!.addListener(tabListener);
     super.initState();
   }
@@ -89,23 +98,36 @@ class _PortfolioScreenState extends State<PortfolioScreen>
     );
   }
 
-  Column firstTabView(PortFolioController controller, BuildContext context) {
-    return Column(
-      mainAxisAlignment: controller.isAddShare
-          ? MainAxisAlignment.start
-          : MainAxisAlignment.center,
-      children: [
-        controller.isAddShare
-            ? CommonWidget.commonSizedBox(height: 26)
-            : SizedBox(),
-        controller.isAddShare
-            ? ListView.builder(
-                itemCount: listOfStocks.length,
+  firstTabView(PortFolioController controller, BuildContext context) {
+    return GetBuilder<StockSummaryViewModel>(
+      builder: (stockController) {
+        if (stockController.stockSummaryApiResponse.status == Status.LOADING) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (stockController.stockSummaryApiResponse.status == Status.COMPLETE) {
+          StockSummaryResponseModel responseModel =
+              stockController.stockSummaryApiResponse.data;
+          controller.isDeleteAvailable =
+              responseModel.data!.addedStocks!.length == 0 ? false : true;
+          return Column(
+            mainAxisAlignment: responseModel.data!.addedStocks!.length != 0
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.center,
+            children: [
+              controller.isAddShare
+                  ? CommonWidget.commonSizedBox(height: 26)
+                  : SizedBox(),
+              // controller.isAddShare
+              //     ?
+              ListView.builder(
+                itemCount: responseModel.data!.addedStocks!.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                        horizontal: 10, vertical: 20),
                     child: Column(
                       children: [
                         Row(
@@ -115,13 +137,13 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                 ? InkWell(
                                     onTap: () {
                                       controller.setListOfPortFolio(
-                                          shareName: listOfStocks[index]
-                                              ['title']);
+                                          shareName: responseModel
+                                              .data!.addedStocks![index].id!);
                                     },
                                     child: CommonWidget.commonSvgPitcher(
                                         image: controller.listOfDeletePortFolio
-                                                .contains(listOfStocks[index]
-                                                    ['title'])
+                                                .contains(responseModel.data!
+                                                    .addedStocks![index].id)
                                             ? 'assets/svg/check_box.svg'
                                             : 'assets/svg/empty_check_box.svg'),
                                   )
@@ -129,45 +151,48 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                             Padding(
                               padding: EdgeInsets.only(left: 10),
                               child: CommonText.textBoldWight400(
-                                  text: listOfStocks[index]['title']),
+                                  text:
+                                      '${responseModel.data!.addedStocks![index].name}'),
                             ),
                             Spacer(),
-                            listOfStocks[index]['updates'].length == 0
-                                ? CommonText.textBoldWight400(
-                                    text: 'No recent updates ')
-                                : Row(
-                                    children: List.generate(
-                                        listOfStocks[index]['updates'].length,
-                                        (indexOf) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          width: 30.sp,
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: CommonText.textBoldWight400(
-                                              text: listOfStocks[index]
-                                                      ['updates'][indexOf]
-                                                  .toString()),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: listOfStocks[index]
-                                                                  ['updates']
-                                                              .length ==
-                                                          2 &&
-                                                      indexOf == 0
-                                                  ? CommonColor.greenColor2ECC71
-                                                      .withOpacity(0.5)
-                                                  : CommonColor
-                                                      .lightRedColor3D3D3D
-                                                      .withOpacity(0.5)),
-                                        ),
-                                      );
-                                    }),
-                                  )
+                            // listOfStocks[index]['updates'].length == 0
+                            //     ?
+                            CommonText.textBoldWight400(
+                                text: 'No recent updates ')
+
+                            // : Row(
+                            //     children: List.generate(
+                            //         listOfStocks[index]['updates'].length,
+                            //         (indexOf) {
+                            //       return Padding(
+                            //         padding: const EdgeInsets.all(8.0),
+                            //         child: Container(
+                            //           width: 30.sp,
+                            //           alignment: Alignment.center,
+                            //           padding: EdgeInsets.symmetric(
+                            //             vertical: 8,
+                            //           ),
+                            //           child: CommonText.textBoldWight400(
+                            //               text: listOfStocks[index]
+                            //                       ['updates'][indexOf]
+                            //                   .toString()),
+                            //           decoration: BoxDecoration(
+                            //               borderRadius:
+                            //                   BorderRadius.circular(8),
+                            //               color: listOfStocks[index]
+                            //                                   ['updates']
+                            //                               .length ==
+                            //                           2 &&
+                            //                       indexOf == 0
+                            //                   ? CommonColor.greenColor2ECC71
+                            //                       .withOpacity(0.5)
+                            //                   : CommonColor
+                            //                       .lightRedColor3D3D3D
+                            //                       .withOpacity(0.5)),
+                            //         ),
+                            //       );
+                            //     }),
+                            //   )
                           ],
                         ),
                         CommonWidget.commonSizedBox(height: 6),
@@ -178,94 +203,138 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     ),
                   );
                 },
-              )
-            : SizedBox(),
-        _portFolioController.isAddShare
-            ? CommonWidget.commonSizedBox(height: 32)
-            : SizedBox(),
-        InkWell(
-          onTap: () {
-            if (controller.isDelete) {
-              showModalBottomSheet(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ),
-                context: context,
-                builder: (context) => Container(
-                  height: 150.sp,
-                  decoration: BoxDecoration(
-                    color: Color(0xfff4f4f4),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(30),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: CommonText.textBoldWight500(
-                            text: "Are you sure you want to delete ?"),
+              ),
+              // : SizedBox(),
+              _portFolioController.isAddShare
+                  ? CommonWidget.commonSizedBox(height: 32)
+                  : SizedBox(),
+              InkWell(
+                onTap: () {
+                  if (controller.isDelete) {
+                    showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
                       ),
-                      CommonWidget.commonSizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 30),
-                                child: CommonText.textBoldWight700(
-                                    text: "CANCEL",
-                                    fontSize: 10.sp,
-                                    color: Colors.white),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: CommonColor.themColor9295E2)),
+                      context: context,
+                      builder: (context) => Container(
+                        height: 150.sp,
+                        decoration: BoxDecoration(
+                          color: Color(0xfff4f4f4),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(30),
                           ),
-                          SizedBox(
-                            width: 30,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 30),
-                                child: CommonText.textBoldWight700(
-                                    text: "YES, DELETE",
-                                    fontSize: 10.sp,
-                                    color: Colors.white),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: CommonColor.themColor9295E2)),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              Get.to(() => SearchScreen());
-            }
-          },
-          child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-              child: CommonText.textBoldWight700(
-                  text: controller.isDelete ? 'DELETE' : 'ADD STOCKS',
-                  fontSize: 10.sp,
-                  color: Colors.white),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: CommonColor.themColor9295E2)),
-        ),
-      ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: CommonText.textBoldWight500(
+                                  text: "Are you sure you want to delete ?"),
+                            ),
+                            CommonWidget.commonSizedBox(height: 30),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    controller.isDelete = false;
+
+                                    Get.back();
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 30),
+                                      child: CommonText.textBoldWight700(
+                                          text: "CANCEL",
+                                          fontSize: 10.sp,
+                                          color: Colors.white),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: CommonColor.themColor9295E2)),
+                                ),
+                                SizedBox(
+                                  width: 30,
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    await removeStockViewModel
+                                        .removeStockViewModel(body: {
+                                      "stockId":
+                                          controller.listOfDeletePortFolio
+                                    });
+
+                                    if (removeStockViewModel
+                                            .removeStockApiResponse.status ==
+                                        Status.COMPLETE) {
+                                      Get.back();
+
+                                      CommonWidget.getSnackBar(
+                                          color: Colors.green,
+                                          duration: 2,
+                                          colorText: Colors.white,
+                                          title: "Stock Removed successfully!",
+                                          message: 'Successfully');
+                                    }
+                                    if (removeStockViewModel
+                                            .removeStockApiResponse.status ==
+                                        Status.ERROR) {
+                                      Get.back();
+
+                                      CommonWidget.getSnackBar(
+                                          color: Colors.red,
+                                          duration: 2,
+                                          colorText: Colors.white,
+                                          title: "Try again",
+                                          message: 'Failed');
+                                    }
+                                    controller.isDelete = false;
+                                    await stockSummaryViewModel
+                                        .stockSummaryViewModel(
+                                            isLoading: false);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 30),
+                                    child: CommonText.textBoldWight700(
+                                        text: "YES, DELETE",
+                                        fontSize: 10.sp,
+                                        color: Colors.white),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: CommonColor.themColor9295E2,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  } else {
+                    Get.to(() => SearchScreen());
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                    child: CommonText.textBoldWight700(
+                        text: controller.isDelete ? 'DELETE' : 'ADD STOCKS',
+                        fontSize: 10.sp,
+                        color: Colors.white),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: CommonColor.themColor9295E2)),
+              ),
+            ],
+          );
+        }
+        return Center(
+          child: Text('Something went wrong'),
+        );
+      },
     );
   }
 
@@ -337,7 +406,14 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     CommonWidget.commonSizedBox(width: 10),
                     InkWell(
                       onTap: () {
-                        controller.isDelete = true;
+                        if (controller.isDeleteAvailable == true) {
+                          controller.isDelete = true;
+                        } else {
+                          CommonWidget.getSnackBar(
+                              title: 'Add Stock First',
+                              message: '',
+                              duration: 2);
+                        }
                       },
                       child: Container(
                           padding: EdgeInsets.all(12),
