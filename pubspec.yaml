@@ -53,6 +53,7 @@ dependencies:
   flutter_progress_hud: ^2.0.2
   country_picker: ^2.0.16
   intl: ^0.17.0
+  syncfusion_flutter_gauges: ^20.3.61
 
 dependency_overrides:
   firebase_core_platform_interface: 4.5.1

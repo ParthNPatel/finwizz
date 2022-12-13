@@ -9,4 +9,5 @@ class APIConst {
   static String addStock = "/stocks";
   static String removeStock = "/stocks/remove";
   static String stockSummary = "/stocks/summary";
+  static String movers = "/movers";
 }
