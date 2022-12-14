@@ -1,6 +1,7 @@
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_movers_res_model.dart';
 import 'package:finwizz/viewModel/get_all_movers_view_model.dart';
+import 'package:finwizz/viewModel/movers_like_unlike_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -24,48 +25,18 @@ class MoversScreen extends StatefulWidget {
 
 class _MoversScreenState extends State<MoversScreen> {
   bool isFavourite = true;
-  bool isFavourite1 = true;
-
-  List listOfNews = [
-    {
-      'image': ImageConst.newsIcon,
-      'title': 'News',
-      'text': 'News that moves stocks'
-    },
-    {
-      'image': ImageConst.bagIcon,
-      'title': 'Portfolio protection',
-      'text': 'Invest on information. Sell on information'
-    }
-  ];
-  List listOfNews1 = [
-    {
-      'image': ImageConst.calender,
-      'title': 'Today',
-    },
-    {
-      'image': ImageConst.calender,
-      'title': 'Yesterday',
-    },
-    {
-      'image': ImageConst.calender,
-      'title': 'Wed, 05 Sep 2022',
-    }
-  ];
-
-  PageController? pageController;
+  PageController pageController =
+      PageController(initialPage: 0, keepPage: true);
 
   GetAllMoverViewModel getAllMoverViewModel = Get.put(GetAllMoverViewModel());
+  MoversLikeUnLikeViewModel moversLikeUnLikeViewModel =
+      Get.put(MoversLikeUnLikeViewModel());
+
+  int currentPage = 0;
 
   @override
   void initState() {
-    pageController = PageController(initialPage: 0, keepPage: true);
     getAllMoverViewModel.getMoversViewModel();
-    // pageController!.addListener(() {
-    //   setState(() {
-    //     _currentPage = pageController!.page!.toInt();
-    //   });
-    // });
     super.initState();
   }
 
@@ -125,590 +96,11 @@ class _MoversScreenState extends State<MoversScreen> {
                             return SizedBox(height: 20.sp);
                           },
                           itemBuilder: (context, index) {
-                            return Row(
-                              children: [
-                                /*  controller.currentPage == 1
-                                    ?*/
-                                InkWell(
-                                  onTap: () {
-                                    pageController!.animateToPage(
-                                        --controller.currentPage,
-                                        duration: Duration(milliseconds: 600),
-                                        curve: Curves.easeIn);
-                                  },
-                                  child: CommonWidget.commonSvgPitcher(
-                                      image: 'assets/svg/left_arrow.svg'),
-                                )
-                                /*  : SizedBox(
-                                        child: CommonWidget.commonSvgPitcher(
-                                            image: 'assets/svg/left_arrow.svg',
-                                            color: Colors.transparent)),*/
-                                ,
-                                SizedBox(
-                                  height: 300,
-                                  width: Get.width - 50,
-                                  child: PageView(
-                                    pageSnapping: true,
-                                    controller: pageController,
-                                    scrollDirection: Axis.horizontal,
-
-                                    onPageChanged: (value) {
-                                      controller.pageCount(value);
-                                    },
-                                    children: [
-                                      Container(
-                                        /* margin:
-                                              EdgeInsets.symmetric(horizontal: 20),*/
-                                        width: double.infinity,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Color(0xffD1CDCD),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(14),
-                                        ),
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              CommonText.textBoldWight700(
-                                                  text:
-                                                      '${response.data![index].title}',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 15),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  CommonText.textBoldWight400(
-                                                      text:
-                                                          '${response.data![index].companyId!.name.toString().capitalizeFirst}',
-                                                      color: Colors.black,
-                                                      fontSize: 9.sp),
-                                                  CommonWidget.commonSizedBox(
-                                                      width: 10),
-                                                  CommonText.textBoldWight400(
-                                                      text:
-                                                          '${response.data![index].priceRange}',
-                                                      color: Colors.black,
-                                                      fontSize: 9.sp),
-                                                  CommonText.textBoldWight400(
-                                                      text: '29 jul - 2 sep',
-                                                      color: Colors.black,
-                                                      fontSize: 9.sp),
-                                                ],
-                                              ),
-                                              Spacer(),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                      height: 125.sp,
-                                                      width: 125.sp,
-                                                      child: gaugeWidget(
-                                                          response, index)),
-                                                  CommonWidget.commonSizedBox(
-                                                      width: 20),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 40),
-                                                    child: Image.asset(
-                                                      'assets/png/up_arrow_iphone.png',
-                                                      scale: 4,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 40),
-                                                    child: CommonText
-                                                        .textBoldWight500(
-                                                            text:
-                                                                " ${response.data![index].percentage} %"),
-                                                  )
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isFavourite =
-                                                            !isFavourite;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      isFavourite == true
-                                                          ? Icons.favorite
-                                                          : Icons
-                                                              .favorite_border,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  CommonText.textBoldWight400(
-                                                      text: '120.1K',
-                                                      color: Colors.black),
-                                                  Spacer(),
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isFavourite1 =
-                                                            !isFavourite1;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      isFavourite1 == true
-                                                          ? Icons.bookmark
-                                                          : Icons
-                                                              .bookmark_outline_sharp,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      Share.share("Test");
-                                                    },
-                                                    child: Icon(
-                                                      Icons.share,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              CommonText.textBoldWight400(
-                                                  text:
-                                                      '${DateFormat('MMM dd, hh:mm').format(response.data![index].createdAt!)} ·| Source : BSE',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                            ]),
-                                      ),
-                                      Container(
-                                        /* margin:
-                                              EdgeInsets.symmetric(horizontal: 20),*/
-                                        width: double.infinity,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Color(0xffD1CDCD),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(14),
-                                        ),
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              CommonText.textBoldWight700(
-                                                  text:
-                                                      '${response.data![index].title}',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 15),
-                                              CommonText.textBoldWight400(
-                                                  text:
-                                                      '${response.data![index].companyId!.name!.toUpperCase()}',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 15),
-                                              CommonText.textBoldWight500(
-                                                  color: Color(0xff394452),
-                                                  fontSize: 10.sp,
-                                                  text:
-                                                      "${response.data![index].description}"),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 16),
-                                              // CommonText.textBoldWight500(
-                                              //     fontSize: 10.sp,
-                                              //     color:
-                                              //         Color(0xff394452),
-                                              //     text:
-                                              //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                                              // CommonWidget.commonSizedBox(
-                                              //     height: 10),
-                                              Row(
-                                                children: [
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isFavourite =
-                                                            !isFavourite;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      isFavourite == true
-                                                          ? Icons.favorite
-                                                          : Icons
-                                                              .favorite_border,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  CommonText.textBoldWight400(
-                                                      text: '120.1K',
-                                                      color: Colors.black),
-                                                  Spacer(),
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isFavourite1 =
-                                                            !isFavourite1;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      isFavourite1 == true
-                                                          ? Icons.bookmark
-                                                          : Icons
-                                                              .bookmark_outline_sharp,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  InkResponse(
-                                                    onTap: () {
-                                                      Share.share("Test");
-                                                    },
-                                                    child: Icon(
-                                                      Icons.share,
-                                                      color: CommonColor
-                                                          .yellowColorFFB800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                              CommonText.textBoldWight400(
-                                                  text:
-                                                      'Sep 7,  12:38 ·| Source : BSE',
-                                                  color: Colors.black),
-                                              CommonWidget.commonSizedBox(
-                                                  height: 10),
-                                            ]),
-                                      )
-                                    ],
-                                    //scrollDirection: Axis.horizontal,
-                                    // itemBuilder: (context, indexPage) {
-                                    //   return indexPage == 0
-                                    //       ? Container(
-                                    //           /* margin:
-                                    //           EdgeInsets.symmetric(horizontal: 20),*/
-                                    //           width: double.infinity,
-                                    //           padding: EdgeInsets.symmetric(
-                                    //               horizontal: 20, vertical: 10),
-                                    //           decoration: BoxDecoration(
-                                    //             border: Border.all(
-                                    //               color: Color(0xffD1CDCD),
-                                    //             ),
-                                    //             borderRadius:
-                                    //                 BorderRadius.circular(14),
-                                    //           ),
-                                    //           child: Column(
-                                    //               crossAxisAlignment:
-                                    //                   CrossAxisAlignment.start,
-                                    //               children: [
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 10),
-                                    //                 CommonText.textBoldWight700(
-                                    //                     text:
-                                    //                         '${response.data![index].title}',
-                                    //                     color: Colors.black),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 15),
-                                    //                 Row(
-                                    //                   mainAxisAlignment:
-                                    //                       MainAxisAlignment
-                                    //                           .spaceBetween,
-                                    //                   children: [
-                                    //                     CommonText.textBoldWight400(
-                                    //                         text:
-                                    //                             '${response.data![index].companyId!.name.toString().capitalizeFirst}',
-                                    //                         color: Colors.black,
-                                    //                         fontSize: 9.sp),
-                                    //                     CommonWidget
-                                    //                         .commonSizedBox(
-                                    //                             width: 10),
-                                    //                     CommonText.textBoldWight400(
-                                    //                         text:
-                                    //                             '${response.data![index].priceRange}',
-                                    //                         color: Colors.black,
-                                    //                         fontSize: 9.sp),
-                                    //                     CommonText.textBoldWight400(
-                                    //                         text:
-                                    //                             '29 jul - 2 sep',
-                                    //                         color: Colors.black,
-                                    //                         fontSize: 9.sp),
-                                    //                   ],
-                                    //                 ),
-                                    //                 Spacer(),
-                                    //                 Row(
-                                    //                   mainAxisAlignment:
-                                    //                       MainAxisAlignment
-                                    //                           .start,
-                                    //                   children: [
-                                    //                     SizedBox(
-                                    //                         height: 125.sp,
-                                    //                         width: 125.sp,
-                                    //                         child: gaugeWidget(
-                                    //                             response,
-                                    //                             index)),
-                                    //                     CommonWidget
-                                    //                         .commonSizedBox(
-                                    //                             width: 20),
-                                    //                     Padding(
-                                    //                       padding:
-                                    //                           const EdgeInsets
-                                    //                                   .only(
-                                    //                               bottom: 40),
-                                    //                       child: Image.asset(
-                                    //                         'assets/png/up_arrow_iphone.png',
-                                    //                         scale: 4,
-                                    //                       ),
-                                    //                     ),
-                                    //                     Padding(
-                                    //                       padding:
-                                    //                           const EdgeInsets
-                                    //                                   .only(
-                                    //                               bottom: 40),
-                                    //                       child: CommonText
-                                    //                           .textBoldWight500(
-                                    //                               text:
-                                    //                                   " ${response.data![index].percentage} %"),
-                                    //                     )
-                                    //                   ],
-                                    //                 ),
-                                    //                 Row(
-                                    //                   children: [
-                                    //                     InkResponse(
-                                    //                       onTap: () {
-                                    //                         setState(() {
-                                    //                           isFavourite =
-                                    //                               !isFavourite;
-                                    //                         });
-                                    //                       },
-                                    //                       child: Icon(
-                                    //                         isFavourite == true
-                                    //                             ? Icons.favorite
-                                    //                             : Icons
-                                    //                                 .favorite_border,
-                                    //                         color: CommonColor
-                                    //                             .yellowColorFFB800,
-                                    //                       ),
-                                    //                     ),
-                                    //                     SizedBox(
-                                    //                       width: 10,
-                                    //                     ),
-                                    //                     CommonText
-                                    //                         .textBoldWight400(
-                                    //                             text: '120.1K',
-                                    //                             color: Colors
-                                    //                                 .black),
-                                    //                     Spacer(),
-                                    //                     InkResponse(
-                                    //                       onTap: () {
-                                    //                         setState(() {
-                                    //                           isFavourite1 =
-                                    //                               !isFavourite1;
-                                    //                         });
-                                    //                       },
-                                    //                       child: Icon(
-                                    //                         isFavourite1 == true
-                                    //                             ? Icons.bookmark
-                                    //                             : Icons
-                                    //                                 .bookmark_outline_sharp,
-                                    //                         color: CommonColor
-                                    //                             .yellowColorFFB800,
-                                    //                       ),
-                                    //                     ),
-                                    //                     SizedBox(
-                                    //                       width: 10,
-                                    //                     ),
-                                    //                     InkResponse(
-                                    //                       onTap: () {
-                                    //                         Share.share("Test");
-                                    //                       },
-                                    //                       child: Icon(
-                                    //                         Icons.share,
-                                    //                         color: CommonColor
-                                    //                             .yellowColorFFB800,
-                                    //                       ),
-                                    //                     ),
-                                    //                   ],
-                                    //                 ),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 10),
-                                    //                 CommonText.textBoldWight400(
-                                    //                     text:
-                                    //                         '${DateFormat('MMM dd, hh:mm').format(response.data![index].createdAt!)} ·| Source : BSE',
-                                    //                     color: Colors.black),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 10),
-                                    //               ]),
-                                    //         )
-                                    //       : Container(
-                                    //           /* margin:
-                                    //           EdgeInsets.symmetric(horizontal: 20),*/
-                                    //           width: double.infinity,
-                                    //           padding: EdgeInsets.symmetric(
-                                    //               horizontal: 20, vertical: 10),
-                                    //           decoration: BoxDecoration(
-                                    //             border: Border.all(
-                                    //               color: Color(0xffD1CDCD),
-                                    //             ),
-                                    //             borderRadius:
-                                    //                 BorderRadius.circular(14),
-                                    //           ),
-                                    //           child: Column(
-                                    //               crossAxisAlignment:
-                                    //                   CrossAxisAlignment.start,
-                                    //               children: [
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 10),
-                                    //                 CommonText.textBoldWight700(
-                                    //                     text:
-                                    //                         '${response.data![index].title}',
-                                    //                     color: Colors.black),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 15),
-                                    //                 CommonText.textBoldWight400(
-                                    //                     text:
-                                    //                         '${response.data![index].companyId!.name!.toUpperCase()}',
-                                    //                     color: Colors.black),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 15),
-                                    //                 CommonText.textBoldWight500(
-                                    //                     color:
-                                    //                         Color(0xff394452),
-                                    //                     fontSize: 10.sp,
-                                    //                     text:
-                                    //                         "${response.data![index].description}"),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 16),
-                                    //                 // CommonText.textBoldWight500(
-                                    //                 //     fontSize: 10.sp,
-                                    //                 //     color:
-                                    //                 //         Color(0xff394452),
-                                    //                 //     text:
-                                    //                 //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                                    //                 // CommonWidget.commonSizedBox(
-                                    //                 //     height: 10),
-                                    //                 Row(
-                                    //                   children: [
-                                    //                     InkResponse(
-                                    //                       onTap: () {
-                                    //                         setState(() {
-                                    //                           isFavourite =
-                                    //                               !isFavourite;
-                                    //                         });
-                                    //                       },
-                                    //                       child: Icon(
-                                    //                         isFavourite == true
-                                    //                             ? Icons.favorite
-                                    //                             : Icons
-                                    //                                 .favorite_border,
-                                    //                         color: CommonColor
-                                    //                             .yellowColorFFB800,
-                                    //                       ),
-                                    //                     ),
-                                    //                     SizedBox(
-                                    //                       width: 10,
-                                    //                     ),
-                                    //                     CommonText
-                                    //                         .textBoldWight400(
-                                    //                             text: '120.1K',
-                                    //                             color: Colors
-                                    //                                 .black),
-                                    //                     Spacer(),
-                                    //                     InkResponse(
-                                    //                       onTap: () {
-                                    //                         setState(() {
-                                    //                           isFavourite1 =
-                                    //                               !isFavourite1;
-                                    //                         });
-                                    //                       },
-                                    //                       child: Icon(
-                                    //                         isFavourite1 == true
-                                    //                             ? Icons.bookmark
-                                    //                             : Icons
-                                    //                                 .bookmark_outline_sharp,
-                                    //                         color: CommonColor
-                                    //                             .yellowColorFFB800,
-                                    //                       ),
-                                    //                     ),
-                                    //                     SizedBox(
-                                    //                       width: 10,
-                                    //                     ),
-                                    //                     InkResponse(
-                                    //                       onTap: () {
-                                    //                         Share.share("Test");
-                                    //                       },
-                                    //                       child: Icon(
-                                    //                         Icons.share,
-                                    //                         color: CommonColor
-                                    //                             .yellowColorFFB800,
-                                    //                       ),
-                                    //                     ),
-                                    //                   ],
-                                    //                 ),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 10),
-                                    //                 CommonText.textBoldWight400(
-                                    //                     text:
-                                    //                         'Sep 7,  12:38 ·| Source : BSE',
-                                    //                     color: Colors.black),
-                                    //                 CommonWidget.commonSizedBox(
-                                    //                     height: 10),
-                                    //               ]),
-                                    //         );
-                                    // },
-                                  ),
-                                ),
-                                /*controller.currentPage == 0
-                                    ?*/
-                                InkWell(
-                                  onTap: () {
-                                    pageController!.animateToPage(
-                                        ++controller.currentPage,
-                                        duration: Duration(milliseconds: 600),
-                                        curve: Curves.easeIn);
-                                  },
-                                  child: CommonWidget.commonSvgPitcher(
-                                      image: 'assets/svg/right_arrow.svg'),
-                                )
-                                /* : SizedBox(
-                                        child: CommonWidget.commonSvgPitcher(
-                                            image: 'assets/svg/right_arrow.svg',
-                                            color: Colors.transparent)),*/
-                              ],
-                            );
+                            return MoverWidget(
+                                response: response,
+                                index: index,
+                                controller: controller,
+                                isFavourite: isFavourite);
                           },
                         ),
                       ],
@@ -723,6 +115,491 @@ class _MoversScreenState extends State<MoversScreen> {
             padding: EdgeInsets.only(top: 30),
             child: CreateAccount(),
           );
+  }
+}
+
+class MoverWidget extends StatefulWidget {
+  GetAllMoverViewModel controller;
+  GetAllMoversResponseModel response;
+  int index;
+  bool isFavourite;
+
+  MoverWidget({
+    Key? key,
+    required this.controller,
+    required this.response,
+    required this.index,
+    required this.isFavourite,
+  }) : super(key: key);
+
+  @override
+  State<MoverWidget> createState() => _MoverWidgetState();
+}
+
+class _MoverWidgetState extends State<MoverWidget> {
+  int currentPage = 0;
+  double gaugeContainerWidth = Get.width - 50;
+  double otherContainerWidth = 0;
+  int sensitivity = 8;
+  Duration duration = Duration(milliseconds: 300);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      width: Get.width,
+      child: Row(
+        children: [
+          currentPage == 1
+              ? InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentPage = 0;
+                      gaugeContainerWidth = Get.width - 50;
+                      otherContainerWidth = 0;
+                    });
+                  },
+                  child: CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/left_arrow.svg'),
+                )
+              : CommonWidget.commonSvgPitcher(
+                  image: 'assets/svg/left_arrow.svg',
+                  color: Colors.transparent),
+          GestureDetector(
+            onHorizontalDragUpdate: (details) {
+              if (details.delta.dx < -sensitivity) {
+                setState(() {
+                  currentPage = 1;
+                  otherContainerWidth = Get.width - 50;
+                  gaugeContainerWidth = 0;
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: duration,
+              width: gaugeContainerWidth,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color(0xffD1CDCD),
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight700(
+                        text: '${widget.response.data![widget.index].title}',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data![widget.index].companyId!.name.toString().capitalizeFirst}',
+                            color: Colors.black,
+                            fontSize: 9.sp),
+                        CommonWidget.commonSizedBox(width: 10),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data![widget.index].priceRange}',
+                            color: Colors.black,
+                            fontSize: 9.sp),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${DateFormat("d MMM").format(widget.response.data![widget.index].createdAt!)} - ${DateFormat("d MMM").format(DateTime.now())}',
+                            color: Colors.black,
+                            fontSize: 9.sp),
+                      ],
+                    ),
+                    Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                            height: 125.sp,
+                            width: 125.sp,
+                            child: gaugeWidget(widget.response, widget.index)),
+                        CommonWidget.commonSizedBox(width: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: Image.asset(
+                            'assets/png/up_arrow_iphone.png',
+                            scale: 4,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: CommonText.textBoldWight500(
+                              text:
+                                  " ${widget.response.data![widget.index].percentage} %"),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        InkResponse(
+                          onTap: () {
+                            setState(() {
+                              widget.isFavourite = !widget.isFavourite;
+                            });
+                          },
+
+                          // onTap: () async {
+                          //   // controller.updateLike(
+                          //   //     response.data![index].isLiked!);
+                          //   if (response.data![index].
+                          //           .isLiked ==
+                          //       false) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "like",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //
+                          //     if (moversLikeUnLikeViewModel
+                          //             .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   } else if (response
+                          //           .data![index]
+                          //           .isLiked ==
+                          //       true) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "unlike",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   }
+                          //   await getAllMoverViewModel
+                          //       .getMoversViewModel(
+                          //           isLoading: false
+                          //   );
+                          //   if (getAllMoverViewModel
+                          //           .getMoversApiResponse
+                          //           .status ==
+                          //       Status.COMPLETE) {}
+                          //   if (getAllMoverViewModel
+                          //       .getMoversApiResponse
+                          //           .status ==
+                          //       Status.ERROR) {
+                          //     CommonWidget.getSnackBar(
+                          //         color: Colors.red,
+                          //         duration: 2,
+                          //         colorText:
+                          //             Colors.white,
+                          //         title:
+                          //             "Refresh Page",
+                          //         message:
+                          //             'Try Again.');
+                          //   }
+                          // },
+
+                          child: Icon(
+                            widget.isFavourite == true
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data![widget.index].likes}',
+                            color: Colors.black),
+                        Spacer(),
+                        // InkResponse(
+                        //   onTap: () {
+                        //     setState(() {
+                        //       isFavourite1 =
+                        //           !isFavourite1;
+                        //     });
+                        //   },
+                        //   child: Icon(
+                        //     isFavourite1 == true
+                        //         ? Icons.bookmark
+                        //         : Icons
+                        //             .bookmark_outline_sharp,
+                        //     color: CommonColor
+                        //         .yellowColorFFB800,
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   width: 10,
+                        // ),
+                        InkResponse(
+                          onTap: () {
+                            Share.share("Test");
+                          },
+                          child: Icon(
+                            Icons.share,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight400(
+                        text:
+                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index].createdAt!)} ·| Source : BSE',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 10),
+                  ]),
+            ),
+          ),
+          GestureDetector(
+            onHorizontalDragUpdate: (details) {
+              if (details.delta.dx > sensitivity) {
+                setState(() {
+                  currentPage = 0;
+                  gaugeContainerWidth = Get.width - 50;
+                  otherContainerWidth = 0;
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: duration,
+              width: otherContainerWidth,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color(0xffD1CDCD),
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight700(
+                        text: '${widget.response.data![widget.index].title}',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 15),
+                    CommonText.textBoldWight400(
+                        text:
+                            '${widget.response.data![widget.index].companyId!.name!.toUpperCase()}',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 15),
+                    CommonText.textBoldWight500(
+                        color: Color(0xff394452),
+                        fontSize: 10.sp,
+                        text:
+                            "${widget.response.data![widget.index].description}"),
+                    CommonWidget.commonSizedBox(height: 16),
+                    // CommonText.textBoldWight500(
+                    //     fontSize: 10.sp,
+                    //     color:
+                    //         Color(0xff394452),
+                    //     text:
+                    //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                    // CommonWidget.commonSizedBox(
+                    //     height: 10),
+                    Row(
+                      children: [
+                        InkResponse(
+                          onTap: () {
+                            setState(() {
+                              widget.isFavourite = !widget.isFavourite;
+                            });
+                          },
+
+                          // onTap: () async {
+                          //   // controller.updateLike(
+                          //   //     response.data![index].isLiked!);
+                          //   if (response.data![index].
+                          //           .isLiked ==
+                          //       false) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "like",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //
+                          //     if (moversLikeUnLikeViewModel
+                          //             .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   } else if (response
+                          //           .data![index]
+                          //           .isLiked ==
+                          //       true) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "unlike",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   }
+                          //   await getAllMoverViewModel
+                          //       .getMoversViewModel(
+                          //           isLoading: false
+                          //   );
+                          //   if (getAllMoverViewModel
+                          //           .getMoversApiResponse
+                          //           .status ==
+                          //       Status.COMPLETE) {}
+                          //   if (getAllMoverViewModel
+                          //       .getMoversApiResponse
+                          //           .status ==
+                          //       Status.ERROR) {
+                          //     CommonWidget.getSnackBar(
+                          //         color: Colors.red,
+                          //         duration: 2,
+                          //         colorText:
+                          //             Colors.white,
+                          //         title:
+                          //             "Refresh Page",
+                          //         message:
+                          //             'Try Again.');
+                          //   }
+                          // },
+
+                          child: Icon(
+                            widget.isFavourite == true
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data![widget.index].likes}',
+                            color: Colors.black),
+                        Spacer(),
+                        // InkResponse(
+                        //   onTap: () {
+                        //     setState(() {
+                        //       isFavourite1 =
+                        //           !isFavourite1;
+                        //     });
+                        //   },
+                        //   child: Icon(
+                        //     isFavourite1 == true
+                        //         ? Icons.bookmark
+                        //         : Icons
+                        //             .bookmark_outline_sharp,
+                        //     color: CommonColor
+                        //         .yellowColorFFB800,
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   width: 10,
+                        // ),
+                        InkResponse(
+                          onTap: () {
+                            Share.share("Test");
+                          },
+                          child: Icon(
+                            Icons.share,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight400(
+                        text:
+                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index].createdAt!)} ·| Source : BSE',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 10),
+                  ]),
+            ),
+          ),
+          currentPage == 0
+              ? InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentPage = 1;
+                      otherContainerWidth = Get.width - 50;
+                      gaugeContainerWidth = 0;
+                    });
+                  },
+                  child: CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/right_arrow.svg'),
+                )
+              : CommonWidget.commonSvgPitcher(
+                  image: 'assets/svg/left_arrow.svg', color: Colors.transparent)
+        ],
+      ),
+    );
   }
 
   SfRadialGauge gaugeWidget(GetAllMoversResponseModel response, int index) {
@@ -793,3 +670,756 @@ class _MoversScreenState extends State<MoversScreen> {
         ]);
   }
 }
+
+//   SizedBox moverWidget(
+//     GetAllMoverViewModel controller,
+//     GetAllMoversResponseModel response,
+//     int index,
+//   ) {
+//     int currentPage = 0;
+//     return SizedBox(
+//       height: 300,
+//       width: Get.width,
+//       child: Row(
+//         children: [
+//           InkWell(
+//             onTap: () {
+//               setState(() {
+//                 currentPage = 0;
+//               });
+//             },
+//             child: CommonWidget.commonSvgPitcher(
+//                 image: 'assets/svg/left_arrow.svg'),
+//           ),
+//           currentPage == 0
+//               ? Container(
+//                   width: Get.width - 50,
+//                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color: Color(0xffD1CDCD),
+//                     ),
+//                     borderRadius: BorderRadius.circular(14),
+//                   ),
+//                   child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         CommonWidget.commonSizedBox(height: 10),
+//                         CommonText.textBoldWight700(
+//                             text: '${response.data![index].title}',
+//                             color: Colors.black),
+//                         CommonWidget.commonSizedBox(height: 15),
+//                         Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                           children: [
+//                             CommonText.textBoldWight400(
+//                                 text:
+//                                     '${response.data![index].companyId!.name.toString().capitalizeFirst}',
+//                                 color: Colors.black,
+//                                 fontSize: 9.sp),
+//                             CommonWidget.commonSizedBox(width: 10),
+//                             CommonText.textBoldWight400(
+//                                 text: '${response.data![index].priceRange}',
+//                                 color: Colors.black,
+//                                 fontSize: 9.sp),
+//                             CommonText.textBoldWight400(
+//                                 text:
+//                                     '${DateFormat("d MMM").format(response.data![index].createdAt!)} - ${DateFormat("d MMM").format(DateTime.now())}',
+//                                 color: Colors.black,
+//                                 fontSize: 9.sp),
+//                           ],
+//                         ),
+//                         Spacer(),
+//                         Row(
+//                           mainAxisAlignment: MainAxisAlignment.start,
+//                           children: [
+//                             SizedBox(
+//                                 height: 125.sp,
+//                                 width: 125.sp,
+//                                 child: gaugeWidget(response, index)),
+//                             CommonWidget.commonSizedBox(width: 20),
+//                             Padding(
+//                               padding: const EdgeInsets.only(bottom: 40),
+//                               child: Image.asset(
+//                                 'assets/png/up_arrow_iphone.png',
+//                                 scale: 4,
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: const EdgeInsets.only(bottom: 40),
+//                               child: CommonText.textBoldWight500(
+//                                   text:
+//                                       " ${response.data![index].percentage} %"),
+//                             )
+//                           ],
+//                         ),
+//                         Row(
+//                           children: [
+//                             InkResponse(
+//                               onTap: () {
+//                                 setState(() {
+//                                   isFavourite = !isFavourite;
+//                                 });
+//                               },
+//
+//                               // onTap: () async {
+//                               //   // controller.updateLike(
+//                               //   //     response.data![index].isLiked!);
+//                               //   if (response.data![index].
+//                               //           .isLiked ==
+//                               //       false) {
+//                               //     await moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeViewModel(
+//                               //             body: {
+//                               //           "type": "like",
+//                               //           "newsId":
+//                               //               "${response.data![index].id}"
+//                               //         });
+//                               //
+//                               //     if (moversLikeUnLikeViewModel
+//                               //             .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.COMPLETE) {}
+//                               //     if (moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.ERROR) {
+//                               //       // CommonWidget.getSnackBar(
+//                               //       //     color: Colors.red,
+//                               //       //     duration: 2,
+//                               //       //     colorText:
+//                               //       //         Colors.white,
+//                               //       //     title:
+//                               //       //         "Something went wrong",
+//                               //       //     message:
+//                               //       //         'Try Again.');
+//                               //     }
+//                               //   } else if (response
+//                               //           .data![index]
+//                               //           .isLiked ==
+//                               //       true) {
+//                               //     await moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeViewModel(
+//                               //             body: {
+//                               //           "type": "unlike",
+//                               //           "newsId":
+//                               //               "${response.data![index].id}"
+//                               //         });
+//                               //     if (moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.COMPLETE) {}
+//                               //     if (moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.ERROR) {
+//                               //       // CommonWidget.getSnackBar(
+//                               //       //     color: Colors.red,
+//                               //       //     duration: 2,
+//                               //       //     colorText:
+//                               //       //         Colors.white,
+//                               //       //     title:
+//                               //       //         "Something went wrong",
+//                               //       //     message:
+//                               //       //         'Try Again.');
+//                               //     }
+//                               //   }
+//                               //   await getAllMoverViewModel
+//                               //       .getMoversViewModel(
+//                               //           isLoading: false
+//                               //   );
+//                               //   if (getAllMoverViewModel
+//                               //           .getMoversApiResponse
+//                               //           .status ==
+//                               //       Status.COMPLETE) {}
+//                               //   if (getAllMoverViewModel
+//                               //       .getMoversApiResponse
+//                               //           .status ==
+//                               //       Status.ERROR) {
+//                               //     CommonWidget.getSnackBar(
+//                               //         color: Colors.red,
+//                               //         duration: 2,
+//                               //         colorText:
+//                               //             Colors.white,
+//                               //         title:
+//                               //             "Refresh Page",
+//                               //         message:
+//                               //             'Try Again.');
+//                               //   }
+//                               // },
+//
+//                               child: Icon(
+//                                 isFavourite == true
+//                                     ? Icons.favorite
+//                                     : Icons.favorite_border,
+//                                 color: CommonColor.yellowColorFFB800,
+//                               ),
+//                             ),
+//                             SizedBox(
+//                               width: 10,
+//                             ),
+//                             CommonText.textBoldWight400(
+//                                 text: '${response.data![index].likes}',
+//                                 color: Colors.black),
+//                             Spacer(),
+//                             // InkResponse(
+//                             //   onTap: () {
+//                             //     setState(() {
+//                             //       isFavourite1 =
+//                             //           !isFavourite1;
+//                             //     });
+//                             //   },
+//                             //   child: Icon(
+//                             //     isFavourite1 == true
+//                             //         ? Icons.bookmark
+//                             //         : Icons
+//                             //             .bookmark_outline_sharp,
+//                             //     color: CommonColor
+//                             //         .yellowColorFFB800,
+//                             //   ),
+//                             // ),
+//                             // SizedBox(
+//                             //   width: 10,
+//                             // ),
+//                             InkResponse(
+//                               onTap: () {
+//                                 Share.share("Test");
+//                               },
+//                               child: Icon(
+//                                 Icons.share,
+//                                 color: CommonColor.yellowColorFFB800,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                         CommonWidget.commonSizedBox(height: 10),
+//                         CommonText.textBoldWight400(
+//                             text:
+//                                 '${DateFormat('MMM dd, kk:mm a').format(response.data![index].createdAt!)} ·| Source : BSE',
+//                             color: Colors.black),
+//                         CommonWidget.commonSizedBox(height: 10),
+//                       ]),
+//                 )
+//               : Container(
+//                   width: Get.width - 50,
+//                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color: Color(0xffD1CDCD),
+//                     ),
+//                     borderRadius: BorderRadius.circular(14),
+//                   ),
+//                   child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         CommonWidget.commonSizedBox(height: 10),
+//                         CommonText.textBoldWight700(
+//                             text: '${response.data![index].title}',
+//                             color: Colors.black),
+//                         CommonWidget.commonSizedBox(height: 15),
+//                         CommonText.textBoldWight400(
+//                             text:
+//                                 '${response.data![index].companyId!.name!.toUpperCase()}',
+//                             color: Colors.black),
+//                         CommonWidget.commonSizedBox(height: 15),
+//                         CommonText.textBoldWight500(
+//                             color: Color(0xff394452),
+//                             fontSize: 10.sp,
+//                             text: "${response.data![index].description}"),
+//                         CommonWidget.commonSizedBox(height: 16),
+//                         // CommonText.textBoldWight500(
+//                         //     fontSize: 10.sp,
+//                         //     color:
+//                         //         Color(0xff394452),
+//                         //     text:
+//                         //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+//                         // CommonWidget.commonSizedBox(
+//                         //     height: 10),
+//                         Row(
+//                           children: [
+//                             InkResponse(
+//                               onTap: () {
+//                                 setState(() {
+//                                   isFavourite = !isFavourite;
+//                                 });
+//                               },
+//
+//                               // onTap: () async {
+//                               //   // controller.updateLike(
+//                               //   //     response.data![index].isLiked!);
+//                               //   if (response.data![index].
+//                               //           .isLiked ==
+//                               //       false) {
+//                               //     await moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeViewModel(
+//                               //             body: {
+//                               //           "type": "like",
+//                               //           "newsId":
+//                               //               "${response.data![index].id}"
+//                               //         });
+//                               //
+//                               //     if (moversLikeUnLikeViewModel
+//                               //             .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.COMPLETE) {}
+//                               //     if (moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.ERROR) {
+//                               //       // CommonWidget.getSnackBar(
+//                               //       //     color: Colors.red,
+//                               //       //     duration: 2,
+//                               //       //     colorText:
+//                               //       //         Colors.white,
+//                               //       //     title:
+//                               //       //         "Something went wrong",
+//                               //       //     message:
+//                               //       //         'Try Again.');
+//                               //     }
+//                               //   } else if (response
+//                               //           .data![index]
+//                               //           .isLiked ==
+//                               //       true) {
+//                               //     await moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeViewModel(
+//                               //             body: {
+//                               //           "type": "unlike",
+//                               //           "newsId":
+//                               //               "${response.data![index].id}"
+//                               //         });
+//                               //     if (moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.COMPLETE) {}
+//                               //     if (moversLikeUnLikeViewModel
+//                               //         .moversLikeUnLikeApiResponse
+//                               //             .status ==
+//                               //         Status.ERROR) {
+//                               //       // CommonWidget.getSnackBar(
+//                               //       //     color: Colors.red,
+//                               //       //     duration: 2,
+//                               //       //     colorText:
+//                               //       //         Colors.white,
+//                               //       //     title:
+//                               //       //         "Something went wrong",
+//                               //       //     message:
+//                               //       //         'Try Again.');
+//                               //     }
+//                               //   }
+//                               //   await getAllMoverViewModel
+//                               //       .getMoversViewModel(
+//                               //           isLoading: false
+//                               //   );
+//                               //   if (getAllMoverViewModel
+//                               //           .getMoversApiResponse
+//                               //           .status ==
+//                               //       Status.COMPLETE) {}
+//                               //   if (getAllMoverViewModel
+//                               //       .getMoversApiResponse
+//                               //           .status ==
+//                               //       Status.ERROR) {
+//                               //     CommonWidget.getSnackBar(
+//                               //         color: Colors.red,
+//                               //         duration: 2,
+//                               //         colorText:
+//                               //             Colors.white,
+//                               //         title:
+//                               //             "Refresh Page",
+//                               //         message:
+//                               //             'Try Again.');
+//                               //   }
+//                               // },
+//
+//                               child: Icon(
+//                                 isFavourite == true
+//                                     ? Icons.favorite
+//                                     : Icons.favorite_border,
+//                                 color: CommonColor.yellowColorFFB800,
+//                               ),
+//                             ),
+//                             SizedBox(
+//                               width: 10,
+//                             ),
+//                             CommonText.textBoldWight400(
+//                                 text: '${response.data![index].likes}',
+//                                 color: Colors.black),
+//                             Spacer(),
+//                             // InkResponse(
+//                             //   onTap: () {
+//                             //     setState(() {
+//                             //       isFavourite1 =
+//                             //           !isFavourite1;
+//                             //     });
+//                             //   },
+//                             //   child: Icon(
+//                             //     isFavourite1 == true
+//                             //         ? Icons.bookmark
+//                             //         : Icons
+//                             //             .bookmark_outline_sharp,
+//                             //     color: CommonColor
+//                             //         .yellowColorFFB800,
+//                             //   ),
+//                             // ),
+//                             // SizedBox(
+//                             //   width: 10,
+//                             // ),
+//                             InkResponse(
+//                               onTap: () {
+//                                 Share.share("Test");
+//                               },
+//                               child: Icon(
+//                                 Icons.share,
+//                                 color: CommonColor.yellowColorFFB800,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                         CommonWidget.commonSizedBox(height: 10),
+//                         CommonText.textBoldWight400(
+//                             text:
+//                                 '${DateFormat('MMM dd, kk:mm a').format(response.data![index].createdAt!)} ·| Source : BSE',
+//                             color: Colors.black),
+//                         CommonWidget.commonSizedBox(height: 10),
+//                       ]),
+//                 ),
+//           InkWell(
+//             onTap: () {
+//               setState(() {
+//                 currentPage = 1;
+//               });
+//             },
+//             child: CommonWidget.commonSvgPitcher(
+//                 image: 'assets/svg/right_arrow.svg'),
+//           )
+//         ],
+//       ),
+//     );
+//
+// //     return Row(
+// //       children: [
+// //         /*      currentPage == 1
+// //             ? */
+// //         InkWell(
+// //           onTap: () {
+// //             pageController.animateToPage(--currentPage,
+// //                 duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+// //           },
+// //           child:
+// //               CommonWidget.commonSvgPitcher(image: 'assets/svg/left_arrow.svg'),
+// //         )
+// // /*            : SizedBox(
+// //                 child: CommonWidget.commonSvgPitcher(
+// //                     image: 'assets/svg/left_arrow.svg',
+// //                     color: Colors.transparent))*/
+// //         ,
+// //         SizedBox(
+// //           height: 300,
+// //           width: Get.width - 50,
+// //           child: PageView(
+// //             pageSnapping: true,
+// //             controller: pageController,
+// //             scrollDirection: Axis.horizontal,
+// //             // onPageChanged: (value) {
+// //             //   setState(() {
+// //             //     currentPage = value;
+// //             //   });
+// //             //
+// //             //   print(' ==== 1 ? ${currentPage}');
+// //             // },
+// //             children: [
+// //
+// //
+// //             ],
+// //             //scrollDirection: Axis.horizontal,
+// //             // itemBuilder: (context, indexPage) {
+// //             //   return indexPage == 0
+// //             //       ? Container(
+// //             //           /* margin:
+// //             //           EdgeInsets.symmetric(horizontal: 20),*/
+// //             //           width: double.infinity,
+// //             //           padding: EdgeInsets.symmetric(
+// //             //               horizontal: 20, vertical: 10),
+// //             //           decoration: BoxDecoration(
+// //             //             border: Border.all(
+// //             //               color: Color(0xffD1CDCD),
+// //             //             ),
+// //             //             borderRadius:
+// //             //                 BorderRadius.circular(14),
+// //             //           ),
+// //             //           child: Column(
+// //             //               crossAxisAlignment:
+// //             //                   CrossAxisAlignment.start,
+// //             //               children: [
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 10),
+// //             //                 CommonText.textBoldWight700(
+// //             //                     text:
+// //             //                         '${response.data![index].title}',
+// //             //                     color: Colors.black),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 15),
+// //             //                 Row(
+// //             //                   mainAxisAlignment:
+// //             //                       MainAxisAlignment
+// //             //                           .spaceBetween,
+// //             //                   children: [
+// //             //                     CommonText.textBoldWight400(
+// //             //                         text:
+// //             //                             '${response.data![index].companyId!.name.toString().capitalizeFirst}',
+// //             //                         color: Colors.black,
+// //             //                         fontSize: 9.sp),
+// //             //                     CommonWidget
+// //             //                         .commonSizedBox(
+// //             //                             width: 10),
+// //             //                     CommonText.textBoldWight400(
+// //             //                         text:
+// //             //                             '${response.data![index].priceRange}',
+// //             //                         color: Colors.black,
+// //             //                         fontSize: 9.sp),
+// //             //                     CommonText.textBoldWight400(
+// //             //                         text:
+// //             //                             '29 jul - 2 sep',
+// //             //                         color: Colors.black,
+// //             //                         fontSize: 9.sp),
+// //             //                   ],
+// //             //                 ),
+// //             //                 Spacer(),
+// //             //                 Row(
+// //             //                   mainAxisAlignment:
+// //             //                       MainAxisAlignment
+// //             //                           .start,
+// //             //                   children: [
+// //             //                     SizedBox(
+// //             //                         height: 125.sp,
+// //             //                         width: 125.sp,
+// //             //                         child: gaugeWidget(
+// //             //                             response,
+// //             //                             index)),
+// //             //                     CommonWidget
+// //             //                         .commonSizedBox(
+// //             //                             width: 20),
+// //             //                     Padding(
+// //             //                       padding:
+// //             //                           const EdgeInsets
+// //             //                                   .only(
+// //             //                               bottom: 40),
+// //             //                       child: Image.asset(
+// //             //                         'assets/png/up_arrow_iphone.png',
+// //             //                         scale: 4,
+// //             //                       ),
+// //             //                     ),
+// //             //                     Padding(
+// //             //                       padding:
+// //             //                           const EdgeInsets
+// //             //                                   .only(
+// //             //                               bottom: 40),
+// //             //                       child: CommonText
+// //             //                           .textBoldWight500(
+// //             //                               text:
+// //             //                                   " ${response.data![index].percentage} %"),
+// //             //                     )
+// //             //                   ],
+// //             //                 ),
+// //             //                 Row(
+// //             //                   children: [
+// //             //                     InkResponse(
+// //             //                       onTap: () {
+// //             //                         setState(() {
+// //             //                           isFavourite =
+// //             //                               !isFavourite;
+// //             //                         });
+// //             //                       },
+// //             //                       child: Icon(
+// //             //                         isFavourite == true
+// //             //                             ? Icons.favorite
+// //             //                             : Icons
+// //             //                                 .favorite_border,
+// //             //                         color: CommonColor
+// //             //                             .yellowColorFFB800,
+// //             //                       ),
+// //             //                     ),
+// //             //                     SizedBox(
+// //             //                       width: 10,
+// //             //                     ),
+// //             //                     CommonText
+// //             //                         .textBoldWight400(
+// //             //                             text: '120.1K',
+// //             //                             color: Colors
+// //             //                                 .black),
+// //             //                     Spacer(),
+// //             //                     InkResponse(
+// //             //                       onTap: () {
+// //             //                         setState(() {
+// //             //                           isFavourite1 =
+// //             //                               !isFavourite1;
+// //             //                         });
+// //             //                       },
+// //             //                       child: Icon(
+// //             //                         isFavourite1 == true
+// //             //                             ? Icons.bookmark
+// //             //                             : Icons
+// //             //                                 .bookmark_outline_sharp,
+// //             //                         color: CommonColor
+// //             //                             .yellowColorFFB800,
+// //             //                       ),
+// //             //                     ),
+// //             //                     SizedBox(
+// //             //                       width: 10,
+// //             //                     ),
+// //             //                     InkResponse(
+// //             //                       onTap: () {
+// //             //                         Share.share("Test");
+// //             //                       },
+// //             //                       child: Icon(
+// //             //                         Icons.share,
+// //             //                         color: CommonColor
+// //             //                             .yellowColorFFB800,
+// //             //                       ),
+// //             //                     ),
+// //             //                   ],
+// //             //                 ),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 10),
+// //             //                 CommonText.textBoldWight400(
+// //             //                     text:
+// //             //                         '${DateFormat('MMM dd, hh:mm').format(response.data![index].createdAt!)} ·| Source : BSE',
+// //             //                     color: Colors.black),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 10),
+// //             //               ]),
+// //             //         )
+// //             //       : Container(
+// //             //           /* margin:
+// //             //           EdgeInsets.symmetric(horizontal: 20),*/
+// //             //           width: double.infinity,
+// //             //           padding: EdgeInsets.symmetric(
+// //             //               horizontal: 20, vertical: 10),
+// //             //           decoration: BoxDecoration(
+// //             //             border: Border.all(
+// //             //               color: Color(0xffD1CDCD),
+// //             //             ),
+// //             //             borderRadius:
+// //             //                 BorderRadius.circular(14),
+// //             //           ),
+// //             //           child: Column(
+// //             //               crossAxisAlignment:
+// //             //                   CrossAxisAlignment.start,
+// //             //               children: [
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 10),
+// //             //                 CommonText.textBoldWight700(
+// //             //                     text:
+// //             //                         '${response.data![index].title}',
+// //             //                     color: Colors.black),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 15),
+// //             //                 CommonText.textBoldWight400(
+// //             //                     text:
+// //             //                         '${response.data![index].companyId!.name!.toUpperCase()}',
+// //             //                     color: Colors.black),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 15),
+// //             //                 CommonText.textBoldWight500(
+// //             //                     color:
+// //             //                         Color(0xff394452),
+// //             //                     fontSize: 10.sp,
+// //             //                     text:
+// //             //                         "${response.data![index].description}"),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 16),
+// //             //                 // CommonText.textBoldWight500(
+// //             //                 //     fontSize: 10.sp,
+// //             //                 //     color:
+// //             //                 //         Color(0xff394452),
+// //             //                 //     text:
+// //             //                 //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+// //             //                 // CommonWidget.commonSizedBox(
+// //             //                 //     height: 10),
+// //             //                 Row(
+// //             //                   children: [
+// //             //                     InkResponse(
+// //             //                       onTap: () {
+// //             //                         setState(() {
+// //             //                           isFavourite =
+// //             //                               !isFavourite;
+// //             //                         });
+// //             //                       },
+// //             //                       child: Icon(
+// //             //                         isFavourite == true
+// //             //                             ? Icons.favorite
+// //             //                             : Icons
+// //             //                                 .favorite_border,
+// //             //                         color: CommonColor
+// //             //                             .yellowColorFFB800,
+// //             //                       ),
+// //             //                     ),
+// //             //                     SizedBox(
+// //             //                       width: 10,
+// //             //                     ),
+// //             //                     CommonText
+// //             //                         .textBoldWight400(
+// //             //                             text: '120.1K',
+// //             //                             color: Colors
+// //             //                                 .black),
+// //             //                     Spacer(),
+// //             //                     InkResponse(
+// //             //                       onTap: () {
+// //             //                         setState(() {
+// //             //                           isFavourite1 =
+// //             //                               !isFavourite1;
+// //             //                         });
+// //             //                       },
+// //             //                       child: Icon(
+// //             //                         isFavourite1 == true
+// //             //                             ? Icons.bookmark
+// //             //                             : Icons
+// //             //                                 .bookmark_outline_sharp,
+// //             //                         color: CommonColor
+// //             //                             .yellowColorFFB800,
+// //             //                       ),
+// //             //                     ),
+// //             //                     SizedBox(
+// //             //                       width: 10,
+// //             //                     ),
+// //             //                     InkResponse(
+// //             //                       onTap: () {
+// //             //                         Share.share("Test");
+// //             //                       },
+// //             //                       child: Icon(
+// //             //                         Icons.share,
+// //             //                         color: CommonColor
+// //             //                             .yellowColorFFB800,
+// //             //                       ),
+// //             //                     ),
+// //             //                   ],
+// //             //                 ),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 10),
+// //             //                 CommonText.textBoldWight400(
+// //             //                     text:
+// //             //                         'Sep 7,  12:38 ·| Source : BSE',
+// //             //                     color: Colors.black),
+// //             //                 CommonWidget.commonSizedBox(
+// //             //                     height: 10),
+// //             //               ]),
+// //             //         );
+// //             // },
+// //           ),
+// //         ),
+// //         /*   currentPage == 0
+// //             ?*/
+// //         InkWell(
+// //           onTap: () {
+// //             pageController.animateToPage(++currentPage,
+// //                 duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+// //           },
+// //           child: CommonWidget.commonSvgPitcher(
+// //               image: 'assets/svg/right_arrow.svg'),
+// //         )
+// //         /* : SizedBox(
+// //                 child: CommonWidget.commonSvgPitcher(
+// //                     image: 'assets/svg/right_arrow.svg',
+// //                     color: Colors.transparent)),*/
+// //       ],
+// //     );
+//   }

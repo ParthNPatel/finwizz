@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    getAllNewsViewModel.getNewsViewModel();
+    getAllNewsViewModel.getNewsViewModel(catId: "");
     super.initState();
   }
 

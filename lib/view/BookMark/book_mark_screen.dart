@@ -511,8 +511,6 @@
 //     );
 //   }
 // }
-import 'dart:developer';
-
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/constant/color_const.dart';
@@ -579,7 +577,7 @@ class _BookMarkScreenState extends State<BookMarkScreen>
   HandleScreenController controller = Get.find();
   @override
   void initState() {
-    getAllNewsViewModel.getNewsViewModel();
+    getAllNewsViewModel.getNewsViewModel(catId: "");
     super.initState();
   }
 
@@ -612,24 +610,31 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                         Status.COMPLETE) {
                       GetAllNewsModel response =
                           controller.getNewsApiResponse.data;
-                      var notData = response.data;
 
-                      notData!.forEach(
+                      showDate!.clear();
+
+                      response.data!.forEach(
                         (element) {
-                          if (showDate!.contains(
-                              element.createdAt.toString().split(' ').first)) {
-                            log('ADDED');
-                          } else {
-                            showDate!.add(
-                                element.createdAt.toString().split(' ').first);
+                          if (element.isFavourite!) {
+                            if (showDate!.contains(element.createdAt
+                                    .toString()
+                                    .split(' ')
+                                    .first) ==
+                                false) {
+                              showDate!.add(element.createdAt
+                                  .toString()
+                                  .split(' ')
+                                  .first);
+                            }
                           }
                         },
                       );
+
                       return ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 9),
                         itemCount: showDate!.length,
                         shrinkWrap: true,
-                        // physics: NeverScrollableScrollPhysics(),
+                        physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index1) {
                           var dateData = showDate![index1];
                           var currentDate =
@@ -660,7 +665,7 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                                     text: dateData == currentDate
                                         ? 'Today'
                                         : dateData == yesterday
-                                            ? 'yesterday'
+                                            ? 'Yesterday'
                                             : '${dateData}',
                                   )
                                 ],
@@ -801,7 +806,8 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                                                       }
                                                       await getAllNewsViewModel
                                                           .getNewsViewModel(
-                                                              isLoading: false);
+                                                              isLoading: false,
+                                                              catId: "");
                                                       if (getAllNewsViewModel
                                                               .getNewsApiResponse
                                                               .status ==
@@ -901,8 +907,10 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                                                           //         'Try Again.');
                                                         }
                                                       }
+                                                      showDate!.clear();
                                                       await getAllNewsViewModel
                                                           .getNewsViewModel(
+                                                              catId: "",
                                                               isLoading: false);
                                                       if (getAllNewsViewModel
                                                               .getNewsApiResponse
@@ -995,8 +1003,14 @@ class _BookMarkScreenState extends State<BookMarkScreen>
             )),
         CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 14.sp),
         Spacer(),
-        CommonWidget.commonSvgPitcher(
-          image: ImageConst.bookMarkFilled,
+        InkWell(
+          onTap: () {
+            setState(() {});
+            controller.changeTapped(false);
+          },
+          child: CommonWidget.commonSvgPitcher(
+            image: ImageConst.bookMarkFilled,
+          ),
         ),
         CommonWidget.commonSizedBox(width: 10),
         Container(

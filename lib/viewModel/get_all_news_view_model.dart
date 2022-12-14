@@ -21,19 +21,21 @@ class GetAllNewsViewModel extends GetxController {
     update();
   }
 
-  Future<void> getNewsViewModel({bool isLoading = true}) async {
+  Future<void> getNewsViewModel(
+      {bool isLoading = true, required String catId}) async {
     if (isLoading) {
       _getNewsApiResponse = ApiResponse.loading(message: 'Loading');
     }
 
     // update();
     try {
-      GetAllNewsModel response = await GetAllNewsRepo.getAllNewsRepo();
+      GetAllNewsModel response =
+          await GetAllNewsRepo.getAllNewsRepo(catId: catId);
       print("GetNewsResponseModel==>$response");
 
       _getNewsApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("GetNewsResponseModel==>$e");
+      print("GetNewsResponseModel==>$e==");
       _getNewsApiResponse = ApiResponse.error(message: 'error');
     }
     update();

@@ -5,13 +5,6 @@ import 'package:get/get.dart';
 import '../Models/apis/api_response.dart';
 
 class GetAllMoverViewModel extends GetxController {
-  int currentPage = 0;
-
-  pageCount(value) {
-    currentPage = value;
-    update();
-  }
-
   ApiResponse _getMoversApiResponse =
       ApiResponse.initial(message: 'Initialization');
 
