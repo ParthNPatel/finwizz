@@ -3,16 +3,15 @@ import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../components/common_widget.dart';
 import '../../constant/image_const.dart';
-import '../BookMark/book_mark_screen.dart';
 import '../Home/home_screen.dart';
 import '../SignUp_SignIn/sign_in_screen.dart';
-import '../SignUp_SignIn/sign_up_screen.dart';
 import 'movers_screen.dart';
 import 'news_screen.dart';
-import 'package:get/get.dart';
 
 class NewsMainScreen extends StatefulWidget {
   const NewsMainScreen({Key? key}) : super(key: key);
@@ -89,7 +88,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
               child: TabBarView(
                 controller: tabController,
                 children: [
-                  NewsScreen(),
+                  NewsScreen(isCategoryVisible: true),
                   MoversScreen(),
                 ],
               ),
@@ -139,12 +138,16 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 text: 'Good evening  🙌', fontSize: 14.sp),
         Spacer(),
         GetStorageServices.getUserLoggedInStatus() == true
-            ? InkWell(
-                onTap: () {
-                  controller.changeTapped(true);
-                },
-                child: CommonWidget.commonSvgPitcher(
-                  image: ImageConst.bookMark,
+            ? GetBuilder<HandleScreenController>(
+                builder: (controller) => InkWell(
+                  onTap: () {
+                    setState(() {});
+
+                    controller.changeTapped(true);
+                  },
+                  child: CommonWidget.commonSvgPitcher(
+                    image: ImageConst.bookMark,
+                  ),
                 ),
               )
             : GestureDetector(

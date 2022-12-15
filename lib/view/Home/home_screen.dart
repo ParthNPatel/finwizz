@@ -1,16 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
+import 'package:finwizz/viewModel/get_all_news_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../components/indicatorWidget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
   TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
-
+  GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
   List colors = [
     Color(0xffEB7777),
     CommonColor.themColor9295E2,
@@ -44,7 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   ];
 
-  bool isOpen = true;
+  @override
+  void initState() {
+    getAllNewsViewModel.getNewsViewModel(catId: "");
+    super.initState();
+  }
+
+  // bool isOpen = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,9 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           CommonWidget.commonSizedBox(height: 10),
           appWidget(),
-          isOpen
-              ? scrollWidget()
-              : Column(
+          /* isOpen
+              ? */
+          scrollWidget()
+          /*  : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -139,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   ],
-                )
+                )*/
         ]),
       ),
     );
@@ -253,18 +265,43 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CommonWidget.commonSizedBox(height: 30),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: CommonText.textBoldWight600(
-                  text: TextConst.latestMovers,
-                  fontSize: 16.sp,
-                  color: CommonColor.themDarkColor6E5DE7),
+            GetBuilder<GetAllNewsViewModel>(
+              builder: (controller) {
+                if (controller.getNewsApiResponse.status == Status.LOADING) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (controller.getNewsApiResponse.status == Status.COMPLETE) {
+                  GetAllNewsModel getAllNews =
+                      controller.getNewsApiResponse.data;
+                  return getAllNews.data!.length == 0
+                      ? SizedBox()
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 30),
+                              child: CommonText.textBoldWight600(
+                                  text: TextConst.latestMovers,
+                                  fontSize: 16.sp,
+                                  color: CommonColor.themDarkColor6E5DE7),
+                            ),
+                            CommonWidget.commonSizedBox(height: 30),
+                            bannerWidget(getAllNews),
+                            CommonWidget.commonSizedBox(height: 35),
+                            PageIndicator(
+                                pagerIndex: pagerIndex,
+                                totalPages: getAllNews.data!.length > 3
+                                    ? 3
+                                    : getAllNews.data!.length),
+                            CommonWidget.commonSizedBox(height: 30),
+                          ],
+                        );
+                }
+                return SizedBox();
+              },
             ),
-            CommonWidget.commonSizedBox(height: 30),
-            bannerWidget(),
-            CommonWidget.commonSizedBox(height: 35),
-            PageIndicator(pagerIndex: pagerIndex, totalPages: 3),
-            CommonWidget.commonSizedBox(height: 30),
             ListView.builder(
               itemCount: listOfNews.length,
               physics: NeverScrollableScrollPhysics(),
@@ -272,45 +309,55 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    isOpen = false;
-                    setState(() {});
+                    // isOpen = false;
+                    setState(() {
+                      if (index == 0) {
+                        Get.offAll(() => BottomNavScreen(
+                              selectedIndex: 1,
+                            ));
+                      } else {
+                        Get.offAll(() => BottomNavScreen(
+                              selectedIndex: 2,
+                            ));
+                      }
+                    });
                   },
                   child: Container(
-                      width: double.infinity,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: CommonColor.greyColorEFEDF2),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CommonWidget.commonSizedBox(width: 15),
-                          SizedBox(
-                            height: 90.sp,
-                            width: 50.sp,
-                            child: Image.asset(
-                              listOfNews[index]['image'],
-                              fit: index == 0 ? BoxFit.cover : BoxFit.contain,
-                              scale: 5,
-                            ),
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: CommonColor.greyColorEFEDF2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CommonWidget.commonSizedBox(width: 15),
+                        SizedBox(
+                          height: 90.sp,
+                          width: 50.sp,
+                          child: Image.asset(
+                            listOfNews[index]['image'],
+                            fit: index == 0 ? BoxFit.cover : BoxFit.contain,
+                            scale: 5,
                           ),
-                          CommonWidget.commonSizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CommonText.textBoldWight600(
-                                    text: listOfNews[index]['title'],
-                                    fontSize: 16.sp),
-                                CommonWidget.commonSizedBox(height: 8),
-                                CommonText.textBoldWight400(
-                                    text: listOfNews[index]['text']),
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
+                        ),
+                        CommonWidget.commonSizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonText.textBoldWight600(
+                                  text: listOfNews[index]['title'],
+                                  fontSize: 16.sp),
+                              CommonWidget.commonSizedBox(height: 8),
+                              CommonText.textBoldWight400(
+                                  text: listOfNews[index]['text']),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 );
               },
             )
@@ -320,63 +367,71 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  CarouselSlider bannerWidget() {
+  CarouselSlider bannerWidget(GetAllNewsModel getAllNews) {
     return CarouselSlider(
-        items: List.generate(3, (index) {
-          return Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-                color: colors[index], borderRadius: BorderRadius.circular(14)),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              CommonText.textBoldWight400(
-                  text: 'Frame 8', color: Colors.white60),
-              Row(children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CommonText.textBoldWight700(
-                      text: 'TANLA PLATFORMS', color: Colors.white),
-                ),
-                Spacer(),
-                Column(children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        ImageConst.upArrow,
-                        scale: 2.8,
+        items: List.generate(
+          getAllNews.data!.length > 3 ? 3 : getAllNews.data!.length,
+          (index) {
+            return Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                  color: colors[index],
+                  borderRadius: BorderRadius.circular(14)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommonText.textBoldWight400(
+                      text: 'Frame 8', color: Colors.white60),
+                  Row(children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CommonText.textBoldWight700(
+                          text: '${getAllNews.data![index].title}',
+                          color: Colors.white),
+                    ),
+                    Spacer(),
+                    Column(children: [
+                      Row(
+                        children: [
+                          Image.asset(
+                            ImageConst.upArrow,
+                            scale: 2.8,
+                          ),
+                          CommonText.textBoldWight400(
+                              text: '30%', color: Colors.white)
+                        ],
                       ),
-                      CommonText.textBoldWight400(
-                          text: '30%', color: Colors.white)
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      CommonText.textBoldWight400(
-                          text: '28 JUL -',
-                          color: Colors.white,
-                          fontSize: 8.sp),
-                      CommonText.textBoldWight400(
-                          text: '5 AUG', color: Colors.white, fontSize: 8.sp),
-                    ],
-                  )
-                ]),
-              ]),
-              CommonWidget.commonSizedBox(height: 20),
-              CommonText.textBoldWight600(
-                  color: Colors.white,
-                  fontSize: 10.sp,
-                  text:
-                      "✅ Company will consider a proposal for buybac of Equity Shares on Thursday September 08, 2022"),
-              CommonWidget.commonSizedBox(height: 6),
-              CommonText.textBoldWight600(
-                  fontSize: 10.sp,
-                  color: Colors.white,
-                  text:
-                      "ℹ️ Buyback reflects confidence of investors and is generally  positive for stock price")
-            ]),
-          );
-        }),
+                      Row(
+                        children: [
+                          CommonText.textBoldWight400(
+                              text: '28 JUL -',
+                              color: Colors.white,
+                              fontSize: 8.sp),
+                          CommonText.textBoldWight400(
+                              text: '5 AUG',
+                              color: Colors.white,
+                              fontSize: 8.sp),
+                        ],
+                      )
+                    ]),
+                  ]),
+                  CommonWidget.commonSizedBox(height: 20),
+                  // CommonText.textBoldWight600(
+                  //     color: Colors.white,
+                  //     fontSize: 10.sp,
+                  //     text:
+                  //         "✅ Company will consider a proposal for buybac of Equity Shares on Thursday September 08, 2022"),
+                  // CommonWidget.commonSizedBox(height: 6),
+                  CommonText.textBoldWight600(
+                      fontSize: 10.sp,
+                      color: Colors.white,
+                      text: "${getAllNews.data![index].description}")
+                ],
+              ),
+            );
+          },
+        ),
         options: CarouselOptions(
           //  height: 180,
           aspectRatio: 16 / 9,
@@ -447,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 2.6,
+              scale: 2.4,
             )),
         CommonWidget.commonSizedBox(width: 10)
       ],
@@ -491,10 +546,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 220,
-        color: Colors.white,
-        child: SafeArea(
-          child: Column(children: [
+      width: 220,
+      color: Colors.white,
+      child: SafeArea(
+        child: Column(
+          children: [
             CommonWidget.commonSizedBox(height: 10),
             Image.asset(
               ImageConst.iconWidget,
@@ -611,6 +667,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                   ),
                                 ),
                               ));
+                            } else if (index == 5) {
+                              GetStorageServices.logOut();
+                              Get.offAll(
+                                  () => BottomNavScreen(selectedIndex: 0));
                             }
                           },
                           child: Row(
@@ -656,8 +716,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             CommonText.textBoldWight400(
                 text: '2022 FinWizz', color: CommonColor.amberBlackColor072D4B),
             CommonWidget.commonSizedBox(height: 20),
-          ]),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 
   Dialog contactUs() {

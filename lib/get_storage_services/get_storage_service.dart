@@ -19,6 +19,25 @@ class GetStorageServices {
     return getStorage.read('isUserLoggedIn');
   }
 
+  /// Set FCM
+  static setFcm(String fcm) async {
+    await getStorage.write('fcm', fcm);
+  }
+
+  static getFcm() {
+    return getStorage.read('fcm');
+  }
+
+  /// Set Barrier Token
+
+  static setBarrierToken(token) async {
+    await getStorage.write('barrierToken', token);
+  }
+
+  static getBarrierToken() {
+    return getStorage.read('barrierToken');
+  }
+
   /// user uid
   static setToken(String userUid) {
     getStorage.write('token', userUid);

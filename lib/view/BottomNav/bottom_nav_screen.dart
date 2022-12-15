@@ -1,19 +1,21 @@
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/controller/handle_screen_controller.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/Home/home_screen.dart';
+import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:finwizz/view/news/news_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../BookMark/book_mark_screen.dart';
 import '../portfolio/portfolio_screen.dart';
-import 'package:get/get.dart';
 
 class BottomNavScreen extends StatefulWidget {
-  final int selectedIndex;
-  const BottomNavScreen({Key? key, required this.selectedIndex})
-      : super(key: key);
+  final int? selectedIndex;
+  const BottomNavScreen({Key? key, this.selectedIndex = 0}) : super(key: key);
 
   @override
   State<BottomNavScreen> createState() => _BottomNavScreenState();
@@ -25,6 +27,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     {"icon": ImageConst.news, 'label': "News"},
     {"icon": ImageConst.portfolio, 'label': "Portfolio"},
   ];
+
   int selected = 0;
 
   HandleScreenController controller = Get.find();
@@ -33,7 +36,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    selected = widget.selectedIndex;
+    selected = widget.selectedIndex!;
   }
 
   @override
@@ -46,7 +49,9 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                 ? controller.isTapped == true
                     ? BookMarkScreen()
                     : NewsMainScreen()
-                : PortfolioScreen(),
+                : GetStorageServices.getUserLoggedInStatus() == true
+                    ? PortfolioScreen()
+                    : SignUpScreen(),
       ),
       bottomNavigationBar: Container(
         height: 50.sp,
