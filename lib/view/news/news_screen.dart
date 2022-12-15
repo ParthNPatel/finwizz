@@ -1,20 +1,25 @@
+import 'dart:developer';
+
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_categories_res_model.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/components/common_widget.dart';
+import 'package:finwizz/constant/api_const.dart';
 import 'package:finwizz/constant/color_const.dart';
+import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/viewModel/fav_unFav_view_model.dart';
 import 'package:finwizz/viewModel/get_all_news_categories_view_model.dart';
 import 'package:finwizz/viewModel/get_all_news_view_model.dart';
 import 'package:finwizz/viewModel/like_unlike_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../constant/image_const.dart';
 
 class NewsScreen extends StatefulWidget {
   final bool? isCategoryVisible;
@@ -36,34 +41,7 @@ class _NewsScreenState extends State<NewsScreen> {
   int selected = 0;
 
   bool isFavourite = true;
-  bool isFavourite1 = true;
 
-  List listOfNews = [
-    {
-      'image': ImageConst.newsIcon,
-      'title': 'News',
-      'text': 'News that moves stocks'
-    },
-    {
-      'image': ImageConst.bagIcon,
-      'title': 'Portfolio protection',
-      'text': 'Invest on information. Sell on information'
-    }
-  ];
-  List listOfNews1 = [
-    {
-      'image': ImageConst.calender,
-      'title': 'Today',
-    },
-    {
-      'image': ImageConst.calender,
-      'title': 'Yesterday',
-    },
-    {
-      'image': ImageConst.calender,
-      'title': 'Wed, 05 Sep 2022',
-    }
-  ];
   GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
   GetAllNewsCategoriesViewModel getAllNewsCategoriesViewModel =
       Get.put(GetAllNewsCategoriesViewModel());
@@ -72,604 +50,628 @@ class _NewsScreenState extends State<NewsScreen> {
 
   @override
   void initState() {
-    getAllNewsViewModel.getNewsViewModel(
-      catId: "",
-    );
+    // getAllNewsViewModel.getNewsViewModel(
+    //   catId: "",
+    // );
     getAllNewsCategoriesViewModel.getNewsCategoriesViewModel();
+    getNewsByPage(catId: "", isRefresh: true);
     super.initState();
+
+    log('TOKEN :- ${GetStorageServices.getBarrierToken()}');
   }
 
-  List? showDate = [];
+  List showDate = [];
+
+  final RefreshController refreshController =
+      RefreshController(initialRefresh: true);
+  int currentNews = 10;
+  int currentPage = 1;
+  late int totalNews;
+  List<News> news = [];
+
+  Future<bool> getNewsByPage({String? catId, bool isRefresh = false}) async {
+    log("calling ${currentPage}");
+
+    if (isRefresh) {
+      currentPage = 1;
+    } else {
+      if (currentPage >= totalNews) {
+        refreshController.loadNoData();
+        return false;
+      }
+    }
+
+    final Uri uri = Uri.parse('${APIConst.baseUrl}' +
+        '${APIConst.getAllNews}' +
+        '?categoryId=${catId}' +
+        '&limit=${currentNews}&page=${currentPage}');
+
+    print('${uri}');
+
+    Map<String, String> headers = GetStorageServices.getBarrierToken() != null
+        ? {
+            'Authorization': 'Bearer ${GetStorageServices.getBarrierToken()}',
+            'Content-Type': 'application/json'
+          }
+        : {'Content-Type': 'application/json'};
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      final result = getAllNewsModelFromJson(response.body);
+
+      news.addAll(result.data!);
+
+      currentPage = currentPage + 1;
+      // currentNews = currentNews + 1;
+      totalNews = result.data!.length;
+      print(response.body);
+      setState(() {});
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child:
-          GetBuilder<GetAllNewsCategoriesViewModel>(builder: (controllerCat) {
-        if (controllerCat.getNewsCategoriesApiResponse.status ==
-            Status.LOADING) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+    return GetBuilder<GetAllNewsCategoriesViewModel>(builder: (controllerCat) {
+      if (controllerCat.getNewsCategoriesApiResponse.status == Status.LOADING) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      if (controllerCat.getNewsCategoriesApiResponse.status ==
+          Status.COMPLETE) {
+        GetAllNewsCategoriesResponseModel resp =
+            controllerCat.getNewsCategoriesApiResponse.data;
+
+        if (resp.data!.elementAt(0).name != "All" &&
+            resp.data!.elementAt(0).sId != "") {
+          resp.data!.insert(
+              0,
+              Data(
+                  name: "All",
+                  sId: "",
+                  updatedAt: "${DateTime.now()}",
+                  createdAt: "${DateTime.now()}"));
         }
-        if (controllerCat.getNewsCategoriesApiResponse.status ==
-            Status.COMPLETE) {
-          GetAllNewsCategoriesResponseModel resp =
-              controllerCat.getNewsCategoriesApiResponse.data;
 
-          if (resp.data!.elementAt(0).name != "All" &&
-              resp.data!.elementAt(0).sId != "") {
-            resp.data!.insert(
-                0,
-                Data(
-                    name: "All",
-                    sId: "",
-                    updatedAt: "${DateTime.now()}",
-                    createdAt: "${DateTime.now()}"));
-          }
+        showDate.clear();
 
-          print('Cat ====== > ${resp.data!.length}');
+        news.forEach(
+          (element) {
+            if (showDate
+                    .contains(element.createdAt.toString().split(' ').first) ==
+                false) {
+              showDate.add(element.createdAt.toString().split(' ').first);
+            }
+          },
+        );
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CommonWidget.commonSizedBox(height: 20),
-              SizedBox(
-                height: 40.sp,
-                child: ListView.builder(
-                  padding: EdgeInsets.only(left: 30),
-                  itemCount: resp.data!.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) => InkWell(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onTap: () {
-                      setState(() {
-                        selected = index;
-                      });
-                      getAllNewsViewModel.getNewsViewModel(
-                          isLoading: false,
-                          catId: "${resp.data![selected].sId}");
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                      // height: 40.sp,
-                      // width: 80.sp,
-                      decoration: BoxDecoration(
-                        color: selected == index
-                            ? Color(0xffdddef6)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Color(0xffdddef6), width: 1),
-                      ),
-                      child: CommonText.textBoldWight500(
-                          text: "${resp.data![index].name}", fontSize: 9.sp),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CommonWidget.commonSizedBox(height: 20),
+            SizedBox(
+              height: 40.sp,
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                padding: EdgeInsets.only(left: 30),
+                itemCount: resp.data!.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) => InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () async {
+                    setState(() {
+                      selected = index;
+                    });
+
+                    news.clear();
+
+                    await getNewsByPage(
+                        catId: "${resp.data![selected].sId}", isRefresh: true);
+                    // getAllNewsViewModel.getNewsViewModel(
+                    //     isLoading: false,
+                    //     catId: "${resp.data![selected].sId}");
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    // height: 40.sp,
+                    // width: 80.sp,
+                    decoration: BoxDecoration(
+                      color: selected == index
+                          ? Color(0xffdddef6)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Color(0xffdddef6), width: 1),
                     ),
+                    child: CommonText.textBoldWight500(
+                        text: "${resp.data![index].name}", fontSize: 9.sp),
                   ),
                 ),
               ),
-              CommonWidget.commonSizedBox(height: 10),
-              GetBuilder<GetAllNewsViewModel>(
-                builder: (controller) {
-                  if (controller.getNewsApiResponse.status == Status.LOADING) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+            ),
+            CommonWidget.commonSizedBox(height: 10),
+            Expanded(
+              child: SmartRefresher(
+                controller: refreshController,
+                physics: BouncingScrollPhysics(),
+                enablePullUp: true,
+                onRefresh: () async {
+                  final result = await getNewsByPage(
+                      isRefresh: true, catId: "${resp.data![selected].sId}");
+
+                  if (result) {
+                    return refreshController.refreshCompleted();
+                  } else {
+                    return refreshController.refreshFailed();
                   }
-                  if (controller.getNewsApiResponse.status == Status.COMPLETE) {
-                    GetAllNewsModel response =
-                        controller.getNewsApiResponse.data;
+                },
+                onLoading: () async {
+                  final result =
+                      await getNewsByPage(catId: "${resp.data![selected].sId}");
 
-                    showDate!.clear();
-
-                    response.data!.forEach(
-                      (element) {
-                        if (showDate!.contains(element.createdAt
-                                .toString()
-                                .split(' ')
-                                .first) ==
-                            false) {
-                          showDate!.add(
-                              element.createdAt.toString().split(' ').first);
-                        }
-                      },
-                    );
-                    return ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 9),
-                        itemCount: showDate!.length,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index1) {
-                          var dateData = showDate![index1];
-                          var currentDate =
-                              DateTime.now().toString().split(' ').first;
-                          var yesterday = DateTime.now()
-                              .subtract(Duration(days: 1))
-                              .toString()
-                              .split(' ')
-                              .first;
-                          return Column(
+                  if (result) {
+                    return refreshController.loadComplete();
+                  } else {
+                    return refreshController.loadFailed();
+                  }
+                },
+                child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 9),
+                    itemCount: showDate.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index1) {
+                      var dateData = showDate[index1];
+                      var currentDate =
+                          DateTime.now().toString().split(' ').first;
+                      var yesterday = DateTime.now()
+                          .subtract(Duration(days: 1))
+                          .toString()
+                          .split(' ')
+                          .first;
+                      return Column(
+                        children: [
+                          Divider(
+                            color: Color(0xffD1CDCD),
+                            height: 0,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
                             children: [
-                              Divider(
-                                color: Color(0xffD1CDCD),
-                                height: 0,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Row(
-                                children: [
-                                  CommonWidget.commonSvgPitcher(
-                                      image: ImageConst.calender,
-                                      height: 20.sp,
-                                      width: 20.sp),
-                                  SizedBox(width: 10),
-                                  CommonText.textBoldWight500(
-                                    text: dateData == currentDate
-                                        ? 'Today'
-                                        : dateData == yesterday
-                                            ? 'Yesterday'
-                                            : '${dateData}',
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Divider(
-                                color: Color(0xffD1CDCD),
-                                height: 0,
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: response.data!.length,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  var time = DateFormat('kk:mm:a')
-                                      .format(response.data![index].createdAt!);
-                                  var date = DateFormat.yMMMEd()
-                                      .format(response.data![index].createdAt!)
-                                      .toString()
-                                      .split(', ')[1];
-                                  return response.data![index].createdAt
-                                              .toString()
-                                              .split(' ')
-                                              .first ==
-                                          showDate![index1]
-                                      ? Container(
-                                          margin: EdgeInsets.only(
-                                              left: 20, right: 20, bottom: 20),
-                                          width: double.infinity,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Color(0xffD1CDCD),
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                          ),
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                                CommonText.textBoldWight700(
-                                                    text:
-                                                        '${response.data![index].title}',
-                                                    color: Colors.black),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 15),
-                                                // CommonText.textBoldWight400(
-                                                //     text: 'TANLA', color: Colors.black),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 15),
-                                                CommonText.textBoldWight500(
-                                                    color: Color(0xff394452),
-                                                    fontSize: 10.sp,
-                                                    text:
-                                                        "${response.data![index].description}"),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 6),
-                                                // CommonText.textBoldWight500(
-                                                //     fontSize: 10.sp,
-                                                //     color: Color(0xff394452),
-                                                //     text:
-                                                //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                                Row(
-                                                  children: [
-                                                    InkResponse(
-                                                      onTap: () async {
-                                                        // controller.updateLike(
-                                                        //     response.data![index].isLiked!);
-                                                        if (response
-                                                                .data![index]
-                                                                .isLiked ==
-                                                            false) {
-                                                          await likeUnLikeViewModel
-                                                              .likeUnLikeViewModel(
-                                                                  body: {
-                                                                "type": "like",
-                                                                "newsId":
-                                                                    "${response.data![index].id}"
-                                                              });
-
-                                                          if (likeUnLikeViewModel
-                                                                  .likeUnlikeApiResponse
-                                                                  .status ==
-                                                              Status
-                                                                  .COMPLETE) {}
-                                                          if (likeUnLikeViewModel
-                                                                  .likeUnlikeApiResponse
-                                                                  .status ==
-                                                              Status.ERROR) {
-                                                            // CommonWidget.getSnackBar(
-                                                            //     color: Colors.red,
-                                                            //     duration: 2,
-                                                            //     colorText:
-                                                            //         Colors.white,
-                                                            //     title:
-                                                            //         "Something went wrong",
-                                                            //     message:
-                                                            //         'Try Again.');
-                                                          }
-                                                        } else if (response
-                                                                .data![index]
-                                                                .isLiked ==
-                                                            true) {
-                                                          await likeUnLikeViewModel
-                                                              .likeUnLikeViewModel(
-                                                                  body: {
-                                                                "type":
-                                                                    "unlike",
-                                                                "newsId":
-                                                                    "${response.data![index].id}"
-                                                              });
-                                                          if (likeUnLikeViewModel
-                                                                  .likeUnlikeApiResponse
-                                                                  .status ==
-                                                              Status
-                                                                  .COMPLETE) {}
-                                                          if (likeUnLikeViewModel
-                                                                  .likeUnlikeApiResponse
-                                                                  .status ==
-                                                              Status.ERROR) {
-                                                            // CommonWidget.getSnackBar(
-                                                            //     color: Colors.red,
-                                                            //     duration: 2,
-                                                            //     colorText:
-                                                            //         Colors.white,
-                                                            //     title:
-                                                            //         "Something went wrong",
-                                                            //     message:
-                                                            //         'Try Again.');
-                                                          }
-                                                        }
-                                                        await getAllNewsViewModel
-                                                            .getNewsViewModel(
-                                                                isLoading:
-                                                                    false,
-                                                                catId:
-                                                                    "${resp.data![selected].sId}");
-                                                        if (getAllNewsViewModel
-                                                                .getNewsApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {}
-                                                        if (getAllNewsViewModel
-                                                                .getNewsApiResponse
-                                                                .status ==
-                                                            Status.ERROR) {
-                                                          CommonWidget.getSnackBar(
-                                                              color: Colors.red,
-                                                              duration: 2,
-                                                              colorText:
-                                                                  Colors.white,
-                                                              title:
-                                                                  "Refresh Page",
-                                                              message:
-                                                                  'Try Again.');
-                                                        }
-                                                      },
-                                                      child: Icon(
-                                                        response.data![index]
-                                                                    .isLiked ==
-                                                                true
-                                                            ? Icons.favorite
-                                                            : Icons
-                                                                .favorite_border,
-                                                        color: CommonColor
-                                                            .yellowColorFFB800,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    CommonText.textBoldWight400(
-                                                        text: response
-                                                                    .data![
-                                                                        index]
-                                                                    .likes !=
-                                                                null
-                                                            ? '${response.data![index].likes}'
-                                                            : "0",
-                                                        color: Colors.black),
-                                                    Spacer(),
-                                                    InkResponse(
-                                                      onTap: () async {
-                                                        if (response
-                                                                .data![index]
-                                                                .isFavourite ==
-                                                            false) {
-                                                          await favUnFavViewModel
-                                                              .favUnFavViewModel(
-                                                                  body: {
-                                                                "type":
-                                                                    "favourite",
-                                                                "newsId":
-                                                                    "${response.data![index].id}"
-                                                              });
-                                                          if (favUnFavViewModel
-                                                                  .favUnFavApiResponse
-                                                                  .status ==
-                                                              Status
-                                                                  .COMPLETE) {}
-                                                          if (favUnFavViewModel
-                                                                  .favUnFavApiResponse
-                                                                  .status ==
-                                                              Status.ERROR) {
-                                                            // CommonWidget.getSnackBar(
-                                                            //     color: Colors.red,
-                                                            //     duration: 2,
-                                                            //     colorText:
-                                                            //         Colors.white,
-                                                            //     title:
-                                                            //         "Something went wrong",
-                                                            //     message:
-                                                            //         'Try Again.');
-                                                          }
-                                                        } else if (response
-                                                                .data![index]
-                                                                .isFavourite ==
-                                                            true) {
-                                                          await favUnFavViewModel
-                                                              .favUnFavViewModel(
-                                                                  body: {
-                                                                "type":
-                                                                    "unfavourite",
-                                                                "newsId":
-                                                                    "${response.data![index].id}"
-                                                              });
-                                                          if (favUnFavViewModel
-                                                                  .favUnFavApiResponse
-                                                                  .status ==
-                                                              Status
-                                                                  .COMPLETE) {}
-                                                          if (favUnFavViewModel
-                                                                  .favUnFavApiResponse
-                                                                  .status ==
-                                                              Status.ERROR) {
-                                                            // CommonWidget.getSnackBar(
-                                                            //     color: Colors.red,
-                                                            //     duration: 2,
-                                                            //     colorText:
-                                                            //         Colors.white,
-                                                            //     title:
-                                                            //         "Something went wrong",
-                                                            //     message:
-                                                            //         'Try Again.');
-                                                          }
-                                                        }
-                                                        await getAllNewsViewModel
-                                                            .getNewsViewModel(
-                                                                isLoading:
-                                                                    false,
-                                                                catId:
-                                                                    "${resp.data![selected].sId}");
-                                                        if (getAllNewsViewModel
-                                                                .getNewsApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {}
-                                                        if (getAllNewsViewModel
-                                                                .getNewsApiResponse
-                                                                .status ==
-                                                            Status.ERROR) {
-                                                          CommonWidget.getSnackBar(
-                                                              color: Colors.red,
-                                                              duration: 2,
-                                                              colorText:
-                                                                  Colors.white,
-                                                              title:
-                                                                  "Refresh Page",
-                                                              message:
-                                                                  'Try Again.');
-                                                        }
-                                                      },
-                                                      child: Icon(
-                                                        response.data![index]
-                                                                    .isFavourite ==
-                                                                true
-                                                            ? Icons.bookmark
-                                                            : Icons
-                                                                .bookmark_outline_sharp,
-                                                        color: CommonColor
-                                                            .yellowColorFFB800,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    InkResponse(
-                                                      onTap: () {
-                                                        Share.share("Test");
-                                                      },
-                                                      child: Icon(
-                                                        Icons.share,
-                                                        color: CommonColor
-                                                            .yellowColorFFB800,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                                CommonText.textBoldWight400(
-                                                    text:
-                                                        '${date},  ${time} ·| Source : BSE',
-                                                    color: Colors.black),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                              ]),
-                                        )
-                                      : SizedBox();
-                                },
+                              CommonWidget.commonSvgPitcher(
+                                  image: ImageConst.calender,
+                                  height: 20.sp,
+                                  width: 20.sp),
+                              SizedBox(width: 10),
+                              CommonText.textBoldWight500(
+                                text: dateData == currentDate
+                                    ? 'Today'
+                                    : dateData == yesterday
+                                        ? 'Yesterday'
+                                        : '${dateData}',
                               )
                             ],
-                          );
-                          //   Column(
-                          //   children: [
-                          //     Padding(
-                          //       padding: EdgeInsets.symmetric(
-                          //           vertical: 20, horizontal: 20),
-                          //       child: Column(
-                          //         children: [
-                          //           Divider(
-                          //             color: Color(0xffD1CDCD),
-                          //             height: 0,
-                          //           ),
-                          //           SizedBox(
-                          //             height: 5,
-                          //           ),
-                          //           Row(
-                          //             children: [
-                          //               CommonWidget.commonSvgPitcher(
-                          //                   image: ImageConst.calender,
-                          //                   height: 20.sp,
-                          //                   width: 20.sp),
-                          //               SizedBox(width: 10),
-                          //               CommonText.textBoldWight500(text: 'Today')
-                          //             ],
-                          //           ),
-                          //           SizedBox(
-                          //             height: 5,
-                          //           ),
-                          //           Divider(
-                          //             color: Color(0xffD1CDCD),
-                          //             height: 0,
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //     Container(
-                          //       margin: EdgeInsets.symmetric(horizontal: 20),
-                          //       width: double.infinity,
-                          //       padding: EdgeInsets.symmetric(
-                          //           horizontal: 20, vertical: 10),
-                          //       decoration: BoxDecoration(
-                          //         border: Border.all(
-                          //           color: Color(0xffD1CDCD),
-                          //         ),
-                          //         borderRadius: BorderRadius.circular(14),
-                          //       ),
-                          //       child: Column(
-                          //           crossAxisAlignment: CrossAxisAlignment.start,
-                          //           children: [
-                          //             CommonWidget.commonSizedBox(height: 10),
-                          //             CommonText.textBoldWight700(
-                          //                 text: '${response.data![index1].title}',
-                          //                 color: Colors.black),
-                          //             CommonWidget.commonSizedBox(height: 15),
-                          //             // CommonText.textBoldWight400(
-                          //             //     text: 'TANLA', color: Colors.black),
-                          //             CommonWidget.commonSizedBox(height: 15),
-                          //             CommonText.textBoldWight500(
-                          //                 color: Color(0xff394452),
-                          //                 fontSize: 10.sp,
-                          //                 text:
-                          //                     "${response.data![index1].description}"),
-                          //             CommonWidget.commonSizedBox(height: 6),
-                          //             // CommonText.textBoldWight500(
-                          //             //     fontSize: 10.sp,
-                          //             //     color: Color(0xff394452),
-                          //             //     text:
-                          //             //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                          //             CommonWidget.commonSizedBox(height: 10),
-                          //             Row(
-                          //               children: [
-                          //                 InkResponse(
-                          //                   onTap: () {
-                          //                     setState(() {
-                          //                       isFavourite = !isFavourite;
-                          //                     });
-                          //                   },
-                          //                   child: Icon(
-                          //                     isFavourite == true
-                          //                         ? Icons.favorite
-                          //                         : Icons.favorite_border,
-                          //                     color: CommonColor.yellowColorFFB800,
-                          //                   ),
-                          //                 ),
-                          //                 SizedBox(
-                          //                   width: 10,
-                          //                 ),
-                          //                 CommonText.textBoldWight400(
-                          //                     text: '120.1K', color: Colors.black),
-                          //                 Spacer(),
-                          //                 InkResponse(
-                          //                   onTap: () {
-                          //                     setState(() {
-                          //                       isFavourite1 = !isFavourite1;
-                          //                     });
-                          //                   },
-                          //                   child: Icon(
-                          //                     isFavourite1 == true
-                          //                         ? Icons.bookmark
-                          //                         : Icons.bookmark_outline_sharp,
-                          //                     color: CommonColor.yellowColorFFB800,
-                          //                   ),
-                          //                 ),
-                          //                 SizedBox(
-                          //                   width: 10,
-                          //                 ),
-                          //                 InkResponse(
-                          //                   onTap: () {
-                          //                     Share.share("Test");
-                          //                   },
-                          //                   child: Icon(
-                          //                     Icons.share,
-                          //                     color: CommonColor.yellowColorFFB800,
-                          //                   ),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //             CommonWidget.commonSizedBox(height: 10),
-                          //             CommonText.textBoldWight400(
-                          //                 text: 'Sep 7,  12:38 ·| Source : BSE',
-                          //                 color: Colors.black),
-                          //             CommonWidget.commonSizedBox(height: 10),
-                          //           ]),
-                          //     ),
-                          //   ],
-                          // );
-                        });
-                  }
-                  return Center(
-                    child: Text('Something went wrong'),
-                  );
-                },
-              )
-            ],
-          );
-        } else
-          return SizedBox();
-      }),
-    );
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Divider(
+                            color: Color(0xffD1CDCD),
+                            height: 0,
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          ListView.builder(
+                            itemCount: news.length,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              var time = DateFormat('kk:mm:a')
+                                  .format(news[index].createdAt!);
+                              var date = DateFormat.yMMMEd()
+                                  .format(news[index].createdAt!)
+                                  .toString()
+                                  .split(', ')[1];
+                              return news[index]
+                                          .createdAt
+                                          .toString()
+                                          .split(' ')
+                                          .first ==
+                                      showDate[index1]
+                                  ? Container(
+                                      margin: EdgeInsets.only(
+                                          left: 20, right: 20, bottom: 20),
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Color(0xffD1CDCD),
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                            CommonText.textBoldWight700(
+                                                text: '${news[index].title}',
+                                                color: Colors.black),
+                                            CommonWidget.commonSizedBox(
+                                                height: 15),
+                                            // CommonText.textBoldWight400(
+                                            //     text: 'TANLA', color: Colors.black),
+                                            CommonWidget.commonSizedBox(
+                                                height: 15),
+                                            CommonText.textBoldWight500(
+                                                color: Color(0xff394452),
+                                                fontSize: 10.sp,
+                                                text:
+                                                    "${news[index].description}"),
+                                            CommonWidget.commonSizedBox(
+                                                height: 6),
+                                            // CommonText.textBoldWight500(
+                                            //     fontSize: 10.sp,
+                                            //     color: Color(0xff394452),
+                                            //     text:
+                                            //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                            Row(
+                                              children: [
+                                                InkResponse(
+                                                  onTap: () async {
+                                                    // controller.updateLike(
+                                                    //     response.data![index].isLiked!);
+                                                    if (news[index].isLiked ==
+                                                        false) {
+                                                      await likeUnLikeViewModel
+                                                          .likeUnLikeViewModel(
+                                                              body: {
+                                                            "type": "like",
+                                                            "newsId":
+                                                                "${news[index].id}"
+                                                          });
+
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    } else if (news[index]
+                                                            .isLiked ==
+                                                        true) {
+                                                      await likeUnLikeViewModel
+                                                          .likeUnLikeViewModel(
+                                                              body: {
+                                                            "type": "unlike",
+                                                            "newsId":
+                                                                "${news[index].id}"
+                                                          });
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (likeUnLikeViewModel
+                                                              .likeUnlikeApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    }
+                                                    await getNewsByPage(
+                                                        isRefresh: false,
+                                                        catId:
+                                                            "${resp.data![selected].sId}");
+                                                    /*            if (getAllNewsViewModel.getNewsApiResponse.status ==
+                                Status.COMPLETE) {}
+                            if (getAllNewsViewModel.getNewsApiResponse.status ==
+                                Status.ERROR) {
+                              CommonWidget.getSnackBar(
+                                  color: Colors.red,
+                                  duration: 2,
+                                  colorText: Colors.white,
+                                  title: "Refresh Page",
+                                  message: 'Try Again.');
+                            }*/
+                                                  },
+                                                  child: Icon(
+                                                    news[index].isLiked == true
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border,
+                                                    color: CommonColor
+                                                        .yellowColorFFB800,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                CommonText.textBoldWight400(
+                                                    text: news[index].likes !=
+                                                            null
+                                                        ? '${news[index].likes}'
+                                                        : "0",
+                                                    color: Colors.black),
+                                                Spacer(),
+                                                InkResponse(
+                                                  onTap: () async {
+                                                    if (news[index]
+                                                            .isFavourite ==
+                                                        false) {
+                                                      await favUnFavViewModel
+                                                          .favUnFavViewModel(
+                                                              body: {
+                                                            "type": "favourite",
+                                                            "newsId":
+                                                                "${news[index].id}"
+                                                          });
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    } else if (news[index]
+                                                            .isFavourite ==
+                                                        true) {
+                                                      await favUnFavViewModel
+                                                          .favUnFavViewModel(
+                                                              body: {
+                                                            "type":
+                                                                "unfavourite",
+                                                            "newsId":
+                                                                "${news[index].id}"
+                                                          });
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.COMPLETE) {}
+                                                      if (favUnFavViewModel
+                                                              .favUnFavApiResponse
+                                                              .status ==
+                                                          Status.ERROR) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.red,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "Something went wrong",
+                                                        //     message:
+                                                        //         'Try Again.');
+                                                      }
+                                                    }
+                                                    await getNewsByPage(
+                                                        isRefresh: false,
+                                                        catId:
+                                                            "${resp.data![selected].sId}");
+                                                    /*  if (getAllNewsViewModel.getNewsApiResponse.status ==
+                                Status.COMPLETE) {}
+                            if (getAllNewsViewModel.getNewsApiResponse.status ==
+                                Status.ERROR) {
+                              CommonWidget.getSnackBar(
+                                  color: Colors.red,
+                                  duration: 2,
+                                  colorText: Colors.white,
+                                  title: "Refresh Page",
+                                  message: 'Try Again.');
+                            }*/
+                                                  },
+                                                  child: Icon(
+                                                    news[index].isFavourite ==
+                                                            true
+                                                        ? Icons.bookmark
+                                                        : Icons
+                                                            .bookmark_outline_sharp,
+                                                    color: CommonColor
+                                                        .yellowColorFFB800,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                InkResponse(
+                                                  onTap: () {
+                                                    Share.share("Test");
+                                                  },
+                                                  child: Icon(
+                                                    Icons.share,
+                                                    color: CommonColor
+                                                        .yellowColorFFB800,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                            CommonText.textBoldWight400(
+                                                text:
+                                                    '${date},  ${time} ·| Source : BSE',
+                                                color: Colors.black),
+                                            CommonWidget.commonSizedBox(
+                                                height: 10),
+                                          ]),
+                                    )
+                                  : SizedBox();
+                            },
+                          )
+                        ],
+                      );
+                      //   Column(
+                      //   children: [
+                      //     Padding(
+                      //       padding: EdgeInsets.symmetric(
+                      //           vertical: 20, horizontal: 20),
+                      //       child: Column(
+                      //         children: [
+                      //           Divider(
+                      //             color: Color(0xffD1CDCD),
+                      //             height: 0,
+                      //           ),
+                      //           SizedBox(
+                      //             height: 5,
+                      //           ),
+                      //           Row(
+                      //             children: [
+                      //               CommonWidget.commonSvgPitcher(
+                      //                   image: ImageConst.calender,
+                      //                   height: 20.sp,
+                      //                   width: 20.sp),
+                      //               SizedBox(width: 10),
+                      //               CommonText.textBoldWight500(text: 'Today')
+                      //             ],
+                      //           ),
+                      //           SizedBox(
+                      //             height: 5,
+                      //           ),
+                      //           Divider(
+                      //             color: Color(0xffD1CDCD),
+                      //             height: 0,
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //     Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 20),
+                      //       width: double.infinity,
+                      //       padding: EdgeInsets.symmetric(
+                      //           horizontal: 20, vertical: 10),
+                      //       decoration: BoxDecoration(
+                      //         border: Border.all(
+                      //           color: Color(0xffD1CDCD),
+                      //         ),
+                      //         borderRadius: BorderRadius.circular(14),
+                      //       ),
+                      //       child: Column(
+                      //           crossAxisAlignment: CrossAxisAlignment.start,
+                      //           children: [
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //             CommonText.textBoldWight700(
+                      //                 text: '${response.data![index1].title}',
+                      //                 color: Colors.black),
+                      //             CommonWidget.commonSizedBox(height: 15),
+                      //             // CommonText.textBoldWight400(
+                      //             //     text: 'TANLA', color: Colors.black),
+                      //             CommonWidget.commonSizedBox(height: 15),
+                      //             CommonText.textBoldWight500(
+                      //                 color: Color(0xff394452),
+                      //                 fontSize: 10.sp,
+                      //                 text:
+                      //                     "${response.data![index1].description}"),
+                      //             CommonWidget.commonSizedBox(height: 6),
+                      //             // CommonText.textBoldWight500(
+                      //             //     fontSize: 10.sp,
+                      //             //     color: Color(0xff394452),
+                      //             //     text:
+                      //             //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //             Row(
+                      //               children: [
+                      //                 InkResponse(
+                      //                   onTap: () {
+                      //                     setState(() {
+                      //                       isFavourite = !isFavourite;
+                      //                     });
+                      //                   },
+                      //                   child: Icon(
+                      //                     isFavourite == true
+                      //                         ? Icons.favorite
+                      //                         : Icons.favorite_border,
+                      //                     color: CommonColor.yellowColorFFB800,
+                      //                   ),
+                      //                 ),
+                      //                 SizedBox(
+                      //                   width: 10,
+                      //                 ),
+                      //                 CommonText.textBoldWight400(
+                      //                     text: '120.1K', color: Colors.black),
+                      //                 Spacer(),
+                      //                 InkResponse(
+                      //                   onTap: () {
+                      //                     setState(() {
+                      //                       isFavourite1 = !isFavourite1;
+                      //                     });
+                      //                   },
+                      //                   child: Icon(
+                      //                     isFavourite1 == true
+                      //                         ? Icons.bookmark
+                      //                         : Icons.bookmark_outline_sharp,
+                      //                     color: CommonColor.yellowColorFFB800,
+                      //                   ),
+                      //                 ),
+                      //                 SizedBox(
+                      //                   width: 10,
+                      //                 ),
+                      //                 InkResponse(
+                      //                   onTap: () {
+                      //                     Share.share("Test");
+                      //                   },
+                      //                   child: Icon(
+                      //                     Icons.share,
+                      //                     color: CommonColor.yellowColorFFB800,
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //             CommonText.textBoldWight400(
+                      //                 text: 'Sep 7,  12:38 ·| Source : BSE',
+                      //                 color: Colors.black),
+                      //             CommonWidget.commonSizedBox(height: 10),
+                      //           ]),
+                      //     ),
+                      //   ],
+                      // );
+                    }),
+              ),
+            )
+          ],
+        );
+      } else
+        return SizedBox();
+    });
   }
 }

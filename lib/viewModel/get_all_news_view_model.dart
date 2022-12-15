@@ -5,11 +5,8 @@ import '../Models/repo/get_all_news_repo.dart';
 import '../Models/responseModel/get_all_news_data.dart';
 
 class GetAllNewsViewModel extends GetxController {
-  ApiResponse _getNewsApiResponse =
-      ApiResponse.initial(message: 'Initialization');
-
-  ApiResponse get getNewsApiResponse => _getNewsApiResponse;
   bool like = false;
+
   updateLike(bool val) {
     like = val;
     update();
@@ -20,6 +17,11 @@ class GetAllNewsViewModel extends GetxController {
     isFavourite = val;
     update();
   }
+
+  ApiResponse _getNewsApiResponse =
+      ApiResponse.initial(message: 'Initialization');
+
+  ApiResponse get getNewsApiResponse => _getNewsApiResponse;
 
   Future<void> getNewsViewModel(
       {bool isLoading = true, required String catId}) async {

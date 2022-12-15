@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
@@ -57,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  bool isOpen = true;
+  // bool isOpen = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,9 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           CommonWidget.commonSizedBox(height: 10),
           appWidget(),
-          isOpen
-              ? scrollWidget()
-              : Column(
+          /* isOpen
+              ? */
+          scrollWidget()
+          /*  : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -152,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   ],
-                )
+                )*/
         ]),
       ),
     );
@@ -310,18 +309,18 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    isOpen = false;
-                    setState(() {});
-                    log('HELLO');
-                    // if (index == 0) {
-                    //   Get.off(() => BottomNavScreen(
-                    //         selectedIndex: 1,
-                    //       ));
-                    // } else {
-                    //   Get.off(() => BottomNavScreen(
-                    //         selectedIndex: 2,
-                    //       ));
-                    // }
+                    // isOpen = false;
+                    setState(() {
+                      if (index == 0) {
+                        Get.offAll(() => BottomNavScreen(
+                              selectedIndex: 1,
+                            ));
+                      } else {
+                        Get.offAll(() => BottomNavScreen(
+                              selectedIndex: 2,
+                            ));
+                      }
+                    });
                   },
                   child: Container(
                     width: double.infinity,

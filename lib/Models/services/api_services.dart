@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:finwizz/constant/api_const.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+
 import '../../get_storage_services/get_storage_service.dart';
 import 'app_exception.dart';
 
@@ -45,7 +47,8 @@ class APIService {
         print("resp${result.body}");
         response = returnResponse(result.statusCode, result.body);
         print(result.statusCode);
-      } /*else {
+      }
+      /*else {
         print("REQUEST PARAMETER url  $url");
         print("REQUEST PARAMETER $body");
 

@@ -17,12 +17,12 @@ class GetAllNewsModel {
   });
 
   bool? flag;
-  List<Datum>? data;
+  List<News>? data;
 
   factory GetAllNewsModel.fromJson(Map<String, dynamic> json) =>
       GetAllNewsModel(
         flag: json["flag"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        data: List<News>.from(json["data"].map((x) => News.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -31,8 +31,8 @@ class GetAllNewsModel {
       };
 }
 
-class Datum {
-  Datum({
+class News {
+  News({
     this.id,
     this.title,
     this.description,
@@ -58,7 +58,7 @@ class Datum {
   bool? isLiked;
   bool? isFavourite;
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory News.fromJson(Map<String, dynamic> json) => News(
         id: json["_id"],
         title: json["title"],
         description: json["description"],
