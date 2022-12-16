@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:finwizz/Models/repo/stock_summary_repo.dart';
 import 'package:finwizz/Models/responseModel/stock_summary_res_model.dart';
 import 'package:get/get.dart';
@@ -18,11 +20,11 @@ class StockSummaryViewModel extends GetxController {
     try {
       StockSummaryResponseModel response =
           await StockSummaryRepo.stockSummaryRepo();
-      print("StockSummaryResponseModel==>$response");
+      log("StockSummaryResponseModel==>$response");
 
       _stockSummaryApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("StockSummaryResponseModel==>$e");
+      log("StockSummaryResponseModel==> erur $e");
       _stockSummaryApiResponse = ApiResponse.error(message: 'error');
     }
     update();

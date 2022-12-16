@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../components/common_widget.dart';
 import '../../constant/api_const.dart';
 import '../../get_storage_services/get_storage_service.dart';
@@ -16,11 +19,14 @@ class LoginRepo extends BaseService {
       progress.show();
       var response = await APIService().getResponse(
           url: APIConst.loginUrl, apitype: APIType.aPost, body: model);
-      print('Login response===>>>  $response');
-      print('${response['flag']}');
-      print('${response['data']['token']}');
+      log('Login response===>>>  $response');
+      log('${response['flag']}');
+      log('${response['data']['token']}');
       if (response['flag'] == true) {
         GetStorageServices.setBarrierToken('${response['token']}');
+        GetStorageServices.setNewsAlerts(response['data']['newsAlerts']);
+        GetStorageServices.setPortfolioAlerts(
+            response['data']['portfolioAlerts']);
         Get.offAll(
           BottomNavScreen(),
         );

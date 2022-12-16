@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
+import 'package:finwizz/Models/responseModel/update_user_res_model.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/image_const.dart';
@@ -10,6 +13,7 @@ import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
 import 'package:finwizz/viewModel/get_all_news_view_model.dart';
+import 'package:finwizz/viewModel/update_user_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -544,13 +548,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   final message = TextEditingController();
 
-  bool icChecked = false;
+  bool isCheckedNews = GetStorageServices.getNewsAlerts();
 
-  bool icChecked1 = false;
+  bool isCheckedPortfolio = GetStorageServices.getPortfolioAlerts();
+
+  UpdateUserViewModel updateUserViewModel = Get.put(UpdateUserViewModel());
 
   @override
   Widget build(BuildContext context) {
-    print('loginnnmmm      ${GetStorageServices.getUserLoggedInStatus()}');
+    log('loginnnmmm ${GetStorageServices.getUserLoggedInStatus()}');
+
     return Container(
       width: 220,
       color: Colors.white,
@@ -625,85 +632,156 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   } else if (index == 0) {
                     Get.back();
 
-                    Get.dialog(StatefulBuilder(
-                      builder: (context, setState) => Dialog(
-                        child: Padding(
-                          padding: const EdgeInsets.all(40.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Center(
-                                child: CommonText.textBoldWight600(
-                                    text: "Notifications",
-                                    fontSize: 18.sp,
-                                    color: Colors.black),
-                              ),
-                              CommonWidget.commonSizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: 100.sp,
-                                    child: CommonText.textBoldWight500(
-                                        text: "News",
-                                        fontSize: 13.sp,
-                                        color: Colors.black),
-                                  ),
-                                  Spacer(),
-                                  CupertinoSwitch(
-                                    activeColor: CommonColor.themColor9295E2,
-                                    value: icChecked,
-                                    onChanged: (value) {
-                                      setState(
-                                        () {
-                                          icChecked = value;
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  Icon(
-                                    Icons.lock_outline,
-                                    color: Colors.transparent,
-                                  )
-                                ],
-                              ),
-                              CommonWidget.commonSizedBox(height: 20.sp),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 100.sp,
-                                    child: CommonText.textBoldWight500(
-                                        text: "Portfolio alerts ",
-                                        fontSize: 13.sp,
-                                        color: Colors.black),
-                                  ),
-                                  Spacer(),
-                                  CupertinoSwitch(
-                                    activeColor: CommonColor.themColor9295E2,
-                                    value: icChecked1,
-                                    onChanged: (value) {
-                                      setState(
-                                        () {
-                                          icChecked1 = value;
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  Icon(
-                                    Icons.lock_outline,
-                                    color: CommonColor.primaryColor,
-                                  )
-                                ],
-                              ),
-                              CommonWidget.commonSizedBox(height: 20.sp),
-                            ],
+                    Get.dialog(GetBuilder<UpdateUserViewModel>(
+                        builder: (controllerUser) {
+                      return StatefulBuilder(
+                        builder: (context, setState) => Dialog(
+                          child: Padding(
+                            padding: const EdgeInsets.all(40.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Center(
+                                  child: CommonText.textBoldWight600(
+                                      text: "Notifications",
+                                      fontSize: 18.sp,
+                                      color: Colors.black),
+                                ),
+                                CommonWidget.commonSizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(
+                                      width: 100.sp,
+                                      child: CommonText.textBoldWight500(
+                                          text: "News",
+                                          fontSize: 13.sp,
+                                          color: Colors.black),
+                                    ),
+                                    Spacer(),
+                                    CupertinoSwitch(
+                                      activeColor: CommonColor.themColor9295E2,
+                                      value: isCheckedNews,
+                                      onChanged: (value) async {
+                                        setState(() {
+                                          isCheckedNews = value;
+                                        });
+                                        // log("check ========= > $isCheckedNews");
+
+                                        await controllerUser
+                                            .updateUserViewModel(body: {
+                                          "newsAlerts": isCheckedNews,
+                                        });
+                                        // log("status ===== > ${controllerUser.updateUserApiResponse.status}");
+
+                                        if (controllerUser
+                                                .updateUserApiResponse.status ==
+                                            Status.COMPLETE) {
+                                          UpdateUserResponseModel resp =
+                                              controllerUser
+                                                  .updateUserApiResponse.data;
+
+                                          // log("isCheckedNews ------ > ${resp.data!.newsAlerts!}");
+
+                                          GetStorageServices.setNewsAlerts(
+                                              resp.data!.newsAlerts!);
+
+                                          // CommonWidget.getSnackBar(
+                                          //     color: Colors.green,
+                                          //     duration: 2,
+                                          //     colorText: Colors.white,
+                                          //     title: "isCheckedNews",
+                                          //     message: 'Updated successfully');
+                                        }
+
+                                        if (controllerUser
+                                                .updateUserApiResponse.status ==
+                                            Status.ERROR) {
+                                          // CommonWidget.getSnackBar(
+                                          //     color: Colors.red,
+                                          //     duration: 2,
+                                          //     colorText: Colors.white,
+                                          //     title:
+                                          //         "Something went wrong isCheckedNews",
+                                          //     message: 'Try Again.');
+                                        }
+                                      },
+                                    ),
+                                    Icon(
+                                      Icons.lock_outline,
+                                      color: Colors.transparent,
+                                    )
+                                  ],
+                                ),
+                                CommonWidget.commonSizedBox(height: 20.sp),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 100.sp,
+                                      child: CommonText.textBoldWight500(
+                                          text: "Portfolio alerts ",
+                                          fontSize: 13.sp,
+                                          color: Colors.black),
+                                    ),
+                                    Spacer(),
+                                    CupertinoSwitch(
+                                      activeColor: CommonColor.themColor9295E2,
+                                      value: isCheckedPortfolio,
+                                      onChanged: (value) async {
+                                        setState(() {
+                                          isCheckedPortfolio = value;
+                                        });
+
+                                        await controllerUser
+                                            .updateUserViewModel(body: {
+                                          "portfolioAlerts": isCheckedPortfolio
+                                        });
+
+                                        if (controllerUser
+                                                .updateUserApiResponse.status ==
+                                            Status.COMPLETE) {
+                                          UpdateUserResponseModel resp =
+                                              controllerUser
+                                                  .updateUserApiResponse.data;
+
+                                          GetStorageServices.setPortfolioAlerts(
+                                              resp.data!.portfolioAlerts!);
+
+                                          // CommonWidget.getSnackBar(
+                                          //     color: Colors.green,
+                                          //     duration: 2,
+                                          //     colorText: Colors.white,
+                                          //     title: "isCheckedPortfolio",
+                                          //     message: 'Updated successfully');
+                                        }
+                                        if (controllerUser
+                                                .updateUserApiResponse.status ==
+                                            Status.ERROR) {
+                                          // CommonWidget.getSnackBar(
+                                          //     color: Colors.red,
+                                          //     duration: 2,
+                                          //     colorText: Colors.white,
+                                          //     title: "Something went wrong",
+                                          //     message: 'Try Again.');
+                                        }
+                                      },
+                                    ),
+                                    Icon(
+                                      Icons.lock_outline,
+                                      color: CommonColor.primaryColor,
+                                    )
+                                  ],
+                                ),
+                                CommonWidget.commonSizedBox(height: 20.sp),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ));
+                      );
+                    }));
                   } else if (index == 5) {
                     GetStorageServices.logOut();
                     Get.offAll(() => BottomNavScreen(selectedIndex: 0));

@@ -12,4 +12,5 @@ class APIConst {
   static String stockSummary = "/stocks/summary";
   static String movers = "/movers";
   static String moversLike = "/movers";
+  static String user = "/user";
 }

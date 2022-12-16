@@ -48,9 +48,13 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    stockSummaryViewModel.stockSummaryViewModel();
+    call();
     tabController!.animation!.addListener(tabListener);
     super.initState();
+  }
+
+  call() async {
+    await stockSummaryViewModel.stockSummaryViewModel();
   }
 
   void tabListener() {
@@ -106,13 +110,20 @@ class _PortfolioScreenState extends State<PortfolioScreen>
             child: CircularProgressIndicator(),
           );
         }
+
+        if (stockController.stockSummaryApiResponse.status == Status.ERROR) {
+          return Center(
+            child: Text('Something went wrong'),
+          );
+        }
+
         if (stockController.stockSummaryApiResponse.status == Status.COMPLETE) {
           StockSummaryResponseModel responseModel =
               stockController.stockSummaryApiResponse.data;
           controller.isDeleteAvailable =
-              responseModel.data!.addedStocks!.length == 0 ? false : true;
+              responseModel.data!.length == 0 ? false : true;
           return Column(
-            mainAxisAlignment: responseModel.data!.addedStocks!.length != 0
+            mainAxisAlignment: responseModel.data!.length != 0
                 ? MainAxisAlignment.start
                 : MainAxisAlignment.center,
             children: [
@@ -122,7 +133,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
               // controller.isAddShare
               //     ?
               ListView.builder(
-                itemCount: responseModel.data!.addedStocks!.length,
+                itemCount: responseModel.data!.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return Padding(
@@ -137,13 +148,13 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                 ? InkWell(
                                     onTap: () {
                                       controller.setListOfPortFolio(
-                                          shareName: responseModel
-                                              .data!.addedStocks![index].id!);
+                                          shareName:
+                                              responseModel.data![index].id!);
                                     },
                                     child: CommonWidget.commonSvgPitcher(
                                         image: controller.listOfDeletePortFolio
-                                                .contains(responseModel.data!
-                                                    .addedStocks![index].id)
+                                                .contains(responseModel
+                                                    .data![index].id)
                                             ? 'assets/svg/check_box.svg'
                                             : 'assets/svg/empty_check_box.svg'),
                                   )
@@ -151,48 +162,85 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                             Padding(
                               padding: EdgeInsets.only(left: 10),
                               child: CommonText.textBoldWight400(
-                                  text:
-                                      '${responseModel.data!.addedStocks![index].name}'),
+                                  text: '${responseModel.data![index].name}'),
                             ),
                             Spacer(),
-                            // listOfStocks[index]['updates'].length == 0
-                            //     ?
-                            CommonText.textBoldWight400(
-                                text: 'No recent updates ')
 
-                            // : Row(
-                            //     children: List.generate(
-                            //         listOfStocks[index]['updates'].length,
-                            //         (indexOf) {
-                            //       return Padding(
-                            //         padding: const EdgeInsets.all(8.0),
-                            //         child: Container(
-                            //           width: 30.sp,
-                            //           alignment: Alignment.center,
-                            //           padding: EdgeInsets.symmetric(
-                            //             vertical: 8,
-                            //           ),
-                            //           child: CommonText.textBoldWight400(
-                            //               text: listOfStocks[index]
-                            //                       ['updates'][indexOf]
-                            //                   .toString()),
-                            //           decoration: BoxDecoration(
-                            //               borderRadius:
-                            //                   BorderRadius.circular(8),
-                            //               color: listOfStocks[index]
-                            //                                   ['updates']
-                            //                               .length ==
-                            //                           2 &&
-                            //                       indexOf == 0
-                            //                   ? CommonColor.greenColor2ECC71
-                            //                       .withOpacity(0.5)
-                            //                   : CommonColor
-                            //                       .lightRedColor3D3D3D
-                            //                       .withOpacity(0.5)),
+                            responseModel.data![index].positive! > 0 &&
+                                    responseModel.data![index].positive != null
+                                ? Container(
+                                    alignment: Alignment.center,
+                                    width: 30.sp,
+                                    height: 30.sp,
+                                    decoration: BoxDecoration(
+                                        color:
+                                            Color(0xff2ECC71).withOpacity(.5),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Color(0xffEBEEF2))),
+                                    child: CommonText.textBoldWight400(
+                                        text:
+                                            '${responseModel.data![index].positive}'),
+                                  )
+                                : SizedBox(),
+                            SizedBox(width: 15.sp),
+                            responseModel.data![index].negative! > 0 &&
+                                    responseModel.data![index].negative != null
+                                ? Container(
+                                    alignment: Alignment.center,
+                                    width: 30.sp,
+                                    height: 30.sp,
+                                    decoration: BoxDecoration(
+                                        color:
+                                            Color(0xffF43737).withOpacity(.5),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Color(0xffEBEEF2))),
+                                    child: CommonText.textBoldWight400(
+                                        text:
+                                            '${responseModel.data![index].negative}'),
+                                  )
+                                : SizedBox(
+                                    width: 30.sp,
+                                    height: 30.sp,
+                                  ),
+
+                            SizedBox(width: 20.sp),
+
+                            /* listOfStocks[index]['updates'].length == 0
+                                ? CommonText.textBoldWight400(
+                                    text: 'No recent updates ')
+                                :*/
+                            // Row(
+                            //   children: List.generate(
+                            //       listOfStocks[index]['updates'].length,
+                            //       (indexOf) {
+                            //     return Padding(
+                            //       padding: const EdgeInsets.all(8.0),
+                            //       child: Container(
+                            //         width: 30.sp,
+                            //         alignment: Alignment.center,
+                            //         padding: EdgeInsets.symmetric(
+                            //           vertical: 8,
                             //         ),
-                            //       );
-                            //     }),
-                            //   )
+                            //         child: CommonText.textBoldWight400(
+                            //             text: listOfStocks[index]['updates']
+                            //                     [indexOf]
+                            //                 .toString()),
+                            //         decoration: BoxDecoration(
+                            //             borderRadius: BorderRadius.circular(8),
+                            //             color: listOfStocks[index]['updates']
+                            //                             .length ==
+                            //                         2 &&
+                            //                     indexOf == 0
+                            //                 ? CommonColor.greenColor2ECC71
+                            //                     .withOpacity(0.5)
+                            //                 : CommonColor.lightRedColor3D3D3D
+                            //                     .withOpacity(0.5)),
+                            //       ),
+                            //     );
+                            //   }),
+                            // )
                           ],
                         ),
                         CommonWidget.commonSizedBox(height: 6),
@@ -330,10 +378,8 @@ class _PortfolioScreenState extends State<PortfolioScreen>
               ),
             ],
           );
-        }
-        return Center(
-          child: Text('Something went wrong'),
-        );
+        } else
+          return SizedBox();
       },
     );
   }

@@ -101,6 +101,22 @@ class GetStorageServices {
     return getStorage.read('setIsEmailOrPhone');
   }
 
+  static setNewsAlerts(bool newsAlerts) {
+    getStorage.write('setNewsAlerts', newsAlerts);
+  }
+
+  static getNewsAlerts() {
+    return getStorage.read('setNewsAlerts');
+  }
+
+  static setPortfolioAlerts(bool portfolioAlerts) {
+    getStorage.write('setPortfolioAlerts', portfolioAlerts);
+  }
+
+  static getPortfolioAlerts() {
+    return getStorage.read('setPortfolioAlerts');
+  }
+
   static logOut() {
     getStorage.remove('setIsEmailOrPhone');
     getStorage.remove('setMobile');
@@ -110,5 +126,7 @@ class GetStorageServices {
     getStorage.remove('username');
     getStorage.remove('isUserLoggedIn');
     getStorage.remove('setFullNameValue');
+    getStorage.remove('setNewsAlerts');
+    getStorage.remove('setPortfolioAlerts');
   }
 }

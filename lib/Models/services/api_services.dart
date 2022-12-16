@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 import '../../get_storage_services/get_storage_service.dart';
 import 'app_exception.dart';
 
-enum APIType { aPost, aGet, aPut }
+enum APIType { aPost, aGet, aPut, aPatch }
 
 class APIService {
   var response;
@@ -72,6 +72,36 @@ class APIService {
         response = returnResponse(result.statusCode, res);
         // print(result.statusCode);
       }*/
+    } on SocketException {
+      throw FetchDataException('No Internet access');
+    }
+
+    return response;
+  }
+
+  Future getPatchResponse(
+      {required String url,
+      required APIType apitype,
+      Map<String, dynamic>? body1,
+      Map<String, String>? header,
+      bool fileUpload = false}) async {
+    Map<String, String> headers = GetStorageServices.getBarrierToken() != null
+        ? {
+            'Authorization': 'Bearer ${GetStorageServices.getBarrierToken()}',
+            'Content-Type': 'application/json'
+          }
+        : {'Content-Type': 'application/json'};
+
+    try {
+      if (apitype == APIType.aPatch) {
+        log("headers ==== > ${headers}");
+
+        final result = await http.patch(Uri.parse(APIConst.baseUrl + url),
+            body: json.encode(body1), headers: headers);
+        response = returnResponse(result.statusCode, result.body);
+        log("RES status code ${result.statusCode}");
+        log("res${result.body}");
+      }
     } on SocketException {
       throw FetchDataException('No Internet access');
     }

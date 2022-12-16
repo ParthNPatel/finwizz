@@ -69,9 +69,14 @@ class _NewsScreenState extends State<NewsScreen> {
   late int totalNews;
   List<News> news = [];
 
-  Future<bool> getNewsByPage({String? catId, bool isRefresh = false}) async {
-    log("calling ${currentPage}");
-
+  Future<bool> getNewsByPage(
+      {String? catId,
+      bool isRefresh = false,
+      bool isLike = false,
+      bool isFavourite = false,
+      int? index,
+      bool? like,
+      bool? fav}) async {
     if (isRefresh) {
       currentPage = 1;
     } else {
@@ -85,8 +90,6 @@ class _NewsScreenState extends State<NewsScreen> {
         '${APIConst.getAllNews}' +
         '?categoryId=${catId}' +
         '&limit=${currentNews}&page=${currentPage}');
-
-    print('${uri}');
 
     Map<String, String> headers = GetStorageServices.getBarrierToken() != null
         ? {
@@ -102,9 +105,41 @@ class _NewsScreenState extends State<NewsScreen> {
 
       news.addAll(result.data!);
 
+      if (isLike) {
+        news[index!] = News(
+          id: news[index].id,
+          createdAt: news[index].createdAt,
+          updatedAt: news[index].updatedAt,
+          title: news[index].title,
+          type: news[index].type,
+          description: news[index].description,
+          categoryId: news[index].categoryId,
+          companyId: news[index].companyId,
+          isLiked: like,
+          isFavourite: news[index].isFavourite,
+          likes: like == true ? news[index].likes! + 1 : news[index].likes! - 1,
+        );
+      }
+
+      if (isFavourite) {
+        news[index!] = News(
+          id: news[index].id,
+          createdAt: news[index].createdAt,
+          updatedAt: news[index].updatedAt,
+          title: news[index].title,
+          type: news[index].type,
+          description: news[index].description,
+          categoryId: news[index].categoryId,
+          companyId: news[index].companyId,
+          isLiked: news[index].isLiked,
+          isFavourite: fav,
+          likes: news[index].likes,
+        );
+      }
+
       currentPage = currentPage + 1;
       // currentNews = currentNews + 1;
-      totalNews = result.data!.length;
+      totalNews = 10;
       print(response.body);
       setState(() {});
       return true;
@@ -167,7 +202,6 @@ class _NewsScreenState extends State<NewsScreen> {
                     setState(() {
                       selected = index;
                     });
-
                     news.clear();
 
                     await getNewsByPage(
@@ -202,6 +236,8 @@ class _NewsScreenState extends State<NewsScreen> {
                 physics: BouncingScrollPhysics(),
                 enablePullUp: true,
                 onRefresh: () async {
+                  news.clear();
+
                   final result = await getNewsByPage(
                       isRefresh: true, catId: "${resp.data![selected].sId}");
 
@@ -346,21 +382,19 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       if (likeUnLikeViewModel
                                                               .likeUnlikeApiResponse
                                                               .status ==
-                                                          Status.COMPLETE) {}
+                                                          Status.COMPLETE) {
+                                                        await getNewsByPage(
+                                                            isRefresh: false,
+                                                            catId:
+                                                                "${resp.data![selected].sId}",
+                                                            isLike: true,
+                                                            index: index,
+                                                            like: true);
+                                                      }
                                                       if (likeUnLikeViewModel
                                                               .likeUnlikeApiResponse
                                                               .status ==
-                                                          Status.ERROR) {
-                                                        // CommonWidget.getSnackBar(
-                                                        //     color: Colors.red,
-                                                        //     duration: 2,
-                                                        //     colorText:
-                                                        //         Colors.white,
-                                                        //     title:
-                                                        //         "Something went wrong",
-                                                        //     message:
-                                                        //         'Try Again.');
-                                                      }
+                                                          Status.ERROR) {}
                                                     } else if (news[index]
                                                             .isLiked ==
                                                         true) {
@@ -374,26 +408,21 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       if (likeUnLikeViewModel
                                                               .likeUnlikeApiResponse
                                                               .status ==
-                                                          Status.COMPLETE) {}
+                                                          Status.COMPLETE) {
+                                                        await getNewsByPage(
+                                                            isRefresh: false,
+                                                            catId:
+                                                                "${resp.data![selected].sId}",
+                                                            isLike: true,
+                                                            index: index,
+                                                            like: false);
+                                                      }
                                                       if (likeUnLikeViewModel
                                                               .likeUnlikeApiResponse
                                                               .status ==
-                                                          Status.ERROR) {
-                                                        // CommonWidget.getSnackBar(
-                                                        //     color: Colors.red,
-                                                        //     duration: 2,
-                                                        //     colorText:
-                                                        //         Colors.white,
-                                                        //     title:
-                                                        //         "Something went wrong",
-                                                        //     message:
-                                                        //         'Try Again.');
-                                                      }
+                                                          Status.ERROR) {}
                                                     }
-                                                    await getNewsByPage(
-                                                        isRefresh: false,
-                                                        catId:
-                                                            "${resp.data![selected].sId}");
+
                                                     /*            if (getAllNewsViewModel.getNewsApiResponse.status ==
                                 Status.COMPLETE) {}
                             if (getAllNewsViewModel.getNewsApiResponse.status ==
@@ -439,7 +468,24 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       if (favUnFavViewModel
                                                               .favUnFavApiResponse
                                                               .status ==
-                                                          Status.COMPLETE) {}
+                                                          Status.COMPLETE) {
+                                                        // CommonWidget.getSnackBar(
+                                                        //     color: Colors.green,
+                                                        //     duration: 2,
+                                                        //     colorText:
+                                                        //         Colors.white,
+                                                        //     title:
+                                                        //         "isFavourite",
+                                                        //     message:
+                                                        //         'You liked a post');
+                                                        await getNewsByPage(
+                                                            isRefresh: false,
+                                                            catId:
+                                                                "${resp.data![selected].sId}",
+                                                            isFavourite: true,
+                                                            fav: true,
+                                                            index: index);
+                                                      }
                                                       if (favUnFavViewModel
                                                               .favUnFavApiResponse
                                                               .status ==
@@ -468,7 +514,15 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       if (favUnFavViewModel
                                                               .favUnFavApiResponse
                                                               .status ==
-                                                          Status.COMPLETE) {}
+                                                          Status.COMPLETE) {
+                                                        await getNewsByPage(
+                                                            isRefresh: false,
+                                                            catId:
+                                                                "${resp.data![selected].sId}",
+                                                            isFavourite: true,
+                                                            fav: false,
+                                                            index: index);
+                                                      }
                                                       if (favUnFavViewModel
                                                               .favUnFavApiResponse
                                                               .status ==
@@ -484,10 +538,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                         //         'Try Again.');
                                                       }
                                                     }
-                                                    await getNewsByPage(
-                                                        isRefresh: false,
-                                                        catId:
-                                                            "${resp.data![selected].sId}");
+
                                                     /*  if (getAllNewsViewModel.getNewsApiResponse.status ==
                                 Status.COMPLETE) {}
                             if (getAllNewsViewModel.getNewsApiResponse.status ==
