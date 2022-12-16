@@ -28,34 +28,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.asset("assets/png/stack_bubel.png", scale: 4.2),
-          CommonWidget.commonSizedBox(height: 20),
-          CreateAccount(),
-          CommonWidget.commonSizedBox(height: 40.sp),
-          InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onTap: () {
-              GetStorageServices.setUserLoggedIn();
-              Get.off(() => SignInScreen());
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CommonText.textBoldWight500(
-                    text: "Already have an account? ", fontSize: 11.sp),
-                CommonText.textBoldWight600(
-                  text: "Sign In",
-                  color: Color(0xff0865D3),
-                  fontSize: 11.sp,
-                ),
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset("assets/png/stack_bubel.png", scale: 4.2),
+            CommonWidget.commonSizedBox(height: 20),
+            CreateAccount(),
+            CommonWidget.commonSizedBox(height: 40.sp),
+            InkWell(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onTap: () {
+                GetStorageServices.setUserLoggedIn();
+                Get.off(() => SignInScreen());
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CommonText.textBoldWight500(
+                      text: "Already have an account? ", fontSize: 11.sp),
+                  CommonText.textBoldWight600(
+                    text: "Sign In",
+                    color: Color(0xff0865D3),
+                    fontSize: 11.sp,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

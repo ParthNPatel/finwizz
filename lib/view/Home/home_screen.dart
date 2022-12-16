@@ -526,7 +526,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
     {'icon': ImageConst.signOutICON, 'text': 'Logout'},
   ];
-
+  List drawerWithoutLogin = [
+    {'icon': ImageConst.googlePlayIcon, 'text': 'Rate us on play \nstore'},
+    {'icon': ImageConst.chatIcon, 'text': 'Contact us'},
+    {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
+    {'icon': ImageConst.signOutICON, 'text': 'Login'},
+  ];
   List platFormIcon = [
     ImageConst.twiterIcon,
     ImageConst.linkedinIcon,
@@ -545,6 +550,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print('loginnnmmm      ${GetStorageServices.getUserLoggedInStatus()}');
     return Container(
       width: 220,
       color: Colors.white,
@@ -564,129 +570,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             ),
             Spacer(),
             Column(
-              children: List.generate(
-                  drawerDataList.length,
-                  (index) => Padding(
-                        padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
-                        child: InkWell(
-                          onTap: () {
-                            if (index == 1) {
-                              Get.back();
-                              Get.dialog(referrals());
-                            } else if (index == 3) {
-                              Get.back();
-
-                              Get.dialog(contactUs());
-                            } else if (index == 0) {
-                              Get.back();
-
-                              Get.dialog(StatefulBuilder(
-                                builder: (context, setState) => Dialog(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(40.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Center(
-                                          child: CommonText.textBoldWight600(
-                                              text: "Notifications",
-                                              fontSize: 18.sp,
-                                              color: Colors.black),
-                                        ),
-                                        CommonWidget.commonSizedBox(height: 20),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(
-                                              width: 100.sp,
-                                              child:
-                                                  CommonText.textBoldWight500(
-                                                      text: "News",
-                                                      fontSize: 13.sp,
-                                                      color: Colors.black),
-                                            ),
-                                            Spacer(),
-                                            CupertinoSwitch(
-                                              activeColor:
-                                                  CommonColor.themColor9295E2,
-                                              value: icChecked,
-                                              onChanged: (value) {
-                                                setState(
-                                                  () {
-                                                    icChecked = value;
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                            Icon(
-                                              Icons.lock_outline,
-                                              color: Colors.transparent,
-                                            )
-                                          ],
-                                        ),
-                                        CommonWidget.commonSizedBox(
-                                            height: 20.sp),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SizedBox(
-                                              width: 100.sp,
-                                              child:
-                                                  CommonText.textBoldWight500(
-                                                      text: "Portfolio alerts ",
-                                                      fontSize: 13.sp,
-                                                      color: Colors.black),
-                                            ),
-                                            Spacer(),
-                                            CupertinoSwitch(
-                                              activeColor:
-                                                  CommonColor.themColor9295E2,
-                                              value: icChecked1,
-                                              onChanged: (value) {
-                                                setState(
-                                                  () {
-                                                    icChecked1 = value;
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                            Icon(
-                                              Icons.lock_outline,
-                                              color: CommonColor.primaryColor,
-                                            )
-                                          ],
-                                        ),
-                                        CommonWidget.commonSizedBox(
-                                            height: 20.sp),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ));
-                            } else if (index == 5) {
-                              GetStorageServices.logOut();
-                              Get.offAll(
-                                  () => BottomNavScreen(selectedIndex: 0));
-                            }
-                          },
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                  height: 24.sp,
-                                  width: 24.sp,
-                                  child: Image.asset(
-                                      drawerDataList[index]['icon'])),
-                              CommonWidget.commonSizedBox(width: 10),
-                              CommonText.textBoldWight400(
-                                  text: drawerDataList[index]['text'])
-                            ],
-                          ),
-                        ),
-                      )),
+              children: GetStorageServices.getUserLoggedInStatus() == true
+                  ? withLogin()
+                  : withoutLogin(),
             ),
             Spacer(),
             Padding(
@@ -720,6 +606,159 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         ),
       ),
     );
+  }
+
+  List<Widget> withLogin() {
+    return List.generate(
+        drawerDataList.length,
+        (index) => Padding(
+              padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
+              child: InkWell(
+                onTap: () {
+                  if (index == 1) {
+                    Get.back();
+                    Get.dialog(referrals());
+                  } else if (index == 3) {
+                    Get.back();
+
+                    Get.dialog(contactUs());
+                  } else if (index == 0) {
+                    Get.back();
+
+                    Get.dialog(StatefulBuilder(
+                      builder: (context, setState) => Dialog(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Center(
+                                child: CommonText.textBoldWight600(
+                                    text: "Notifications",
+                                    fontSize: 18.sp,
+                                    color: Colors.black),
+                              ),
+                              CommonWidget.commonSizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 100.sp,
+                                    child: CommonText.textBoldWight500(
+                                        text: "News",
+                                        fontSize: 13.sp,
+                                        color: Colors.black),
+                                  ),
+                                  Spacer(),
+                                  CupertinoSwitch(
+                                    activeColor: CommonColor.themColor9295E2,
+                                    value: icChecked,
+                                    onChanged: (value) {
+                                      setState(
+                                        () {
+                                          icChecked = value;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  Icon(
+                                    Icons.lock_outline,
+                                    color: Colors.transparent,
+                                  )
+                                ],
+                              ),
+                              CommonWidget.commonSizedBox(height: 20.sp),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 100.sp,
+                                    child: CommonText.textBoldWight500(
+                                        text: "Portfolio alerts ",
+                                        fontSize: 13.sp,
+                                        color: Colors.black),
+                                  ),
+                                  Spacer(),
+                                  CupertinoSwitch(
+                                    activeColor: CommonColor.themColor9295E2,
+                                    value: icChecked1,
+                                    onChanged: (value) {
+                                      setState(
+                                        () {
+                                          icChecked1 = value;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  Icon(
+                                    Icons.lock_outline,
+                                    color: CommonColor.primaryColor,
+                                  )
+                                ],
+                              ),
+                              CommonWidget.commonSizedBox(height: 20.sp),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ));
+                  } else if (index == 5) {
+                    GetStorageServices.logOut();
+                    Get.offAll(() => BottomNavScreen(selectedIndex: 0));
+                  }
+                },
+                child: Row(
+                  children: [
+                    SizedBox(
+                        height: 24.sp,
+                        width: 24.sp,
+                        child: Image.asset(drawerDataList[index]['icon'])),
+                    CommonWidget.commonSizedBox(width: 10),
+                    CommonText.textBoldWight400(
+                        text: drawerDataList[index]['text'])
+                  ],
+                ),
+              ),
+            ));
+  }
+
+  List<Widget> withoutLogin() {
+    return List.generate(
+        drawerWithoutLogin.length,
+        (index) => Padding(
+              padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
+              child: InkWell(
+                onTap: () {
+                  print('indexindex   $index');
+                  if (index == 1) {
+                    Get.back();
+                  } else if (index == 3) {
+                    Get.back();
+                    Get.to(() => SignInScreen());
+                  } else if (index == 0) {
+                    Get.back();
+                  } else if (index == 4) {
+                    // GetStorageServices.logOut();
+
+                  } else if (index == 2) {
+                    Get.back();
+                  }
+                },
+                child: Row(
+                  children: [
+                    SizedBox(
+                        height: 24.sp,
+                        width: 24.sp,
+                        child: Image.asset(drawerWithoutLogin[index]['icon'])),
+                    CommonWidget.commonSizedBox(width: 10),
+                    CommonText.textBoldWight400(
+                        text: drawerWithoutLogin[index]['text'])
+                  ],
+                ),
+              ),
+            ));
   }
 
   Dialog contactUs() {

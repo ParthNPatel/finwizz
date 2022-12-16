@@ -67,9 +67,14 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                 elevation: MaterialStateProperty.all(0),
               ),
               onPressed: () {
+                print('indexxxxxx    $index');
+                // if (selected == 2) {
+                //   print('milannnanna ');
+                // } else {
                 setState(() {
                   selected = index;
                 });
+                // }
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
