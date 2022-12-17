@@ -369,58 +369,74 @@ class _NewsScreenState extends State<NewsScreen> {
                                                   onTap: () async {
                                                     // controller.updateLike(
                                                     //     response.data![index].isLiked!);
-                                                    if (news[index].isLiked ==
-                                                        false) {
-                                                      await likeUnLikeViewModel
-                                                          .likeUnLikeViewModel(
-                                                              body: {
-                                                            "type": "like",
-                                                            "newsId":
-                                                                "${news[index].id}"
-                                                          });
 
-                                                      if (likeUnLikeViewModel
-                                                              .likeUnlikeApiResponse
-                                                              .status ==
-                                                          Status.COMPLETE) {
-                                                        await getNewsByPage(
-                                                            isRefresh: false,
-                                                            catId:
-                                                                "${resp.data![selected].sId}",
-                                                            isLike: true,
-                                                            index: index,
-                                                            like: true);
-                                                      }
-                                                      if (likeUnLikeViewModel
-                                                              .likeUnlikeApiResponse
-                                                              .status ==
-                                                          Status.ERROR) {}
-                                                    } else if (news[index]
-                                                            .isLiked ==
+                                                    if (GetStorageServices
+                                                            .getUserLoggedInStatus ==
                                                         true) {
-                                                      await likeUnLikeViewModel
-                                                          .likeUnLikeViewModel(
-                                                              body: {
-                                                            "type": "unlike",
-                                                            "newsId":
-                                                                "${news[index].id}"
-                                                          });
-                                                      if (likeUnLikeViewModel
-                                                              .likeUnlikeApiResponse
-                                                              .status ==
-                                                          Status.COMPLETE) {
-                                                        await getNewsByPage(
-                                                            isRefresh: false,
-                                                            catId:
-                                                                "${resp.data![selected].sId}",
-                                                            isLike: true,
-                                                            index: index,
-                                                            like: false);
+                                                      if (news[index].isLiked ==
+                                                          false) {
+                                                        await likeUnLikeViewModel
+                                                            .likeUnLikeViewModel(
+                                                                body: {
+                                                              "type": "like",
+                                                              "newsId":
+                                                                  "${news[index].id}"
+                                                            });
+
+                                                        if (likeUnLikeViewModel
+                                                                .likeUnlikeApiResponse
+                                                                .status ==
+                                                            Status.COMPLETE) {
+                                                          await getNewsByPage(
+                                                              isRefresh: false,
+                                                              catId:
+                                                                  "${resp.data![selected].sId}",
+                                                              isLike: true,
+                                                              index: index,
+                                                              like: true);
+                                                        }
+                                                        if (likeUnLikeViewModel
+                                                                .likeUnlikeApiResponse
+                                                                .status ==
+                                                            Status.ERROR) {}
+                                                      } else if (news[index]
+                                                              .isLiked ==
+                                                          true) {
+                                                        await likeUnLikeViewModel
+                                                            .likeUnLikeViewModel(
+                                                                body: {
+                                                              "type": "unlike",
+                                                              "newsId":
+                                                                  "${news[index].id}"
+                                                            });
+                                                        if (likeUnLikeViewModel
+                                                                .likeUnlikeApiResponse
+                                                                .status ==
+                                                            Status.COMPLETE) {
+                                                          await getNewsByPage(
+                                                              isRefresh: false,
+                                                              catId:
+                                                                  "${resp.data![selected].sId}",
+                                                              isLike: true,
+                                                              index: index,
+                                                              like: false);
+                                                        }
+                                                        if (likeUnLikeViewModel
+                                                                .likeUnlikeApiResponse
+                                                                .status ==
+                                                            Status.ERROR) {}
                                                       }
-                                                      if (likeUnLikeViewModel
-                                                              .likeUnlikeApiResponse
-                                                              .status ==
-                                                          Status.ERROR) {}
+                                                    } else {
+                                                      CommonWidget.getSnackBar(
+                                                          color: Colors.red
+                                                              .withOpacity(.5),
+                                                          duration: 2,
+                                                          colorText:
+                                                              Colors.white,
+                                                          title:
+                                                              "Want to like news ??",
+                                                          message:
+                                                              'Need to login first, Please complete login steps');
                                                     }
 
                                                     /*            if (getAllNewsViewModel.getNewsApiResponse.status ==
@@ -455,88 +471,104 @@ class _NewsScreenState extends State<NewsScreen> {
                                                 Spacer(),
                                                 InkResponse(
                                                   onTap: () async {
-                                                    if (news[index]
-                                                            .isFavourite ==
-                                                        false) {
-                                                      await favUnFavViewModel
-                                                          .favUnFavViewModel(
-                                                              body: {
-                                                            "type": "favourite",
-                                                            "newsId":
-                                                                "${news[index].id}"
-                                                          });
-                                                      if (favUnFavViewModel
-                                                              .favUnFavApiResponse
-                                                              .status ==
-                                                          Status.COMPLETE) {
-                                                        // CommonWidget.getSnackBar(
-                                                        //     color: Colors.green,
-                                                        //     duration: 2,
-                                                        //     colorText:
-                                                        //         Colors.white,
-                                                        //     title:
-                                                        //         "isFavourite",
-                                                        //     message:
-                                                        //         'You liked a post');
-                                                        await getNewsByPage(
-                                                            isRefresh: false,
-                                                            catId:
-                                                                "${resp.data![selected].sId}",
-                                                            isFavourite: true,
-                                                            fav: true,
-                                                            index: index);
-                                                      }
-                                                      if (favUnFavViewModel
-                                                              .favUnFavApiResponse
-                                                              .status ==
-                                                          Status.ERROR) {
-                                                        // CommonWidget.getSnackBar(
-                                                        //     color: Colors.red,
-                                                        //     duration: 2,
-                                                        //     colorText:
-                                                        //         Colors.white,
-                                                        //     title:
-                                                        //         "Something went wrong",
-                                                        //     message:
-                                                        //         'Try Again.');
-                                                      }
-                                                    } else if (news[index]
-                                                            .isFavourite ==
+                                                    if (GetStorageServices
+                                                            .getUserLoggedInStatus() ==
                                                         true) {
-                                                      await favUnFavViewModel
-                                                          .favUnFavViewModel(
-                                                              body: {
-                                                            "type":
-                                                                "unfavourite",
-                                                            "newsId":
-                                                                "${news[index].id}"
-                                                          });
-                                                      if (favUnFavViewModel
-                                                              .favUnFavApiResponse
-                                                              .status ==
-                                                          Status.COMPLETE) {
-                                                        await getNewsByPage(
-                                                            isRefresh: false,
-                                                            catId:
-                                                                "${resp.data![selected].sId}",
-                                                            isFavourite: true,
-                                                            fav: false,
-                                                            index: index);
+                                                      if (news[index]
+                                                              .isFavourite ==
+                                                          false) {
+                                                        await favUnFavViewModel
+                                                            .favUnFavViewModel(
+                                                                body: {
+                                                              "type":
+                                                                  "favourite",
+                                                              "newsId":
+                                                                  "${news[index].id}"
+                                                            });
+                                                        if (favUnFavViewModel
+                                                                .favUnFavApiResponse
+                                                                .status ==
+                                                            Status.COMPLETE) {
+                                                          // CommonWidget.getSnackBar(
+                                                          //     color: Colors.green,
+                                                          //     duration: 2,
+                                                          //     colorText:
+                                                          //         Colors.white,
+                                                          //     title:
+                                                          //         "isFavourite",
+                                                          //     message:
+                                                          //         'You liked a post');
+                                                          await getNewsByPage(
+                                                              isRefresh: false,
+                                                              catId:
+                                                                  "${resp.data![selected].sId}",
+                                                              isFavourite: true,
+                                                              fav: true,
+                                                              index: index);
+                                                        }
+                                                        if (favUnFavViewModel
+                                                                .favUnFavApiResponse
+                                                                .status ==
+                                                            Status.ERROR) {
+                                                          // CommonWidget.getSnackBar(
+                                                          //     color: Colors.red,
+                                                          //     duration: 2,
+                                                          //     colorText:
+                                                          //         Colors.white,
+                                                          //     title:
+                                                          //         "Something went wrong",
+                                                          //     message:
+                                                          //         'Try Again.');
+                                                        }
+                                                      } else if (news[index]
+                                                              .isFavourite ==
+                                                          true) {
+                                                        await favUnFavViewModel
+                                                            .favUnFavViewModel(
+                                                                body: {
+                                                              "type":
+                                                                  "unfavourite",
+                                                              "newsId":
+                                                                  "${news[index].id}"
+                                                            });
+                                                        if (favUnFavViewModel
+                                                                .favUnFavApiResponse
+                                                                .status ==
+                                                            Status.COMPLETE) {
+                                                          await getNewsByPage(
+                                                              isRefresh: false,
+                                                              catId:
+                                                                  "${resp.data![selected].sId}",
+                                                              isFavourite: true,
+                                                              fav: false,
+                                                              index: index);
+                                                        }
+                                                        if (favUnFavViewModel
+                                                                .favUnFavApiResponse
+                                                                .status ==
+                                                            Status.ERROR) {
+                                                          // CommonWidget.getSnackBar(
+                                                          //     color: Colors.red,
+                                                          //     duration: 2,
+                                                          //     colorText:
+                                                          //         Colors.white,
+                                                          //     title:
+                                                          //         "Something went wrong",
+                                                          //     message:
+                                                          //         'Try Again.');
+                                                        }
                                                       }
-                                                      if (favUnFavViewModel
-                                                              .favUnFavApiResponse
-                                                              .status ==
-                                                          Status.ERROR) {
-                                                        // CommonWidget.getSnackBar(
-                                                        //     color: Colors.red,
-                                                        //     duration: 2,
-                                                        //     colorText:
-                                                        //         Colors.white,
-                                                        //     title:
-                                                        //         "Something went wrong",
-                                                        //     message:
-                                                        //         'Try Again.');
-                                                      }
+                                                    } else {
+                                                      CommonWidget.getSnackBar(
+                                                          color: Colors.red
+                                                              .withOpacity(.5),
+                                                          duration: 2,
+                                                          colorText:
+                                                              Colors.white,
+                                                          title:
+                                                              "Want to save news ??",
+                                                          message:
+                                                              'Need to login first, Please complete login steps');
                                                     }
 
                                                     /*  if (getAllNewsViewModel.getNewsApiResponse.status ==

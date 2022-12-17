@@ -118,6 +118,7 @@ class GetStorageServices {
   }
 
   static logOut() {
+    getStorage.remove('barrierToken');
     getStorage.remove('setIsEmailOrPhone');
     getStorage.remove('setMobile');
     getStorage.remove('setEmailValue');
