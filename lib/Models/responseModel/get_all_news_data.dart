@@ -39,6 +39,7 @@ class News {
     this.categoryId,
     this.companyId,
     this.type,
+    this.source,
     this.createdAt,
     this.updatedAt,
     this.likes,
@@ -52,6 +53,7 @@ class News {
   YId? categoryId;
   YId? companyId;
   int? type;
+  String? source;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? likes;
@@ -68,6 +70,7 @@ class News {
         companyId:
             json["companyId"] == null ? null : YId.fromJson(json["companyId"]),
         type: json["type"],
+        source: json["source"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         likes: json["likes"] == null ? null : json["likes"],
@@ -82,6 +85,7 @@ class News {
         "categoryId": categoryId == null ? null : categoryId!.toJson(),
         "companyId": companyId == null ? null : companyId!.toJson(),
         "type": type,
+        "source": source,
         "createdAt": createdAt!.toIso8601String(),
         "updatedAt": updatedAt!.toIso8601String(),
         "likes": likes == null ? null : likes,

@@ -612,7 +612,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                 height: 10),
                                             CommonText.textBoldWight400(
                                                 text:
-                                                    '${date},  ${time} ·| Source : BSE',
+                                                    '${date},  ${time} ·|  ${news[index].source != null ? "Source : ${news[index].source}" : ""}',
                                                 color: Colors.black),
                                             CommonWidget.commonSizedBox(
                                                 height: 10),
