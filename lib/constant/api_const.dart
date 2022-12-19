@@ -14,4 +14,6 @@ class APIConst {
   static String moversLike = "/movers";
   static String user = "/user";
   static String insider = "/insider";
+  static String contact = "/contact";
+  static String notification = "/notification";
 }

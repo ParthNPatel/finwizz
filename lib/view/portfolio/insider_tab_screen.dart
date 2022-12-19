@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/insider_res_model.dart';
 import 'package:finwizz/components/common_widget.dart';
@@ -54,7 +52,7 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
   @override
   void initState() {
     super.initState();
-    insiderViewModel.getMoversViewModel();
+    insiderViewModel.getInsiderViewModel();
   }
 
   int? viewAllIndex;
@@ -93,8 +91,6 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
                                   response.data![index].insiders!.sharesSold!
                                       .shares!) *
                               100;
-
-                      log('=====> ${(sold.w / 2.5) + (bought.w / 2.5)}');
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(
@@ -263,7 +259,60 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
                             viewAllIndex == index && isViewAll == true
                                 ? Container(
                                     padding: EdgeInsets.only(top: 30),
-                                    child: Image.asset(ImageConst.tableImage),
+                                    child: DataTable(
+                                      columnSpacing: 7.sp,
+                                      horizontalMargin: 5.sp,
+                                      dataTextStyle: TextStyle(
+                                          fontSize: 10.sp,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: TextConst.fontFamily),
+                                      border: TableBorder.symmetric(
+                                          inside: BorderSide(
+                                              width: 1,
+                                              color: Color(0xffD1CDCD)),
+                                          outside: BorderSide(
+                                              width: 1,
+                                              color: Color(0xffD1CDCD))),
+                                      columns: [
+                                        DataColumn(
+                                            label: CommonText.textBoldWight400(
+                                                text: 'Category of\nperson',
+                                                fontSize: 10.sp)),
+                                        DataColumn(
+                                            label: CommonText.textBoldWight400(
+                                                text: 'Shares',
+                                                fontSize: 10.sp)),
+                                        DataColumn(
+                                            label: CommonText.textBoldWight400(
+                                                text: 'Value',
+                                                fontSize: 10.sp)),
+                                        DataColumn(
+                                            label: CommonText.textBoldWight400(
+                                                text: 'Transaction\ntype',
+                                                fontSize: 10.sp)),
+                                        DataColumn(
+                                            label: CommonText.textBoldWight400(
+                                                text: 'Mode of\nacquisition',
+                                                fontSize: 10.sp)),
+                                      ],
+                                      rows: List.generate(
+                                          response.data![index].insiders!.table!
+                                              .length,
+                                          (indexRow) =>
+                                              DataRow(selected: false, cells: [
+                                                DataCell(Text(
+                                                    '${response.data![index].insiders!.table![indexRow].personCategory}')),
+                                                DataCell(Text(
+                                                    '${response.data![index].insiders!.table![indexRow].shares}')),
+                                                DataCell(Text(
+                                                    '${response.data![index].insiders!.table![indexRow].value}')),
+                                                DataCell(Text(
+                                                    '${response.data![index].insiders!.table![indexRow].transactionType}')),
+                                                DataCell(Text(
+                                                    '${response.data![index].insiders!.table![indexRow].mode}')),
+                                              ])),
+                                    ),
                                   )
                                 : SizedBox()
                           ],

@@ -31,6 +31,8 @@ class LoginRepo extends BaseService {
           BottomNavScreen(),
         );
       } else {
+        progress.dismiss();
+
         CommonWidget.getSnackBar(
           message: 'Ops!',
           title: 'Login Failed',

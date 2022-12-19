@@ -1028,7 +1028,7 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                 color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 2.6,
+              scale: 5,
             )),
         CommonWidget.commonSizedBox(width: 10)
       ],

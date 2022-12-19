@@ -179,7 +179,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 2.6,
+              scale: 5,
             )),
         CommonWidget.commonSizedBox(width: 10)
       ],

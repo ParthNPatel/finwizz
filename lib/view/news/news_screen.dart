@@ -371,7 +371,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                     //     response.data![index].isLiked!);
 
                                                     if (GetStorageServices
-                                                            .getUserLoggedInStatus ==
+                                                            .getUserLoggedInStatus() ==
                                                         true) {
                                                       if (news[index].isLiked ==
                                                           false) {

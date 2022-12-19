@@ -5,6 +5,17 @@ import 'package:get/get.dart';
 import '../Models/apis/api_response.dart';
 
 class SearchStockViewModel extends GetxController {
+  List addStockList = [];
+
+  addStock(String id) {
+    if (addStockList.contains(id)) {
+      addStockList.remove(id);
+    } else {
+      addStockList.add(id);
+    }
+    update();
+  }
+
   ApiResponse _searchStockApiResponse =
       ApiResponse.initial(message: 'Initialization');
 

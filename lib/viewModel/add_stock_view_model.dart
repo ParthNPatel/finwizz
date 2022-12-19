@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:finwizz/Models/repo/add_stock_repo.dart';
 import 'package:finwizz/Models/responseModel/add_stock_res_model.dart';
 import 'package:get/get.dart';
@@ -16,11 +18,11 @@ class AddStockViewModel extends GetxController {
     try {
       AddStockResponseModel response =
           await AddStockRepo.addStockRepo(body: body);
-      print("AddStockResponseModel==>$response");
+      log("AddStockResponseModel==>$response");
 
       _addStockApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("AddStockResponseModel==>$e");
+      log("AddStockResponseModel==>$e");
       _addStockApiResponse = ApiResponse.error(message: 'error');
     }
     update();

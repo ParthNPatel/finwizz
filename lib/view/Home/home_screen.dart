@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/repo/contact_us_repo.dart';
+import 'package:finwizz/Models/responseModel/contact_us_res_model.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/Models/responseModel/update_user_res_model.dart';
 import 'package:finwizz/components/common_widget.dart';
@@ -34,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
   GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
+
   List colors = [
     Color(0xffEB7777),
     CommonColor.themColor9295E2,
@@ -506,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 2.4,
+              scale: 5,
             )),
         CommonWidget.commonSizedBox(width: 10)
       ],
@@ -548,9 +551,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   final message = TextEditingController();
 
-  bool isCheckedNews = GetStorageServices.getNewsAlerts();
+  bool isCheckedNews = GetStorageServices.getNewsAlerts() ?? false;
 
-  bool isCheckedPortfolio = GetStorageServices.getPortfolioAlerts();
+  bool isCheckedPortfolio = GetStorageServices.getPortfolioAlerts() ?? false;
 
   UpdateUserViewModel updateUserViewModel = Get.put(UpdateUserViewModel());
 
@@ -792,7 +795,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     SizedBox(
                         height: 24.sp,
                         width: 24.sp,
-                        child: Image.asset(drawerDataList[index]['icon'])),
+                        child: Image.asset(
+                          drawerDataList[index]['icon'],
+                          scale: 2,
+                        )),
                     CommonWidget.commonSizedBox(width: 10),
                     CommonText.textBoldWight400(
                         text: drawerDataList[index]['text'])
@@ -912,7 +918,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             CommonWidget.commonSizedBox(height: 10),
             TextFormField(
               maxLines: 7,
-              controller: email,
+              controller: message,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.only(bottom: 3, left: 15),
                 enabledBorder: OutlineInputBorder(
@@ -922,7 +928,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide(
                     color: Color(0xffC9C5C5),
                   ),
@@ -933,8 +939,34 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             Center(
               child: MaterialButton(
                   elevation: 0,
-                  onPressed: () {
-                    Get.back();
+                  onPressed: () async {
+                    if (name.text.isNotEmpty &&
+                        email.text.isNotEmpty &&
+                        message.text.isNotEmpty) {
+                      ContactUsResponseModel response =
+                          await ContactUsRepo.contactUsRepo(body: {
+                        "name": "${name.text.trim()}",
+                        "email": "${email.text.trim()}",
+                        "message": "${message.text.trim()}"
+                      });
+                      Get.back();
+
+                      if (response.flag == true) {
+                        CommonWidget.getSnackBar(
+                            color: Colors.green.withOpacity(.5),
+                            duration: 2,
+                            colorText: Colors.white,
+                            title: "${response.flag}",
+                            message: 'Your query delivered successfully');
+                      } else {
+                        CommonWidget.getSnackBar(
+                            color: Colors.red.withOpacity(.5),
+                            duration: 2,
+                            colorText: Colors.white,
+                            title: "${response.flag}",
+                            message: 'Something went wrong');
+                      }
+                    }
                   },
                   color: Color(0xff9295E2),
                   shape: RoundedRectangleBorder(

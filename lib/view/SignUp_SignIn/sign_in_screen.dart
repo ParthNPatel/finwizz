@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/services/app_notification.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
-import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
+import 'package:sizer/sizer.dart';
+
 import '../../Models/repo/login_repo.dart';
 import '../../Models/responseModel/country_model.dart';
 import '../../get_storage_services/get_storage_service.dart';
@@ -83,10 +86,14 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future enterOtp(final progress) async {
     try {
+      await AppNotificationHandler.getFcmToken();
+
       PhoneAuthCredential phoneAuthProvider =
           await PhoneAuthProvider.credential(
               verificationId: verificationCode!,
               smsCode: otpController.text.trim());
+
+      log("getFcm ======= > in ${GetStorageServices.getFcm()}");
 
       firebaseAuth.signInWithCredential(phoneAuthProvider).catchError((e) {
         progress.dismiss();
@@ -103,7 +110,7 @@ class _SignInScreenState extends State<SignInScreen> {
           try {
             await LoginRepo.loginUserRepo(model: {
               "phone": "${phoneController.text.trim()}",
-              "loginType": "mobile"
+              "fcm_token": "${GetStorageServices.getFcm()}"
             }, progress: progress);
             GetStorageServices.setUserLoggedIn();
             Get.offAll(() => BottomNavScreen(selectedIndex: 0));

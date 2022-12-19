@@ -27,20 +27,7 @@ class PortfolioScreen extends StatefulWidget {
 class _PortfolioScreenState extends State<PortfolioScreen>
     with SingleTickerProviderStateMixin {
   TabController? tabController;
-  // List listOfStocks = [
-  //   {
-  //     'title': 'TANLA',
-  //     'updates': [1, 5]
-  //   },
-  //   {
-  //     'title': 'TATA MOTORS',
-  //     'updates': [2]
-  //   },
-  //   {
-  //     'title': 'RELIANCE',
-  //     'updates': [],
-  //   }
-  // ];
+
   PortFolioController _portFolioController = Get.find();
   StockSummaryViewModel stockSummaryViewModel =
       Get.put(StockSummaryViewModel());

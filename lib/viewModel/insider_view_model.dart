@@ -10,7 +10,7 @@ class InsiderViewModel extends GetxController {
 
   ApiResponse get getMoversApiResponse => _getMoversApiResponse;
 
-  Future<void> getMoversViewModel({bool isLoading = true}) async {
+  Future<void> getInsiderViewModel({bool isLoading = true}) async {
     if (isLoading) {
       _getMoversApiResponse = ApiResponse.loading(message: 'Loading');
     }
