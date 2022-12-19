@@ -19,6 +19,7 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   GetNotificationViewModel getNotificationViewModel =
       Get.put(GetNotificationViewModel());
+
   final globalKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -45,76 +46,83 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   Status.COMPLETE) {
                 GetNotificationResponseModel response =
                     controller.getNotificationApiResponse.data;
+                if (response.message!.length != 0) {
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 20.sp, vertical: 15.sp),
+                    physics: BouncingScrollPhysics(),
+                    itemCount: response.message!.length,
+                    separatorBuilder: (context, index) => Divider(
+                      height: 30,
+                      thickness: 1.3,
+                      color: Color(0xffDDDADA),
+                    ),
+                    itemBuilder: (context, index) {
+                      var time = DateTime.now()
+                                  .difference(
+                                      response.message![index].updatedAt!)
+                                  .inSeconds >
+                              60
+                          ? DateTime.now()
+                                      .difference(
+                                          response.message![index].updatedAt!)
+                                      .inMinutes >
+                                  60
+                              ? DateTime.now()
+                                          .difference(response
+                                              .message![index].updatedAt!)
+                                          .inHours >
+                                      24
+                                  ? 'About ${DateTime.now().difference(response.message![index].updatedAt!).inDays} days ago'
+                                  : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inHours} hour ago'
+                              : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inMinutes} minute ago'
+                          : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inSeconds} seconds ago';
 
-                return ListView.separated(
-                  shrinkWrap: true,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.sp, vertical: 15.sp),
-                  physics: BouncingScrollPhysics(),
-                  itemCount: response.message!.length,
-                  separatorBuilder: (context, index) => Divider(
-                    height: 30,
-                    thickness: 1.3,
-                    color: Color(0xffDDDADA),
-                  ),
-                  itemBuilder: (context, index) {
-                    var time = DateTime.now()
-                                .difference(response.message![index].updatedAt!)
-                                .inSeconds >
-                            60
-                        ? DateTime.now()
-                                    .difference(
-                                        response.message![index].updatedAt!)
-                                    .inMinutes >
-                                60
-                            ? DateTime.now()
-                                        .difference(
-                                            response.message![index].updatedAt!)
-                                        .inHours >
-                                    24
-                                ? 'About ${DateTime.now().difference(response.message![index].updatedAt!).inDays} days ago'
-                                : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inHours} hour ago'
-                            : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inMinutes} minute ago'
-                        : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inSeconds} seconds ago';
-
-                    return Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 17.sp,
-                          backgroundColor: Color(0xff6E5DE7).withOpacity(0.8),
-                          child: Image.asset(
-                            ImageConst.newsIcon,
-                            height: 17.sp,
-                            width: 17.sp,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CommonText.textBoldWight500(
-                                text: response.message![index].title!),
-                            SizedBox(
-                              height: 5,
+                      return Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 17.sp,
+                            backgroundColor: Color(0xff6E5DE7).withOpacity(0.8),
+                            child: Image.asset(
+                              ImageConst.newsIcon,
+                              height: 17.sp,
+                              width: 17.sp,
                             ),
-                            CommonText.textBoldWight400(
-                                text: time,
-                                fontSize: 9.sp,
-                                color: Color(0xff7B6F72)),
-                          ],
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.more_vert,
-                          color: Color(0xffada4a5),
-                          size: 15.sp,
-                        )
-                      ],
-                    );
-                  },
-                );
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonText.textBoldWight500(
+                                  text: response.message![index].title!),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              CommonText.textBoldWight400(
+                                  text: time,
+                                  fontSize: 9.sp,
+                                  color: Color(0xff7B6F72)),
+                            ],
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.more_vert,
+                            color: Color(0xffada4a5),
+                            size: 15.sp,
+                          )
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: CommonText.textBoldWight500(
+                        text: "No Message Received yet."),
+                  );
+                }
               } else
                 return SizedBox();
             }),
@@ -124,40 +132,41 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Row appWidget() {
-    return Row(
-      children: [
-        IconButton(
-            onPressed: () {
-              globalKey.currentState!.openDrawer();
-            },
-            icon: Icon(
-              Icons.menu_outlined,
-              size: 28.sp,
-              color: CommonColor.themColor9295E2,
-            )),
-        CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 14.sp),
-        Spacer(),
-        CommonWidget.commonSizedBox(width: 10),
-        Container(
-            padding: EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                    ]),
-                shape: BoxShape.circle,
-                color: CommonColor.themColor9295E2),
-            child: Image.asset(
-              'assets/png/notification.png',
-              scale: 5,
-            )),
-        CommonWidget.commonSizedBox(width: 10)
-      ],
+  AppBar appWidget() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            size: 28.sp,
+            color: CommonColor.themColor9295E2,
+          )),
+      centerTitle: true,
+      title: CommonText.textBoldWight700(
+          text: 'Notification', fontSize: 14.sp, color: Colors.black),
     );
   }
+
+  // Row appWidget() {
+  //   return Row(
+  //     children: [
+  //       IconButton(
+  //           onPressed: () {
+  //             globalKey.currentState!.openDrawer();
+  //           },
+  //           icon: Icon(
+  //             Icons.arrow_back_ios,
+  //             size: 28.sp,
+  //             color: CommonColor.themColor9295E2,
+  //           )),
+  //       CommonText.textBoldWight700(text: 'Hello  🙌', fontSize: 14.sp),
+  //       Spacer(),
+  //       CommonWidget.commonSizedBox(width: 10),
+  //     ],
+  //   );
+  // }
 }

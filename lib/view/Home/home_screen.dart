@@ -23,6 +23,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../components/indicatorWidget.dart';
+import '../notification/notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -72,93 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           CommonWidget.commonSizedBox(height: 10),
           appWidget(),
-          /* isOpen
-              ? */
           scrollWidget()
-          /*  : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-                      margin: EdgeInsets.only(left: 60, right: 30, top: 40),
-                      child: CommonText.textBoldWight400(
-                          text:
-                              'Invite 3 friends to FinWizz and unlock all features for free'),
-                      decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                blurRadius: 10,
-                                offset: Offset(4, 6),
-                                spreadRadius: 1)
-                          ],
-                          borderRadius: BorderRadius.circular(10),
-                          color: CommonColor.lightBlueColorCADCF8),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        isOpen = true;
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 30, vertical: 13),
-                        margin: EdgeInsets.only(left: 60, top: 40),
-                        child: CommonText.textBoldWight400(
-                            text: 'Refer now', color: Colors.white),
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  color: CommonColor.themDarkColor6E5DE7,
-                                  //blurRadius: 10,
-                                  offset: Offset(3, 5),
-                                  spreadRadius: 1)
-                            ],
-                            borderRadius: BorderRadius.circular(1010),
-                            color: Colors.black),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 40, top: 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CommonText.textBoldWight600(
-                              text: 'Your opinion matters!', fontSize: 16.sp),
-                          CommonWidget.commonSizedBox(height: 9),
-                          CommonText.textBoldWight400(
-                            text: 'Are you enjoying FinWizz?',
-                          ),
-                          CommonWidget.commonSizedBox(height: 9),
-                          RatingBar(
-                            initialRating: 0,
-                            direction: Axis.horizontal,
-                            allowHalfRating: true,
-                            itemSize: 28,
-                            itemCount: 5,
-                            ratingWidget: RatingWidget(
-                              full: Icon(Icons.star,
-                                  color: CommonColor.yellowColorFFC633),
-                              half: Icon(Icons.star_half,
-                                  color: CommonColor.yellowColorFFC633),
-                              empty: Icon(
-                                Icons.star_border_outlined,
-                              ),
-                            ),
-                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                            onRatingUpdate: (rating) {
-                              if (rating <= 4) {
-                                Get.dialog(buildSimpleDialog());
-                              }
-                              print(rating);
-                            },
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )*/
         ]),
       ),
     );
@@ -319,13 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     // isOpen = false;
                     setState(() {
                       if (index == 0) {
-                        Get.offAll(() => BottomNavScreen(
-                              selectedIndex: 1,
-                            ));
+                        Get.offAll(() => BottomNavScreen(selectedIndex: 1));
                       } else {
-                        Get.offAll(() => BottomNavScreen(
-                              selectedIndex: 2,
-                            ));
+                        Get.offAll(() => BottomNavScreen(selectedIndex: 2));
                       }
                     });
                   },
@@ -494,23 +405,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
         CommonWidget.commonSizedBox(width: 10),
-        Container(
-            padding: EdgeInsets.all(8),
+        GestureDetector(
+          onTap: () {
+            Get.to(NotificationScreen());
+          },
+          child: Container(
+            //padding: EdgeInsets.all(8),
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                    ]),
-                shape: BoxShape.circle,
-                color: CommonColor.themColor9295E2),
+            // decoration: BoxDecoration(
+            //     gradient: LinearGradient(
+            //         begin: Alignment.center,
+            //         end: Alignment.bottomCenter,
+            //         colors: [
+            //           Color(0xff6E5DE7).withOpacity(0.8),
+            //           Color(0xff6E5DE7).withOpacity(0.8),
+            //         ]),
+            //     shape: BoxShape.circle,
+            //     color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 5,
-            )),
+              scale: 3.3,
+            ),
+          ),
+        ),
         CommonWidget.commonSizedBox(width: 10)
       ],
     );

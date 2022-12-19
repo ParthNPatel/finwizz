@@ -165,22 +165,23 @@ class _NewsMainScreenState extends State<NewsMainScreen>
               ),
         CommonWidget.commonSizedBox(width: 10),
         Container(
-            padding: EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                    ]),
-                shape: BoxShape.circle,
-                color: CommonColor.themColor9295E2),
-            child: Image.asset(
-              'assets/png/notification.png',
-              scale: 5,
-            )),
+          // padding: EdgeInsets.all(8),
+          // alignment: Alignment.center,
+          // decoration: BoxDecoration(
+          //     gradient: LinearGradient(
+          //         begin: Alignment.center,
+          //         end: Alignment.bottomCenter,
+          //         colors: [
+          //           Color(0xff6E5DE7).withOpacity(0.8),
+          //           Color(0xff6E5DE7).withOpacity(0.8),
+          //         ]),
+          //     shape: BoxShape.circle,
+          //     color: CommonColor.themColor9295E2),
+          child: Image.asset(
+            'assets/png/notification.png',
+            scale: 3.3,
+          ),
+        ),
         CommonWidget.commonSizedBox(width: 10)
       ],
     );

@@ -263,7 +263,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                                 title:
                                                                     "Try again",
                                                                 message:
-                                                                    'Failed 123');
+                                                                    'You can only add Max 3 Stocks before Completing 3 referral');
                                                           }
                                                         },
                                                         child: Container(

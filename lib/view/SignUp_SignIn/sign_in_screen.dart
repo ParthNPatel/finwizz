@@ -147,6 +147,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: ProgressHUD(
         child: Builder(
           builder: (context) {
@@ -158,7 +159,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 CommonWidget.commonSizedBox(height: 20),
                 Center(
                   child: CommonText.textBoldWight600(
-                      text: 'Welcome Back!', fontSize: 25.sp),
+                      text: 'Welcome to FinWizz!', fontSize: 22.sp),
                 ),
                 CommonWidget.commonSizedBox(height: 40.sp),
                 CommonWidget.textFormField(
@@ -313,25 +314,25 @@ class _SignInScreenState extends State<SignInScreen> {
                       )),
                 ),
                 CommonWidget.commonSizedBox(height: 40.sp),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: () {
-                    Get.off(() => SignUpScreen());
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CommonText.textBoldWight500(
-                          text: "Don’t have an account? ", fontSize: 11.sp),
-                      CommonText.textBoldWight600(
-                        text: "Sign Up",
-                        color: Color(0xff0865D3),
-                        fontSize: 11.sp,
-                      ),
-                    ],
-                  ),
-                ),
+                // InkWell(
+                //   splashColor: Colors.transparent,
+                //   highlightColor: Colors.transparent,
+                //   onTap: () {
+                //     Get.off(() => SignUpScreen());
+                //   },
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       CommonText.textBoldWight500(
+                //           text: "Don’t have an account? ", fontSize: 11.sp),
+                //       CommonText.textBoldWight600(
+                //         text: "Sign Up",
+                //         color: Color(0xff0865D3),
+                //         fontSize: 11.sp,
+                //       ),
+                //     ],
+                //   ),
+                // ),
               ],
             );
           },

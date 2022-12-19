@@ -23,12 +23,12 @@ class BottomNavScreen extends StatefulWidget {
 }
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  List bottomItems = [
-    {"icon": ImageConst.home, 'label': "Home"},
-    {"icon": ImageConst.bellIcon, 'label': "Notification"},
-    {"icon": ImageConst.news, 'label': "News"},
-    {"icon": ImageConst.portfolio, 'label': "Portfolio"},
-  ];
+  // List bottomItems = [
+  //   {"icon": ImageConst.home, 'label': "Home"},
+  //   {"icon": ImageConst.bellIcon, 'label': "Notification"},
+  //   {"icon": ImageConst.news, 'label': "News"},
+  //   {"icon": ImageConst.portfolio, 'label': "Portfolio"},
+  // ];
 
   List bottomItemsWN = [
     {"icon": ImageConst.home, 'label': "Home"},
@@ -52,7 +52,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     return Scaffold(
       body: GetBuilder<HandleScreenController>(
         builder: (controller) =>
-            GetStorageServices.getUserLoggedInStatus() == true
+            /*GetStorageServices.getUserLoggedInStatus() == true
                 ? selected == 0
                     ? HomeScreen()
                     : selected == 1
@@ -64,15 +64,16 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                             : GetStorageServices.getUserLoggedInStatus() == true
                                 ? PortfolioScreen()
                                 : SignUpScreen()
-                : selected == 0
-                    ? HomeScreen()
-                    : selected == 1
-                        ? controller.isTapped == true
-                            ? BookMarkScreen()
-                            : NewsMainScreen()
-                        : GetStorageServices.getUserLoggedInStatus() == true
-                            ? PortfolioScreen()
-                            : SignUpScreen(),
+                :*/
+            selected == 0
+                ? HomeScreen()
+                : selected == 1
+                    ? controller.isTapped == true
+                        ? BookMarkScreen()
+                        : NewsMainScreen()
+                    : GetStorageServices.getUserLoggedInStatus() == true
+                        ? PortfolioScreen()
+                        : SignUpScreen(),
       ),
       bottomNavigationBar: Container(
         height: 50.sp,
@@ -81,9 +82,10 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(
-            GetStorageServices.getUserLoggedInStatus() == true
+            /* GetStorageServices.getUserLoggedInStatus() == true
                 ? bottomItems.length
-                : bottomItemsWN.length,
+                :*/
+            bottomItemsWN.length,
             (index) => ElevatedButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.transparent),
@@ -102,7 +104,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GetStorageServices.getUserLoggedInStatus() == true
+                  /*GetStorageServices.getUserLoggedInStatus() == true
                       ? bottomItems[index]['icon'].toString().contains(".svg")
                           ? SvgPicture.asset(
                               bottomItems[index]['icon'],
@@ -116,26 +118,28 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                                   : Color(0xff808191),
                               height: 17.sp,
                               width: 17.sp)
-                      : bottomItemsWN[index]['icon'].toString().contains(".svg")
-                          ? SvgPicture.asset(
-                              bottomItemsWN[index]['icon'],
-                              color: selected == index
-                                  ? CommonColor.primaryColor
-                                  : Color(0xff808191),
-                            )
-                          : Image.asset(bottomItemsWN[index]['icon'],
-                              color: selected == index
-                                  ? CommonColor.primaryColor
-                                  : Color(0xff808191),
-                              height: 17.sp,
-                              width: 17.sp),
+                      :*/
+                  bottomItemsWN[index]['icon'].toString().contains(".svg")
+                      ? SvgPicture.asset(
+                          bottomItemsWN[index]['icon'],
+                          color: selected == index
+                              ? CommonColor.primaryColor
+                              : Color(0xff808191),
+                        )
+                      : Image.asset(bottomItemsWN[index]['icon'],
+                          color: selected == index
+                              ? CommonColor.primaryColor
+                              : Color(0xff808191),
+                          height: 17.sp,
+                          width: 17.sp),
                   SizedBox(
                     height: 3.sp,
                   ),
                   Text(
-                    GetStorageServices.getUserLoggedInStatus() == true
+                    /* GetStorageServices.getUserLoggedInStatus() == true
                         ? bottomItems[index]['label']
-                        : bottomItemsWN[index]['label'],
+                        :*/
+                    bottomItemsWN[index]['label'],
                     style: TextStyle(
                       color:
                           selected == index ? Colors.black : Color(0xffA6A6A6),

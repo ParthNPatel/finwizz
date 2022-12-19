@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:country_picker/country_picker.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/text_styel.dart';
@@ -13,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../Models/repo/login_repo.dart';
 import '../../Models/responseModel/country_model.dart';
 import '../BottomNav/bottom_nav_screen.dart';
@@ -37,26 +35,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
             CommonWidget.commonSizedBox(height: 20),
             CreateAccount(),
             CommonWidget.commonSizedBox(height: 40.sp),
-            InkWell(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onTap: () {
-                GetStorageServices.setUserLoggedIn();
-                Get.off(() => SignInScreen());
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CommonText.textBoldWight500(
-                      text: "Already have an account? ", fontSize: 11.sp),
-                  CommonText.textBoldWight600(
-                    text: "Sign In",
-                    color: Color(0xff0865D3),
-                    fontSize: 11.sp,
-                  ),
-                ],
-              ),
-            ),
+            // InkWell(
+            //   splashColor: Colors.transparent,
+            //   highlightColor: Colors.transparent,
+            //   onTap: () {
+            //     GetStorageServices.setUserLoggedIn();
+            //     Get.off(() => SignInScreen());
+            //   },
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       CommonText.textBoldWight500(
+            //           text: "Already have an account? ", fontSize: 11.sp),
+            //       CommonText.textBoldWight600(
+            //         text: "Sign In",
+            //         color: Color(0xff0865D3),
+            //         fontSize: 11.sp,
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -203,7 +201,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 children: [
                   Center(
                     child: CommonText.textBoldWight600(
-                        text: 'Create Account', fontSize: 22.sp),
+                        text: 'Welcome to FinWizz', fontSize: 22.sp),
                   ),
                   CommonWidget.commonSizedBox(height: 40.sp),
                   CommonWidget.textFormField(
@@ -355,7 +353,7 @@ class _CreateAccountState extends State<CreateAccount> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 55.sp, vertical: 12.sp),
                           child: CommonText.textBoldWight600(
-                              text: "Sign Up", color: Colors.white),
+                              text: "Sign In", color: Colors.white),
                         )),
                   ),
                 ],

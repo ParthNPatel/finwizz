@@ -634,7 +634,7 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                         padding: EdgeInsets.symmetric(horizontal: 9),
                         itemCount: showDate!.length,
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        // physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index1) {
                           var dateData = showDate![index1];
                           var currentDate =
