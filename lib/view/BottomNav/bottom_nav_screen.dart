@@ -5,7 +5,7 @@ import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/Home/home_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:finwizz/view/news/news_main_screen.dart';
-import 'package:finwizz/view/notification/notification_screen.dart';
+import 'package:finwizz/viewModel/get_all_news_categories_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -39,6 +39,8 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   int selected = 0;
 
   HandleScreenController controller = Get.find();
+  GetAllNewsCategoriesViewModel getAllNewsCategoriesViewModel =
+      Get.put(GetAllNewsCategoriesViewModel());
 
   @override
   void initState() {
@@ -98,6 +100,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                 // } else {
                 setState(() {
                   selected = index;
+                  getAllNewsCategoriesViewModel.newsFilter(0);
                 });
                 // }
               },

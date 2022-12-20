@@ -1,17 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/services/app_notification.dart';
-import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../Models/repo/login_repo.dart';
 import '../../Models/responseModel/country_model.dart';
 import '../BottomNav/bottom_nav_screen.dart';
@@ -72,8 +73,10 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   final phoneController = TextEditingController();
   final otpController = TextEditingController();
+  final referralController = TextEditingController();
 
   bool isChecked = false;
+  bool addReferral = false;
 
   String? verificationCode;
 
@@ -152,10 +155,19 @@ class _CreateAccountState extends State<CreateAccount> {
           log("Enter Valid OTP");
         } else {
           try {
-            await LoginRepo.loginUserRepo(model: {
-              "phone": "${phoneController.text.trim()}",
-              "fcm_token": "${GetStorageServices.getFcm()}"
-            }, progress: progress);
+            await LoginRepo.loginUserRepo(
+                model: referralController.text.isNotEmpty &&
+                        referralController.text != ""
+                    ? {
+                        "phone": "${phoneController.text.trim()}",
+                        "fcm_token": "${GetStorageServices.getFcm()}",
+                        "referralCode": "${referralController.text.trim()}",
+                      }
+                    : {
+                        "phone": "${phoneController.text.trim()}",
+                        "fcm_token": "${GetStorageServices.getFcm()}"
+                      },
+                progress: progress);
             GetStorageServices.setUserLoggedIn();
             Get.offAll(() => BottomNavScreen(selectedIndex: 0));
           } catch (e) {
@@ -284,23 +296,37 @@ class _CreateAccountState extends State<CreateAccount> {
                       keyBoardType: TextInputType.number,
                       controller: otpController,
                       hintText: "OTP"),
-                  CommonWidget.commonSizedBox(height: 5.sp),
-                  InkWell(
-                    onTap: () {},
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
+                  addReferral
+                      ? CommonWidget.commonSizedBox(height: 25.sp)
+                      : SizedBox(),
+                  addReferral
+                      ? CommonWidget.textFormField(
+                          keyBoardType: TextInputType.text,
+                          controller: referralController,
+                          hintText: "Enter Referral Code")
+                      : SizedBox(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: 20,
+                        TextButton(
+                          onPressed: () {},
+                          child: CommonText.textBoldWight400(
+                            text: " Resend OTP",
+                            color: Color(0xff0865D3),
+                          ),
                         ),
-                        CommonText.textBoldWight400(
-                          text: " Resend OTP",
-                          color: Color(0xff0865D3),
-                        ),
-                        SizedBox(
-                          width: 12,
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              addReferral = !addReferral;
+                            });
+                          },
+                          child: CommonText.textBoldWight400(
+                            text: " Add Referral Code",
+                            color: Color(0xff0865D3),
+                          ),
                         ),
                       ],
                     ),
@@ -336,7 +362,16 @@ class _CreateAccountState extends State<CreateAccount> {
                         onPressed: () async {
                           if (phoneController.text.isNotEmpty &&
                               otpController.text.isNotEmpty) {
-                            await enterOtp(progress);
+                            if (isChecked == true) {
+                              await enterOtp(progress);
+                            } else {
+                              CommonWidget.getSnackBar(
+                                  color: Colors.red,
+                                  colorText: Colors.white,
+                                  title: "Required!",
+                                  message:
+                                      "Please check FinWizz terms and condition");
+                            }
                           } else {
                             CommonWidget.getSnackBar(
                                 color: Colors.red,
@@ -353,7 +388,7 @@ class _CreateAccountState extends State<CreateAccount> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 55.sp, vertical: 12.sp),
                           child: CommonText.textBoldWight600(
-                              text: "Sign In", color: Colors.white),
+                              text: "Sign Up", color: Colors.white),
                         )),
                   ),
                 ],

@@ -6,7 +6,6 @@ import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/services/app_notification.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
-import 'package:finwizz/view/SignUp_SignIn/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,8 +27,10 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final phoneController = TextEditingController();
   final otpController = TextEditingController();
+  final referralController = TextEditingController();
 
   bool isChecked = false;
+  bool addReferral = false;
 
   String? verificationCode;
 
@@ -108,10 +109,19 @@ class _SignInScreenState extends State<SignInScreen> {
           log("Enter Valid OTP");
         } else {
           try {
-            await LoginRepo.loginUserRepo(model: {
-              "phone": "${phoneController.text.trim()}",
-              "fcm_token": "${GetStorageServices.getFcm()}"
-            }, progress: progress);
+            await LoginRepo.loginUserRepo(
+                model: referralController.text.isNotEmpty &&
+                        referralController.text != ""
+                    ? {
+                        "phone": "${phoneController.text.trim()}",
+                        "fcm_token": "${GetStorageServices.getFcm()}",
+                        "referralCode": "${referralController.text.trim()}",
+                      }
+                    : {
+                        "phone": "${phoneController.text.trim()}",
+                        "fcm_token": "${GetStorageServices.getFcm()}",
+                      },
+                progress: progress);
             GetStorageServices.setUserLoggedIn();
             Get.offAll(() => BottomNavScreen(selectedIndex: 0));
           } catch (e) {
@@ -152,188 +162,213 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Builder(
           builder: (context) {
             final progress = ProgressHUD.of(context);
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset("assets/png/stack_bubel.png", scale: 4.2),
-                CommonWidget.commonSizedBox(height: 20),
-                Center(
-                  child: CommonText.textBoldWight600(
-                      text: 'Welcome to FinWizz!', fontSize: 22.sp),
-                ),
-                CommonWidget.commonSizedBox(height: 40.sp),
-                CommonWidget.textFormField(
-                    prefix: SizedBox(
-                      width: 60.sp,
-                      child: InkWell(
-                        onTap: () {
-                          // _displayDialog(context);
-                          showCountryPicker(
-                            context: context,
-                            showPhoneCode:
-                                true, // optional. Shows phone code before the country name.
-                            onSelect: (Country country) {
-                              print('Select country: ${country.displayName}');
-                              setState(() {
-                                selectedCountry = country;
-                              });
-                              countryCode = country.phoneCode;
-                            },
-                          );
-                        },
-                        child: Container(
-                            margin:
-                                const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                            alignment: Alignment.center,
-                            height: 50.0,
-                            width: 100,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  selectedCountry != null
-                                      ? "+ ${selectedCountry!.phoneCode}"
-                                      : "+91",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                )
-                              ],
-                            )),
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset("assets/png/stack_bubel.png", scale: 4.2),
+                  CommonWidget.commonSizedBox(height: 20),
+                  Center(
+                    child: CommonText.textBoldWight600(
+                        text: 'Welcome to FinWizz!', fontSize: 22.sp),
+                  ),
+                  CommonWidget.commonSizedBox(height: 40.sp),
+                  CommonWidget.textFormField(
+                      prefix: SizedBox(
+                        width: 60.sp,
+                        child: InkWell(
+                          onTap: () {
+                            // _displayDialog(context);
+                            showCountryPicker(
+                              context: context,
+                              showPhoneCode:
+                                  true, // optional. Shows phone code before the country name.
+                              onSelect: (Country country) {
+                                print('Select country: ${country.displayName}');
+                                setState(() {
+                                  selectedCountry = country;
+                                });
+                                countryCode = country.phoneCode;
+                              },
+                            );
+                          },
+                          child: Container(
+                              margin:
+                                  const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                              alignment: Alignment.center,
+                              height: 50.0,
+                              width: 100,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    selectedCountry != null
+                                        ? "+${selectedCountry!.phoneCode}"
+                                        : "+91",
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                ],
+                              )),
+                        ),
                       ),
-                    ),
-                    maxLength: 10,
-                    keyBoardType: TextInputType.number,
-                    controller: phoneController,
-                    hintText: "Phone Number"),
-                CommonWidget.commonSizedBox(height: 25.sp),
-                CommonWidget.textFormField(
-                    suffix: InkWell(
-                      onTap: () {},
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              if (phoneController.text.isNotEmpty) {
-                                await sendOtp(progress);
-                              } else {
-                                CommonWidget.getSnackBar(
-                                    color: Colors.red,
-                                    colorText: Colors.white,
-                                    title: "Required!",
-                                    message: "Please enter Phone No");
-                              }
-                            },
-                            child: CommonText.textBoldWight400(
-                              text: "Get OTP",
-                              color: Color(0xff0865D3),
+                      maxLength: 10,
+                      keyBoardType: TextInputType.number,
+                      controller: phoneController,
+                      hintText: "Phone Number"),
+                  CommonWidget.commonSizedBox(height: 25.sp),
+                  CommonWidget.textFormField(
+                      suffix: InkWell(
+                        onTap: () {},
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                if (phoneController.text.isNotEmpty) {
+                                  await sendOtp(progress);
+                                } else {
+                                  CommonWidget.getSnackBar(
+                                      color: Colors.red,
+                                      colorText: Colors.white,
+                                      title: "Required!",
+                                      message: "Please enter Phone No");
+                                }
+                              },
+                              child: CommonText.textBoldWight400(
+                                text: "Get OTP",
+                                color: Color(0xff0865D3),
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                        ],
+                            SizedBox(width: 12),
+                          ],
+                        ),
                       ),
+                      maxLength: 6,
+                      keyBoardType: TextInputType.number,
+                      controller: otpController,
+                      hintText: "OTP"),
+                  addReferral
+                      ? CommonWidget.commonSizedBox(height: 25.sp)
+                      : SizedBox(),
+                  addReferral
+                      ? CommonWidget.textFormField(
+                          keyBoardType: TextInputType.text,
+                          controller: referralController,
+                          hintText: "Enter Referral Code")
+                      : SizedBox(),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {},
+                          child: CommonText.textBoldWight400(
+                            text: " Resend OTP",
+                            color: Color(0xff0865D3),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              addReferral = !addReferral;
+                            });
+                          },
+                          child: CommonText.textBoldWight400(
+                            text: " Add Referral Code",
+                            color: Color(0xff0865D3),
+                          ),
+                        ),
+                      ],
                     ),
-                    maxLength: 6,
-                    keyBoardType: TextInputType.number,
-                    controller: otpController,
-                    hintText: "OTP"),
-                CommonWidget.commonSizedBox(height: 5.sp),
-                InkWell(
-                  onTap: () {},
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  ),
+                  CommonWidget.commonSizedBox(height: 25.sp),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: 20,
+                      Checkbox(
+                        value: isChecked,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3.5),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            isChecked = value!;
+                          });
+                        },
                       ),
                       CommonText.textBoldWight400(
-                        text: " Resend OTP",
+                          text: "I agree to the FinWizz ", fontSize: 9.sp),
+                      CommonText.textBoldWight400(
+                        text: "Terms and Conditions",
                         color: Color(0xff0865D3),
-                      ),
-                      SizedBox(
-                        width: 12,
+                        fontSize: 9.sp,
                       ),
                     ],
                   ),
-                ),
-                CommonWidget.commonSizedBox(height: 25.sp),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                      value: isChecked,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3.5),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          isChecked = value!;
-                        });
-                      },
-                    ),
-                    CommonText.textBoldWight400(
-                        text: "I agree to the FinWizz ", fontSize: 9.sp),
-                    CommonText.textBoldWight400(
-                      text: "Terms and Conditions",
-                      color: Color(0xff0865D3),
-                      fontSize: 9.sp,
-                    ),
-                  ],
-                ),
-                CommonWidget.commonSizedBox(height: 25.sp),
-                Center(
-                  child: MaterialButton(
-                      elevation: 0,
-                      onPressed: () async {
-                        if (phoneController.text.isNotEmpty &&
-                            otpController.text.isNotEmpty) {
-                          await enterOtp(progress);
-                        } else {
-                          CommonWidget.getSnackBar(
-                              color: Colors.red,
-                              colorText: Colors.white,
-                              title: "Required!",
-                              message: "Please enter Phone No or OTP");
-                        }
-                      },
-                      color: Color(0xffcecef0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 55.sp, vertical: 12.sp),
-                        child: CommonText.textBoldWight600(
-                            text: "Sign In", color: Colors.white),
-                      )),
-                ),
-                CommonWidget.commonSizedBox(height: 40.sp),
-                // InkWell(
-                //   splashColor: Colors.transparent,
-                //   highlightColor: Colors.transparent,
-                //   onTap: () {
-                //     Get.off(() => SignUpScreen());
-                //   },
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     children: [
-                //       CommonText.textBoldWight500(
-                //           text: "Don’t have an account? ", fontSize: 11.sp),
-                //       CommonText.textBoldWight600(
-                //         text: "Sign Up",
-                //         color: Color(0xff0865D3),
-                //         fontSize: 11.sp,
-                //       ),
-                //     ],
-                //   ),
-                // ),
-              ],
+                  CommonWidget.commonSizedBox(height: 25.sp),
+                  Center(
+                    child: MaterialButton(
+                        elevation: 0,
+                        onPressed: () async {
+                          if (phoneController.text.isNotEmpty &&
+                              otpController.text.isNotEmpty) {
+                            if (isChecked == true) {
+                              await enterOtp(progress);
+                            } else {
+                              CommonWidget.getSnackBar(
+                                  color: Colors.red,
+                                  colorText: Colors.white,
+                                  title: "Required!",
+                                  message:
+                                      "Please check FinWizz terms and condition");
+                            }
+                          } else {
+                            CommonWidget.getSnackBar(
+                                color: Colors.red,
+                                colorText: Colors.white,
+                                title: "Required!",
+                                message: "Please enter Phone No or OTP");
+                          }
+                        },
+                        color: Color(0xffcecef0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 55.sp, vertical: 12.sp),
+                          child: CommonText.textBoldWight600(
+                              text: "Sign In", color: Colors.white),
+                        )),
+                  ),
+                  CommonWidget.commonSizedBox(height: 40.sp),
+                  // InkWell(
+                  //   splashColor: Colors.transparent,
+                  //   highlightColor: Colors.transparent,
+                  //   onTap: () {
+                  //     Get.off(() => SignUpScreen());
+                  //   },
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       CommonText.textBoldWight500(
+                  //           text: "Don’t have an account? ", fontSize: 11.sp),
+                  //       CommonText.textBoldWight600(
+                  //         text: "Sign Up",
+                  //         color: Color(0xff0865D3),
+                  //         fontSize: 11.sp,
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
+              ),
             );
           },
         ),

@@ -2,6 +2,7 @@ import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/stock_summary_res_model.dart';
 import 'package:finwizz/constant/image_const.dart';
 import 'package:finwizz/view/portfolio/search_screen.dart';
+import 'package:finwizz/viewModel/get_all_news_categories_view_model.dart';
 import 'package:finwizz/viewModel/stock_remove_view_model.dart';
 import 'package:finwizz/viewModel/stock_summary_view_model.dart';
 import 'package:flutter/material.dart';
@@ -32,16 +33,15 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   StockSummaryViewModel stockSummaryViewModel =
       Get.put(StockSummaryViewModel());
   RemoveStockViewModel removeStockViewModel = Get.put(RemoveStockViewModel());
+  GetAllNewsCategoriesViewModel getAllNewsCategoriesViewModel =
+      Get.put(GetAllNewsCategoriesViewModel());
+
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    call();
+    stockSummaryViewModel.stockSummaryViewModel();
     tabController!.animation!.addListener(tabListener);
     super.initState();
-  }
-
-  call() async {
-    await stockSummaryViewModel.stockSummaryViewModel();
   }
 
   void tabListener() {
@@ -312,6 +312,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                             .removeStockApiResponse.status ==
                                         Status.COMPLETE) {
                                       Get.back();
+                                      controller.listOfDeletePortFolio.clear();
 
                                       CommonWidget.getSnackBar(
                                           color: Colors.green,
@@ -471,46 +472,65 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     ),
                   ],
                 )
-              : InkWell(
-                  onTap: () {
-                    showMenu(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                        ),
-                      ),
-                      color: Color(0xffE4E3E3),
-                      context: context,
-                      position: RelativeRect.fromLTRB(Get.width, 0, 0, 0.0),
-                      items: [
-                        PopupMenuItem(
-                          child: Text("Positive"),
-                          value: 1,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Negative"),
-                          value: 2,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Neutral"),
-                          value: 3,
-                        ),
-                      ],
-                    );
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(12),
-                      margin: EdgeInsets.all(6),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: CommonColor.greyColorB0A7A7.withOpacity(0.2)),
-                      child: CommonWidget.commonSvgPitcher(
-                          image: ImageConst.filterIcon,
-                          color: controller.isDelete
-                              ? CommonColor.themDarkColor6E5DE7
-                              : Colors.black)),
-                ),
+              : controller.selected == 1
+                  ? InkWell(
+                      onTap: () {
+                        showMenu(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                            ),
+                          ),
+                          color: Color(0xffE4E3E3),
+                          context: context,
+                          position: RelativeRect.fromLTRB(Get.width, 0, 0, 0.0),
+                          items: [
+                            PopupMenuItem(
+                              child: Text("All"),
+                              value: 0,
+                              onTap: () {
+                                getAllNewsCategoriesViewModel.newsFilter(0);
+                              },
+                            ),
+                            PopupMenuItem(
+                              child: Text("Positive"),
+                              value: 1,
+                              onTap: () {
+                                getAllNewsCategoriesViewModel.newsFilter(1);
+                              },
+                            ),
+                            PopupMenuItem(
+                              child: Text("Negative"),
+                              value: 2,
+                              onTap: () {
+                                getAllNewsCategoriesViewModel.newsFilter(2);
+                              },
+                            ),
+                            PopupMenuItem(
+                              child: Text("Neutral"),
+                              value: 3,
+                              onTap: () {
+                                getAllNewsCategoriesViewModel.newsFilter(3);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                      child: Container(
+                          padding: EdgeInsets.all(12),
+                          margin: EdgeInsets.all(6),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  CommonColor.greyColorB0A7A7.withOpacity(0.2)),
+                          child: CommonWidget.commonSvgPitcher(
+                              image: ImageConst.filterIcon,
+                              color: controller.isDelete
+                                  ? CommonColor.themDarkColor6E5DE7
+                                  : Colors.black)),
+                    )
+                  : SizedBox(height: 45.sp, width: 45.sp),
         ],
       ),
     );

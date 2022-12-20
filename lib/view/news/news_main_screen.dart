@@ -2,6 +2,7 @@ import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -99,24 +100,29 @@ class _NewsMainScreenState extends State<NewsMainScreen>
     );
   }
 
-  Container searchWidget() {
-    return Container(
-        padding: EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
-        margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        decoration: BoxDecoration(
-          color: CommonColor.whiteColorF4F6F9,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Row(
-          children: [
-            CommonText.textBoldWight400(text: 'Search'),
-            Spacer(),
-            Icon(
-              Icons.search,
-              color: Color(0xff858C94),
-            )
-          ],
-        ));
+  GestureDetector searchWidget() {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => SearchScreen());
+      },
+      child: Container(
+          padding: EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
+          margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          decoration: BoxDecoration(
+            color: CommonColor.whiteColorF4F6F9,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            children: [
+              CommonText.textBoldWight400(text: 'Search'),
+              Spacer(),
+              Icon(
+                Icons.search,
+                color: Color(0xff858C94),
+              )
+            ],
+          )),
+    );
   }
 
   Row appWidget() {
