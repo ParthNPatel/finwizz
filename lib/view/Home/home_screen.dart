@@ -484,51 +484,58 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       child: SafeArea(
         child: Column(
           children: [
-            CommonWidget.commonSizedBox(height: 10),
-            Image.asset(
-              ImageConst.iconWidget,
-              scale: 3,
-            ),
-            CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
-            CommonWidget.commonSizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Divider(color: CommonColor.amberBlackColor072D4B),
-            ),
-            Spacer(),
+            Column(children: [
+              CommonWidget.commonSizedBox(height: 10),
+              Image.asset(
+                ImageConst.iconWidget,
+                scale: 3,
+              ),
+              CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
+              CommonWidget.commonSizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: Divider(color: CommonColor.amberBlackColor072D4B),
+              ),
+            ]),
             Column(
               children: GetStorageServices.getUserLoggedInStatus() == true
                   ? withLogin()
                   : withoutLogin(),
             ),
             Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 20, bottom: 20),
-              child: Divider(color: CommonColor.amberBlackColor072D4B),
-            ),
-            CommonText.textBoldWight400(
-                text: 'Follow us on', color: CommonColor.amberBlackColor072D4B),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                platFormIcon.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    width: 24.sp,
-                    height: 24.sp,
-                    child: Image.asset(platFormIcon[index]),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, bottom: 20),
+                  child: Divider(color: CommonColor.amberBlackColor072D4B),
+                ),
+                CommonText.textBoldWight400(
+                    text: 'Follow us on',
+                    color: CommonColor.amberBlackColor072D4B),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    platFormIcon.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: 24.sp,
+                        height: 24.sp,
+                        child: Image.asset(platFormIcon[index]),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20, bottom: 10),
-              child: Divider(color: CommonColor.amberBlackColor072D4B),
-            ),
-            CommonText.textBoldWight400(
-                text: '2022 FinWizz', color: CommonColor.amberBlackColor072D4B),
-            CommonWidget.commonSizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, bottom: 10),
+                  child: Divider(color: CommonColor.amberBlackColor072D4B),
+                ),
+                CommonText.textBoldWight400(
+                    text: '2022 FinWizz',
+                    color: CommonColor.amberBlackColor072D4B),
+                CommonWidget.commonSizedBox(height: 20),
+              ],
+            )
           ],
         ),
       ),

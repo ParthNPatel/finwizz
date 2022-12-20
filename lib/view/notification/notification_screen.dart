@@ -31,103 +31,105 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            CommonWidget.commonSizedBox(height: 10),
-            appWidget(),
-            GetBuilder<GetNotificationViewModel>(builder: (controller) {
-              if (controller.getNotificationApiResponse.status ==
-                  Status.LOADING) {
-                return Center(child: CircularProgressIndicator());
-              }
-              if (controller.getNotificationApiResponse.status ==
-                  Status.COMPLETE) {
-                GetNotificationResponseModel response =
-                    controller.getNotificationApiResponse.data;
-                if (response.message!.length != 0) {
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 20.sp, vertical: 15.sp),
-                    physics: BouncingScrollPhysics(),
-                    itemCount: response.message!.length,
-                    separatorBuilder: (context, index) => Divider(
-                      height: 30,
-                      thickness: 1.3,
-                      color: Color(0xffDDDADA),
-                    ),
-                    itemBuilder: (context, index) {
-                      var time = DateTime.now()
-                                  .difference(
-                                      response.message![index].updatedAt!)
-                                  .inSeconds >
-                              60
-                          ? DateTime.now()
-                                      .difference(
-                                          response.message![index].updatedAt!)
-                                      .inMinutes >
-                                  60
-                              ? DateTime.now()
-                                          .difference(response
-                                              .message![index].updatedAt!)
-                                          .inHours >
-                                      24
-                                  ? 'About ${DateTime.now().difference(response.message![index].updatedAt!).inDays} days ago'
-                                  : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inHours} hour ago'
-                              : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inMinutes} minute ago'
-                          : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inSeconds} seconds ago';
+    return Scaffold(
+      body: Column(
+        children: [
+          CommonWidget.commonSizedBox(height: 10),
+          appWidget(),
+          GetBuilder<GetNotificationViewModel>(builder: (controller) {
+            if (controller.getNotificationApiResponse.status ==
+                Status.LOADING) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (controller.getNotificationApiResponse.status ==
+                Status.COMPLETE) {
+              GetNotificationResponseModel response =
+                  controller.getNotificationApiResponse.data;
+              if (response.message!.length != 0) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.sp, vertical: 15.sp),
+                  physics: BouncingScrollPhysics(),
+                  itemCount: response.message!.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 30,
+                    thickness: 1.3,
+                    color: Color(0xffDDDADA),
+                  ),
+                  itemBuilder: (context, index) {
+                    var time = DateTime.now()
+                                .difference(response.message![index].updatedAt!)
+                                .inSeconds >
+                            60
+                        ? DateTime.now()
+                                    .difference(
+                                        response.message![index].updatedAt!)
+                                    .inMinutes >
+                                60
+                            ? DateTime.now()
+                                        .difference(
+                                            response.message![index].updatedAt!)
+                                        .inHours >
+                                    24
+                                ? 'About ${DateTime.now().difference(response.message![index].updatedAt!).inDays} days ago'
+                                : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inHours} hour ago'
+                            : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inMinutes} minute ago'
+                        : 'About ${DateTime.now().difference(response.message![index].updatedAt!).inSeconds} seconds ago';
 
-                      return Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 17.sp,
-                            backgroundColor: Color(0xff6E5DE7).withOpacity(0.8),
-                            child: Image.asset(
-                              ImageConst.newsIcon,
-                              height: 17.sp,
-                              width: 17.sp,
+                    return Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 17.sp,
+                          backgroundColor: Color(0xff6E5DE7).withOpacity(0.8),
+                          child: Image.asset(
+                            ImageConst.newsIcon,
+                            height: 17.sp,
+                            width: 17.sp,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CommonText.textBoldWight500(
+                                text: response.message![index].title!),
+                            SizedBox(
+                              height: 5,
                             ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CommonText.textBoldWight500(
-                                  text: response.message![index].title!),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              CommonText.textBoldWight400(
-                                  text: time,
-                                  fontSize: 9.sp,
-                                  color: Color(0xff7B6F72)),
-                            ],
-                          ),
-                          Spacer(),
-                          Icon(
-                            Icons.more_vert,
-                            color: Color(0xffada4a5),
-                            size: 15.sp,
-                          )
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  return Center(
-                    child: CommonText.textBoldWight500(
-                        text: "No Message Received yet."),
-                  );
-                }
-              } else
-                return SizedBox();
-            }),
-          ],
-        ),
+                            CommonText.textBoldWight400(
+                                text: time,
+                                fontSize: 9.sp,
+                                color: Color(0xff7B6F72)),
+                          ],
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.more_vert,
+                          color: Color(0xffada4a5),
+                          size: 15.sp,
+                        )
+                      ],
+                    );
+                  },
+                );
+              } else {
+                return Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CommonText.textBoldWight500(
+                          text: "No Message Received yet."),
+                    ],
+                  ),
+                );
+              }
+            } else
+              return SizedBox();
+          }),
+        ],
       ),
     );
   }
