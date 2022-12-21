@@ -5,6 +5,7 @@ import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/repo/contact_us_repo.dart';
 import 'package:finwizz/Models/responseModel/contact_us_res_model.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
+import 'package:finwizz/Models/responseModel/get_user_res_model.dart';
 import 'package:finwizz/Models/responseModel/update_user_res_model.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
@@ -15,11 +16,13 @@ import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
 import 'package:finwizz/viewModel/get_all_news_view_model.dart';
+import 'package:finwizz/viewModel/get_user_view_model.dart';
 import 'package:finwizz/viewModel/update_user_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../components/indicatorWidget.dart';
@@ -37,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
   GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
+  GetUserViewModel getUserViewModel = Get.put(GetUserViewModel());
 
   List colors = [
     Color(0xffEB7777),
@@ -59,8 +63,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    getUserData();
     getAllNewsViewModel.getNewsViewModel(catId: "");
     super.initState();
+  }
+
+  getUserData() async {
+    if (GetStorageServices.getUserLoggedInStatus() == true) {
+      await getUserViewModel.getUserViewModel();
+
+      if (getUserViewModel.getUserApiResponse.status == Status.COMPLETE) {
+        GetUserResponseModel response =
+            getUserViewModel.getUserApiResponse.data;
+
+        GetStorageServices.setReferralCode(response.data!.refferalCode ?? "");
+        GetStorageServices.setReferralCount(response.data!.refferalCount ?? 0);
+
+        print('====== > ${GetStorageServices.getReferralCount()}');
+        print('====== > ${GetStorageServices.getReferralCode()}');
+      }
+    }
   }
 
   // bool isOpen = true;
@@ -913,9 +935,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 
   Widget referrals() {
+
+    String link = "Referral Code";
+
     return Dialog(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -935,7 +960,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         fontSize: 10.sp,
                         color: Colors.black),
                     CommonText.textBoldWight400(
-                        text: "1", fontSize: 10.sp, color: Colors.grey),
+                        text: GetStorageServices.getReferralCount() >= 3
+                            ? "0"
+                            : "${3 - GetStorageServices.getReferralCount()}",
+                        fontSize: 10.sp,
+                        color: Colors.grey),
                   ],
                 ),
                 Column(
@@ -945,7 +974,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         fontSize: 10.sp,
                         color: Colors.black),
                     CommonText.textBoldWight400(
-                        text: "2", fontSize: 10.sp, color: Colors.grey),
+                        text: "${GetStorageServices.getReferralCount()}",
+                        fontSize: 10.sp,
+                        color: Colors.grey),
                   ],
                 ),
               ],
@@ -979,7 +1010,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CommonText.textBoldWight600(
-                    text: "FW1234", fontSize: 12.sp, color: Colors.black),
+                    text: "${GetStorageServices.getReferralCode()}",
+                    fontSize: 12.sp,
+                    color: Colors.black),
                 SizedBox(
                   width: 5,
                 ),
@@ -987,9 +1020,21 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   Icons.copy,
                   color: CommonColor.primaryColor,
                 ),
-                Spacer(),
+              ],
+            ),
+            SizedBox(
+              height: 7.sp,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 InkWell(
-                  onTap: () {},
+                  onTap: () async {
+                    await Share.share(
+                      "${GetStorageServices.getReferralCode()}",
+                      subject: link,
+                    );
+                  },
                   child: Image.asset(
                     ImageConst.whatsApp,
                     height: 20.sp,
@@ -997,10 +1042,15 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                 ),
                 SizedBox(
-                  width: 15,
+                  width: 20,
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () async {
+                    await Share.share(
+                      "${GetStorageServices.getReferralCode()}",
+                      subject: link,
+                    );
+                  },
                   child: Image.asset(
                     ImageConst.twitter,
                     height: 20.sp,
@@ -1008,14 +1058,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                 ),
                 SizedBox(
-                  width: 15,
+                  width: 20,
                 ),
                 Icon(
                   Icons.share,
                   color: CommonColor.primaryColor,
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),

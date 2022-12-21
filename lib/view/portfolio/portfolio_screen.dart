@@ -110,19 +110,18 @@ class _PortfolioScreenState extends State<PortfolioScreen>
           controller.isDeleteAvailable =
               responseModel.data!.length == 0 ? false : true;
           return Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: responseModel.data!.length != 0
                 ? MainAxisAlignment.start
                 : MainAxisAlignment.center,
             children: [
-              controller.isAddShare
-                  ? CommonWidget.commonSizedBox(height: 26)
-                  : SizedBox(),
               // controller.isAddShare
               //     ?
               Expanded(
                 child: ListView.builder(
                   itemCount: responseModel.data!.length,
                   shrinkWrap: true,
+                  physics: BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -247,9 +246,6 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                 ),
               ),
               // : SizedBox(),
-              _portFolioController.isAddShare
-                  ? CommonWidget.commonSizedBox(height: 32)
-                  : SizedBox(),
               InkWell(
                 onTap: () {
                   if (controller.isDelete) {
@@ -352,7 +348,8 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                   ),
                                 ),
                               ],
-                            )
+                            ),
+                            CommonWidget.commonSizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -371,6 +368,8 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                         borderRadius: BorderRadius.circular(12),
                         color: CommonColor.themColor9295E2)),
               ),
+
+              CommonWidget.commonSizedBox(height: 20)
             ],
           );
         } else
@@ -448,7 +447,11 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     InkWell(
                       onTap: () {
                         if (controller.isDeleteAvailable == true) {
-                          controller.isDelete = true;
+                          if (!controller.isDelete) {
+                            controller.isDelete = true;
+                          } else {
+                            controller.isDelete = false;
+                          }
                         } else {
                           CommonWidget.getSnackBar(
                               title: 'Add Stock First',

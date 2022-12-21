@@ -95,7 +95,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CommonText.textBoldWight500(
-                                text: response.message![index].title!),
+                                text:
+                                    response.message![index].title!.length > 28
+                                        ? response.message![index].title!
+                                                .substring(0, 28) +
+                                            ".."
+                                        : response.message![index].title!),
                             SizedBox(
                               height: 5,
                             ),

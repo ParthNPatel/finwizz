@@ -117,8 +117,26 @@ class GetStorageServices {
     return getStorage.read('setPortfolioAlerts');
   }
 
+  static setReferralCode(String referralCode) {
+    getStorage.write('referralCode', referralCode);
+  }
+
+  static getReferralCode() {
+    return getStorage.read('referralCode');
+  }
+
+  static setReferralCount(int referralCount) {
+    getStorage.write('referralCount', referralCount);
+  }
+
+  static getReferralCount() {
+    return getStorage.read('referralCount');
+  }
+
   static logOut() {
     getStorage.remove('barrierToken');
+    getStorage.remove('referralCode');
+    getStorage.remove('referralCount');
     getStorage.remove('setIsEmailOrPhone');
     getStorage.remove('setMobile');
     getStorage.remove('setEmailValue');
