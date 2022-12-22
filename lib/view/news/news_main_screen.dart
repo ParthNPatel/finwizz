@@ -1,8 +1,10 @@
+import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/responseModel/search_news_res_model.dart';
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
-import 'package:finwizz/view/portfolio/search_screen.dart';
+import 'package:finwizz/viewModel/search_news_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -25,8 +27,14 @@ class _NewsMainScreenState extends State<NewsMainScreen>
     with SingleTickerProviderStateMixin {
   final globalKey = GlobalKey<ScaffoldState>();
   TabController? tabController;
+  TextEditingController _searchController = TextEditingController();
 
+  SearchNewsViewModel searchNewsViewModel = Get.put(SearchNewsViewModel());
   HandleScreenController controller = Get.find();
+  SearchNewsResponseModel? response;
+
+  bool catVisible = true;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -89,7 +97,10 @@ class _NewsMainScreenState extends State<NewsMainScreen>
               child: TabBarView(
                 controller: tabController,
                 children: [
-                  NewsScreen(isCategoryVisible: true),
+                  NewsScreen(
+                      isCategoryVisible: catVisible,
+                      response: response,
+                      isLoading: isLoading),
                   MoversScreen(),
                 ],
               ),
@@ -100,29 +111,58 @@ class _NewsMainScreenState extends State<NewsMainScreen>
     );
   }
 
-  GestureDetector searchWidget() {
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => SearchScreen());
-      },
-      child: Container(
+  GetBuilder searchWidget() {
+    return GetBuilder<SearchNewsViewModel>(builder: (controller) {
+      return Container(
+          height: 44,
           padding: EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
           margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           decoration: BoxDecoration(
             color: CommonColor.whiteColorF4F6F9,
             borderRadius: BorderRadius.circular(30),
           ),
-          child: Row(
-            children: [
-              CommonText.textBoldWight400(text: 'Search'),
-              Spacer(),
-              Icon(
+          child: TextFormField(
+            controller: _searchController,
+            onChanged: (value) async {
+              if (_searchController.text.isNotEmpty &&
+                  _searchController.text != "") {
+                setState(() {
+                  catVisible = false;
+                });
+              } else {
+                setState(() {
+                  catVisible = true;
+                });
+              }
+
+              await controller.searchNewsViewModel(
+                  searchText: _searchController.text.trim(), isLoading: false);
+
+              if (controller.searchNewsApiResponse.status == Status.LOADING) {
+                setState(() {
+                  isLoading = true;
+                });
+              }
+
+              if (controller.searchNewsApiResponse.status == Status.COMPLETE) {
+                setState(() {
+                  isLoading = false;
+                  response = controller.searchNewsApiResponse.data;
+                });
+              }
+            },
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.only(top: 2),
+              hintText: 'Search',
+              suffixIcon: Icon(
                 Icons.search,
                 color: Color(0xff858C94),
-              )
-            ],
-          )),
-    );
+              ),
+              border: InputBorder.none,
+            ),
+          ));
+    });
   }
 
   Row appWidget() {

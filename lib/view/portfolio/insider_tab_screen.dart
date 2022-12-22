@@ -62,11 +62,12 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder<InsiderViewModel>(builder: (controller) {
-        if (controller.getMoversApiResponse.status == Status.LOADING) {
+        if (controller.getInsidersApiResponse.status == Status.LOADING) {
           return Center(child: CircularProgressIndicator());
         }
-        if (controller.getMoversApiResponse.status == Status.COMPLETE) {
-          InsiderResponseModel response = controller.getMoversApiResponse.data;
+        if (controller.getInsidersApiResponse.status == Status.COMPLETE) {
+          InsiderResponseModel response =
+              controller.getInsidersApiResponse.data;
 
           return Column(children: [
             Expanded(

@@ -7,6 +7,7 @@ class APIConst {
   static String like = "/news/like";
   static String favourite = "/news/favourite";
   static String searchStock = "/stocks/search?text=";
+  static String searchNews = "/news/search?companyId=";
   static String addStock = "/stocks";
   static String removeStock = "/stocks/remove";
   static String stockSummary = "/stocks/summary";
