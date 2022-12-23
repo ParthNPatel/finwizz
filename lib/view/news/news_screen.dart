@@ -204,7 +204,7 @@ class _NewsScreenState extends State<NewsScreen> {
         showSearchDate.clear();
 
         if (!widget.isCategoryVisible!) {
-          widget.response!.data!.docs!.forEach((element) {
+          widget.response?.data!.docs!.forEach((element) {
             if (showSearchDate
                     .contains(element.createdAt.toString().split(' ').first) ==
                 false) {

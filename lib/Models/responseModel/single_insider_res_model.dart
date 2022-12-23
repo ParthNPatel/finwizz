@@ -53,7 +53,9 @@ class Data {
         name: json["name"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
-        insiders: Insiders.fromJson(json["insiders"]),
+        insiders: json["insiders"] == null
+            ? null
+            : Insiders.fromJson(json["insiders"]),
         dataId: json["id"],
       );
 
@@ -62,7 +64,7 @@ class Data {
         "name": name,
         "createdAt": createdAt!.toIso8601String(),
         "updatedAt": updatedAt!.toIso8601String(),
-        "insiders": insiders!.toJson(),
+        "insiders": insiders == null ? null : insiders!.toJson(),
         "id": dataId,
       };
 }

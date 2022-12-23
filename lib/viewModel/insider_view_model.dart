@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:finwizz/Models/repo/insider_repo.dart';
 import 'package:finwizz/Models/responseModel/insider_res_model.dart';
+import 'package:finwizz/Models/responseModel/single_insider_res_model.dart';
 import 'package:get/get.dart';
 
 import '../Models/apis/api_response.dart';
@@ -39,15 +42,15 @@ class InsiderViewModel extends GetxController {
       _getSingleInsidersApiResponse = ApiResponse.loading(message: 'Loading');
     }
 
-    // update();
+    update();
     try {
-      InsiderResponseModel response =
+      SingleInsiderResponseModel response =
           await InsiderRepo.singleInsiderRepo(companyId: companyId!);
-      print("GetSingleInsidersResponseModel==>$response");
+      log("GetSingleInsidersResponseModel==>$response");
 
       _getSingleInsidersApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("GetSingleInsidersResponseModel==>$e");
+      log("GetSingleInsidersResponseModel==>$e");
       _getSingleInsidersApiResponse = ApiResponse.error(message: 'error');
     }
     update();

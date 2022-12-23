@@ -118,7 +118,7 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
                                     CommonWidget.commonSizedBox(width: 7),
                                     Container(
                                         height: 20,
-                                        width: sold.w / 2.5,
+                                        width: sold.w / 2.7,
                                         color: CommonColor.lightRedColorFD7E7E),
                                   ]),
                                   CommonWidget.commonSizedBox(height: 10),
@@ -204,7 +204,7 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
                                         alignment: Alignment.centerLeft,
                                         child: Container(
                                             height: 20,
-                                            width: bought.w / 2.5,
+                                            width: bought.w / 2.7,
                                             color:
                                                 CommonColor.greenColor2ECC71),
                                       ),

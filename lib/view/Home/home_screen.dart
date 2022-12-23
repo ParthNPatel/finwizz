@@ -495,70 +495,71 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   bool isCheckedPortfolio = GetStorageServices.getPortfolioAlerts() ?? false;
 
   UpdateUserViewModel updateUserViewModel = Get.put(UpdateUserViewModel());
+  bool emailCheck = false;
 
   @override
   Widget build(BuildContext context) {
-    log('loginnnmmm ${GetStorageServices.getUserLoggedInStatus()}');
-
     return Container(
       width: 220,
       color: Colors.white,
       child: SafeArea(
-        child: Column(
-          children: [
-            Column(children: [
-              CommonWidget.commonSizedBox(height: 10),
-              Image.asset(
-                ImageConst.iconWidget,
-                scale: 3,
-              ),
-              CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
-              CommonWidget.commonSizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: Divider(color: CommonColor.amberBlackColor072D4B),
-              ),
-            ]),
-            Column(
-              children: GetStorageServices.getUserLoggedInStatus() == true
-                  ? withLogin()
-                  : withoutLogin(),
-            ),
-            Spacer(),
-            Column(
-              children: [
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              Column(children: [
+                CommonWidget.commonSizedBox(height: 10),
+                Image.asset(
+                  ImageConst.iconWidget,
+                  scale: 3,
+                ),
+                CommonText.textBoldWight600(text: 'FinWizz', fontSize: 18.sp),
+                CommonWidget.commonSizedBox(height: 30),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 20),
+                  padding: const EdgeInsets.only(right: 20),
                   child: Divider(color: CommonColor.amberBlackColor072D4B),
                 ),
-                CommonText.textBoldWight400(
-                    text: 'Follow us on',
-                    color: CommonColor.amberBlackColor072D4B),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    platFormIcon.length,
-                    (index) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: 24.sp,
-                        height: 24.sp,
-                        child: Image.asset(platFormIcon[index]),
+              ]),
+              Column(
+                children: GetStorageServices.getUserLoggedInStatus() == true
+                    ? withLogin()
+                    : withoutLogin(),
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20, bottom: 20),
+                    child: Divider(color: CommonColor.amberBlackColor072D4B),
+                  ),
+                  CommonText.textBoldWight400(
+                      text: 'Follow us on',
+                      color: CommonColor.amberBlackColor072D4B),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      platFormIcon.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: 24.sp,
+                          height: 24.sp,
+                          child: Image.asset(platFormIcon[index]),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 10),
-                  child: Divider(color: CommonColor.amberBlackColor072D4B),
-                ),
-                CommonText.textBoldWight400(
-                    text: '2022 FinWizz',
-                    color: CommonColor.amberBlackColor072D4B),
-                CommonWidget.commonSizedBox(height: 20),
-              ],
-            )
-          ],
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20, bottom: 10),
+                    child: Divider(color: CommonColor.amberBlackColor072D4B),
+                  ),
+                  CommonText.textBoldWight400(
+                      text: '2022 FinWizz',
+                      color: CommonColor.amberBlackColor072D4B),
+                  CommonWidget.commonSizedBox(height: 20),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -840,7 +841,25 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               child: SizedBox(
                 child: TextFormField(
                   controller: email,
+                  onChanged: (value) {
+                    setState(() {
+                      emailCheck = RegExp(
+                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                          .hasMatch(email.text);
+                    });
+                  },
                   decoration: InputDecoration(
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 6.sp),
+                      child: CircleAvatar(
+                        radius: 5.sp,
+                        backgroundColor:
+                            emailCheck ? Colors.green : Colors.grey.shade300,
+                        child: Icon(Icons.done,
+                            color: emailCheck ? Colors.white : Colors.grey,
+                            size: 8.sp),
+                      ),
+                    ),
                     contentPadding: EdgeInsets.only(bottom: 3, left: 15),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40),
@@ -886,31 +905,44 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               child: MaterialButton(
                   elevation: 0,
                   onPressed: () async {
+                    log("Pressed ");
+
                     if (name.text.isNotEmpty &&
                         email.text.isNotEmpty &&
                         message.text.isNotEmpty) {
-                      ContactUsResponseModel response =
-                          await ContactUsRepo.contactUsRepo(body: {
-                        "name": "${name.text.trim()}",
-                        "email": "${email.text.trim()}",
-                        "message": "${message.text.trim()}"
-                      });
-                      Get.back();
+                      if (RegExp(
+                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                          .hasMatch(email.text)) {
+                        ContactUsResponseModel response =
+                            await ContactUsRepo.contactUsRepo(body: {
+                          "name": "${name.text.trim()}",
+                          "email": "${email.text.trim()}",
+                          "message": "${message.text.trim()}"
+                        });
+                        Get.back();
 
-                      if (response.flag == true) {
-                        CommonWidget.getSnackBar(
-                            color: Colors.green.withOpacity(.5),
-                            duration: 2,
-                            colorText: Colors.white,
-                            title: "${response.flag}",
-                            message: 'Your query delivered successfully');
+                        if (response.flag == true) {
+                          CommonWidget.getSnackBar(
+                              color: Colors.green.withOpacity(.5),
+                              duration: 2,
+                              colorText: Colors.white,
+                              title: "${response.flag}",
+                              message: 'Your query delivered successfully');
+                        } else {
+                          CommonWidget.getSnackBar(
+                              color: Colors.red.withOpacity(.5),
+                              duration: 2,
+                              colorText: Colors.white,
+                              title: "${response.flag}",
+                              message: 'Something went wrong');
+                        }
                       } else {
                         CommonWidget.getSnackBar(
                             color: Colors.red.withOpacity(.5),
                             duration: 2,
                             colorText: Colors.white,
-                            title: "${response.flag}",
-                            message: 'Something went wrong');
+                            title: "Email not valid",
+                            message: 'Please enter valid email address');
                       }
                     }
                   },
@@ -935,7 +967,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 
   Widget referrals() {
-
     String link = "Referral Code";
 
     return Dialog(

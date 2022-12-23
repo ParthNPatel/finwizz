@@ -1,6 +1,7 @@
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/stock_summary_res_model.dart';
 import 'package:finwizz/constant/image_const.dart';
+import 'package:finwizz/view/portfolio/portfolio_news_screen.dart';
 import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:finwizz/view/portfolio/single_stock_screen.dart';
 import 'package:finwizz/viewModel/get_all_news_categories_view_model.dart';
@@ -14,7 +15,6 @@ import '../../components/common_widget.dart';
 import '../../constant/color_const.dart';
 import '../../constant/text_styel.dart';
 import '../../controllers/portfolio_controller.dart';
-import '../news/news_screen.dart';
 import 'insider_tab_screen.dart';
 
 class PortfolioScreen extends StatefulWidget {
@@ -79,7 +79,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                 controller: tabController,
                 children: [
                   firstTabView(controller, context),
-                  NewsScreen(),
+                  PortfolioNewsScreen(),
                   InsiderTabScreen()
                 ],
               ),

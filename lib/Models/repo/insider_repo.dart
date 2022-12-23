@@ -29,7 +29,7 @@ class InsiderRepo extends BaseService {
       apitype: APIType.aGet,
     );
 
-    print('InsiderResponse===>>>  $response');
+    print('Single InsiderResponse===>>>  $response');
 
     SingleInsiderResponseModel singleInsiderResponseModel =
         SingleInsiderResponseModel.fromJson(response);

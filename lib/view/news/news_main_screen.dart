@@ -4,6 +4,7 @@ import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/notification/notification_screen.dart';
 import 'package:finwizz/viewModel/search_news_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -210,22 +211,27 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 ),
               ),
         CommonWidget.commonSizedBox(width: 10),
-        Container(
-          // padding: EdgeInsets.all(8),
-          // alignment: Alignment.center,
-          // decoration: BoxDecoration(
-          //     gradient: LinearGradient(
-          //         begin: Alignment.center,
-          //         end: Alignment.bottomCenter,
-          //         colors: [
-          //           Color(0xff6E5DE7).withOpacity(0.8),
-          //           Color(0xff6E5DE7).withOpacity(0.8),
-          //         ]),
-          //     shape: BoxShape.circle,
-          //     color: CommonColor.themColor9295E2),
-          child: Image.asset(
-            'assets/png/notification.png',
-            scale: 3.3,
+        GestureDetector(
+          onTap: () {
+            Get.to(NotificationScreen());
+          },
+          child: Container(
+            // padding: EdgeInsets.all(8),
+            // alignment: Alignment.center,
+            // decoration: BoxDecoration(
+            //     gradient: LinearGradient(
+            //         begin: Alignment.center,
+            //         end: Alignment.bottomCenter,
+            //         colors: [
+            //           Color(0xff6E5DE7).withOpacity(0.8),
+            //           Color(0xff6E5DE7).withOpacity(0.8),
+            //         ]),
+            //     shape: BoxShape.circle,
+            //     color: CommonColor.themColor9295E2),
+            child: Image.asset(
+              'assets/png/notification.png',
+              scale: 3.3,
+            ),
           ),
         ),
         CommonWidget.commonSizedBox(width: 10)
