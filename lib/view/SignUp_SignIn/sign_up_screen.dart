@@ -388,7 +388,7 @@ class _CreateAccountState extends State<CreateAccount> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 55.sp, vertical: 12.sp),
                           child: CommonText.textBoldWight600(
-                              text: "Sign Up", color: Colors.white),
+                              text: "Create Account", color: Colors.white),
                         )),
                   ),
                 ],

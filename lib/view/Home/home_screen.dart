@@ -501,6 +501,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: 220,
+      height: double.infinity,
       color: Colors.white,
       child: SafeArea(
         child: SingleChildScrollView(

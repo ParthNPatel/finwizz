@@ -1,14 +1,18 @@
 import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/responseModel/get_user_res_model.dart';
 import 'package:finwizz/Models/responseModel/stock_summary_res_model.dart';
 import 'package:finwizz/constant/image_const.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/portfolio/portfolio_news_screen.dart';
 import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:finwizz/view/portfolio/single_stock_screen.dart';
 import 'package:finwizz/viewModel/get_all_news_categories_view_model.dart';
+import 'package:finwizz/viewModel/get_user_view_model.dart';
 import 'package:finwizz/viewModel/stock_remove_view_model.dart';
 import 'package:finwizz/viewModel/stock_summary_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../components/common_widget.dart';
@@ -36,9 +40,11 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   RemoveStockViewModel removeStockViewModel = Get.put(RemoveStockViewModel());
   GetAllNewsCategoriesViewModel getAllNewsCategoriesViewModel =
       Get.put(GetAllNewsCategoriesViewModel());
+  GetUserViewModel getUserViewModel = Get.put(GetUserViewModel());
 
   @override
   void initState() {
+    getUserViewModel.getUserViewModel();
     tabController = TabController(length: 3, vsync: this);
     stockSummaryViewModel.stockSummaryViewModel();
     tabController!.animation!.addListener(tabListener);
@@ -91,300 +97,551 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   }
 
   firstTabView(PortFolioController controller, BuildContext context) {
-    return GetBuilder<StockSummaryViewModel>(
-      builder: (stockController) {
-        if (stockController.stockSummaryApiResponse.status == Status.LOADING) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+    return GetBuilder<GetUserViewModel>(builder: (controllerUser) {
+      if (controllerUser.getUserApiResponse.status == Status.LOADING) {
+        return Center(child: CircularProgressIndicator());
+      }
+      if (controllerUser.getUserApiResponse.status == Status.COMPLETE) {
+        GetUserResponseModel respUser = controllerUser.getUserApiResponse.data;
 
-        if (stockController.stockSummaryApiResponse.status == Status.ERROR) {
-          return Center(
-            child: Text('Something went wrong'),
-          );
-        }
+        return GetBuilder<StockSummaryViewModel>(
+          builder: (stockController) {
+            if (stockController.stockSummaryApiResponse.status ==
+                Status.LOADING) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-        if (stockController.stockSummaryApiResponse.status == Status.COMPLETE) {
-          StockSummaryResponseModel responseModel =
-              stockController.stockSummaryApiResponse.data;
-          controller.isDeleteAvailable =
-              responseModel.data!.length == 0 ? false : true;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: responseModel.data!.length != 0
-                ? MainAxisAlignment.start
-                : MainAxisAlignment.center,
-            children: [
-              // controller.isAddShare
-              //     ?
-              Expanded(
-                child: ListView.builder(
-                  itemCount: responseModel.data!.length,
-                  shrinkWrap: true,
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 20),
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Get.to(() => SingleStockSceen(
-                                  companyName:
-                                      '${responseModel.data![index].name}',
-                                  companyId: responseModel.data![index].id!));
-                            },
-                            child: Row(
-                              children: [
-                                //assets/svg/empty_check_box.svg
-                                controller.isDelete
-                                    ? InkWell(
-                                        onTap: () {
-                                          controller.setListOfPortFolio(
-                                              shareName: responseModel
-                                                  .data![index].id!);
-                                        },
-                                        child: CommonWidget.commonSvgPitcher(
-                                            image: controller
-                                                    .listOfDeletePortFolio
-                                                    .contains(responseModel
-                                                        .data![index].id)
-                                                ? 'assets/svg/check_box.svg'
-                                                : 'assets/svg/empty_check_box.svg'),
-                                      )
-                                    : SizedBox(),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: CommonText.textBoldWight400(
-                                      text:
-                                          '${responseModel.data![index].name}'),
-                                ),
-                                Spacer(),
+            if (stockController.stockSummaryApiResponse.status ==
+                Status.ERROR) {
+              return Center(
+                child: Text('Something went wrong'),
+              );
+            }
 
-                                responseModel.data![index].positive! > 0 &&
-                                        responseModel.data![index].positive !=
-                                            null
-                                    ? Container(
-                                        alignment: Alignment.center,
-                                        width: 30.sp,
-                                        height: 30.sp,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xff2ECC71)
-                                                .withOpacity(.5),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: Border.all(
-                                                color: Color(0xffEBEEF2))),
-                                        child: CommonText.textBoldWight400(
-                                            text:
-                                                '${responseModel.data![index].positive}'),
-                                      )
-                                    : SizedBox(),
-                                SizedBox(width: 15.sp),
-                                responseModel.data![index].negative! > 0 &&
-                                        responseModel.data![index].negative !=
-                                            null
-                                    ? Container(
-                                        alignment: Alignment.center,
-                                        width: 30.sp,
-                                        height: 30.sp,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffF43737)
-                                                .withOpacity(.5),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: Border.all(
-                                                color: Color(0xffEBEEF2))),
-                                        child: CommonText.textBoldWight400(
-                                            text:
-                                                '${responseModel.data![index].negative}'),
-                                      )
-                                    : SizedBox(
-                                        width: 30.sp,
-                                        height: 30.sp,
-                                      ),
-
-                                SizedBox(width: 20.sp),
-
-                                /* listOfStocks[index]['updates'].length == 0
-                                    ? CommonText.textBoldWight400(
-                                        text: 'No recent updates ')
-                                    :*/
-                                // Row(
-                                //   children: List.generate(
-                                //       listOfStocks[index]['updates'].length,
-                                //       (indexOf) {
-                                //     return Padding(
-                                //       padding: const EdgeInsets.all(8.0),
-                                //       child: Container(
-                                //         width: 30.sp,
-                                //         alignment: Alignment.center,
-                                //         padding: EdgeInsets.symmetric(
-                                //           vertical: 8,
-                                //         ),
-                                //         child: CommonText.textBoldWight400(
-                                //             text: listOfStocks[index]['updates']
-                                //                     [indexOf]
-                                //                 .toString()),
-                                //         decoration: BoxDecoration(
-                                //             borderRadius: BorderRadius.circular(8),
-                                //             color: listOfStocks[index]['updates']
-                                //                             .length ==
-                                //                         2 &&
-                                //                     indexOf == 0
-                                //                 ? CommonColor.greenColor2ECC71
-                                //                     .withOpacity(0.5)
-                                //                 : CommonColor.lightRedColor3D3D3D
-                                //                     .withOpacity(0.5)),
-                                //       ),
-                                //     );
-                                //   }),
-                                // )
-                              ],
-                            ),
-                          ),
-                          CommonWidget.commonSizedBox(height: 6),
-                          Divider(
-                            color: CommonColor.greyColorD1CDCD,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              // : SizedBox(),
-              InkWell(
-                onTap: () {
-                  if (controller.isDelete) {
-                    showModalBottomSheet(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
-                        ),
-                      ),
-                      context: context,
-                      builder: (context) => Container(
-                        height: 150.sp,
-                        decoration: BoxDecoration(
-                          color: Color(0xfff4f4f4),
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(30),
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: CommonText.textBoldWight500(
-                                  text: "Are you sure you want to delete ?"),
-                            ),
-                            CommonWidget.commonSizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    controller.isDelete = false;
-
-                                    Get.back();
-                                  },
-                                  child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 30),
-                                      child: CommonText.textBoldWight700(
-                                          text: "CANCEL",
-                                          fontSize: 10.sp,
-                                          color: Colors.white),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          color: CommonColor.themColor9295E2)),
-                                ),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                InkWell(
-                                  onTap: () async {
-                                    await removeStockViewModel
-                                        .removeStockViewModel(body: {
-                                      "stockId":
-                                          controller.listOfDeletePortFolio
-                                    });
-
-                                    if (removeStockViewModel
-                                            .removeStockApiResponse.status ==
-                                        Status.COMPLETE) {
-                                      Get.back();
-                                      controller.listOfDeletePortFolio.clear();
-
-                                      CommonWidget.getSnackBar(
-                                          color: Colors.green,
-                                          duration: 2,
-                                          colorText: Colors.white,
-                                          title: "Stock Removed successfully!",
-                                          message: 'Successfully');
-                                    }
-                                    if (removeStockViewModel
-                                            .removeStockApiResponse.status ==
-                                        Status.ERROR) {
-                                      Get.back();
-
-                                      CommonWidget.getSnackBar(
-                                          color: Colors.red,
-                                          duration: 2,
-                                          colorText: Colors.white,
-                                          title: "Try again",
-                                          message: 'Failed');
-                                    }
-                                    controller.isDelete = false;
-                                    await stockSummaryViewModel
-                                        .stockSummaryViewModel(
-                                            isLoading: false);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 30),
-                                    child: CommonText.textBoldWight700(
-                                        text: "YES, DELETE",
-                                        fontSize: 10.sp,
-                                        color: Colors.white),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: CommonColor.themColor9295E2,
+            if (stockController.stockSummaryApiResponse.status ==
+                Status.COMPLETE) {
+              StockSummaryResponseModel responseModel =
+                  stockController.stockSummaryApiResponse.data;
+              controller.isDeleteAvailable =
+                  responseModel.data!.length == 0 ? false : true;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: responseModel.data!.length != 0
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.center,
+                children: [
+                  // controller.isAddShare
+                  //     ?
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: responseModel.data!.length,
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 20),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => SingleStockSceen(
+                                      companyName:
+                                          '${responseModel.data![index].name}',
+                                      companyId:
+                                          responseModel.data![index].id!));
+                                },
+                                child: Row(
+                                  children: [
+                                    //assets/svg/empty_check_box.svg
+                                    controller.isDelete
+                                        ? InkWell(
+                                            onTap: () {
+                                              controller.setListOfPortFolio(
+                                                  shareName: responseModel
+                                                      .data![index].id!);
+                                            },
+                                            child: CommonWidget.commonSvgPitcher(
+                                                image: controller
+                                                        .listOfDeletePortFolio
+                                                        .contains(responseModel
+                                                            .data![index].id)
+                                                    ? 'assets/svg/check_box.svg'
+                                                    : 'assets/svg/empty_check_box.svg'),
+                                          )
+                                        : SizedBox(),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: CommonText.textBoldWight400(
+                                          text:
+                                              '${responseModel.data![index].name}'),
                                     ),
+                                    Spacer(),
+
+                                    responseModel.data![index].positive! > 0 &&
+                                            responseModel
+                                                    .data![index].positive !=
+                                                null
+                                        ? Container(
+                                            alignment: Alignment.center,
+                                            width: 30.sp,
+                                            height: 30.sp,
+                                            decoration: BoxDecoration(
+                                                color: Color(0xff2ECC71)
+                                                    .withOpacity(.5),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Color(0xffEBEEF2))),
+                                            child: CommonText.textBoldWight400(
+                                                text:
+                                                    '${responseModel.data![index].positive}'),
+                                          )
+                                        : SizedBox(),
+                                    SizedBox(width: 15.sp),
+                                    responseModel.data![index].negative! > 0 &&
+                                            responseModel
+                                                    .data![index].negative !=
+                                                null
+                                        ? Container(
+                                            alignment: Alignment.center,
+                                            width: 30.sp,
+                                            height: 30.sp,
+                                            decoration: BoxDecoration(
+                                                color: Color(0xffF43737)
+                                                    .withOpacity(.5),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Color(0xffEBEEF2))),
+                                            child: CommonText.textBoldWight400(
+                                                text:
+                                                    '${responseModel.data![index].negative}'),
+                                          )
+                                        : SizedBox(
+                                            width: 30.sp,
+                                            height: 30.sp,
+                                          ),
+
+                                    SizedBox(width: 20.sp),
+
+                                    /* listOfStocks[index]['updates'].length == 0
+                                        ? CommonText.textBoldWight400(
+                                            text: 'No recent updates ')
+                                        :*/
+                                    // Row(
+                                    //   children: List.generate(
+                                    //       listOfStocks[index]['updates'].length,
+                                    //       (indexOf) {
+                                    //     return Padding(
+                                    //       padding: const EdgeInsets.all(8.0),
+                                    //       child: Container(
+                                    //         width: 30.sp,
+                                    //         alignment: Alignment.center,
+                                    //         padding: EdgeInsets.symmetric(
+                                    //           vertical: 8,
+                                    //         ),
+                                    //         child: CommonText.textBoldWight400(
+                                    //             text: listOfStocks[index]['updates']
+                                    //                     [indexOf]
+                                    //                 .toString()),
+                                    //         decoration: BoxDecoration(
+                                    //             borderRadius: BorderRadius.circular(8),
+                                    //             color: listOfStocks[index]['updates']
+                                    //                             .length ==
+                                    //                         2 &&
+                                    //                     indexOf == 0
+                                    //                 ? CommonColor.greenColor2ECC71
+                                    //                     .withOpacity(0.5)
+                                    //                 : CommonColor.lightRedColor3D3D3D
+                                    //                     .withOpacity(0.5)),
+                                    //       ),
+                                    //     );
+                                    //   }),
+                                    // )
+                                  ],
+                                ),
+                              ),
+                              CommonWidget.commonSizedBox(height: 6),
+                              Divider(
+                                color: CommonColor.greyColorD1CDCD,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // : SizedBox(),
+
+                  respUser.data!.addedStocks!.length == 5 &&
+                          respUser.data!.refferalCount! < 3 &&
+                          !controller.isDelete
+                      ? Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Positioned(
+                              bottom: 25,
+                              left: -7,
+                              child: Icon(Icons.lock_outline,
+                                  color: CommonColor.primaryColor),
+                            ),
+                            Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 50),
+                                child: CommonText.textBoldWight700(
+                                    text: 'ADD STOCKS',
+                                    fontSize: 10.sp,
+                                    color: Colors.white),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: CommonColor.greyColorD1CDCD
+                                        .withOpacity(.7))),
+                          ],
+                        )
+                      : InkWell(
+                          onTap: () {
+                            if (controller.isDelete) {
+                              showModalBottomSheet(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
                                   ),
                                 ),
-                              ],
-                            ),
-                            CommonWidget.commonSizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    Get.to(() => SearchScreen());
-                  }
-                },
-                child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                    child: CommonText.textBoldWight700(
-                        text: controller.isDelete ? 'DELETE' : 'ADD STOCKS',
-                        fontSize: 10.sp,
-                        color: Colors.white),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: CommonColor.themColor9295E2)),
-              ),
+                                context: context,
+                                builder: (context) => Container(
+                                  height: 150.sp,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xfff4f4f4),
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(30),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: CommonText.textBoldWight500(
+                                            text:
+                                                "Are you sure you want to delete ?"),
+                                      ),
+                                      CommonWidget.commonSizedBox(height: 30),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              controller.isDelete = false;
 
-              CommonWidget.commonSizedBox(height: 20)
-            ],
-          );
-        } else
-          return SizedBox();
-      },
+                                              Get.back();
+                                            },
+                                            child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10,
+                                                    horizontal: 30),
+                                                child:
+                                                    CommonText.textBoldWight700(
+                                                        text: "CANCEL",
+                                                        fontSize: 10.sp,
+                                                        color: Colors.white),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    color: CommonColor
+                                                        .themColor9295E2)),
+                                          ),
+                                          SizedBox(
+                                            width: 30,
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              await removeStockViewModel
+                                                  .removeStockViewModel(body: {
+                                                "stockId": controller
+                                                    .listOfDeletePortFolio
+                                              });
+
+                                              if (removeStockViewModel
+                                                      .removeStockApiResponse
+                                                      .status ==
+                                                  Status.COMPLETE) {
+                                                Get.back();
+                                                controller.listOfDeletePortFolio
+                                                    .clear();
+
+                                                CommonWidget.getSnackBar(
+                                                    color: Colors.green,
+                                                    duration: 2,
+                                                    colorText: Colors.white,
+                                                    title:
+                                                        "Stock Removed successfully!",
+                                                    message: 'Successfully');
+                                              }
+                                              if (removeStockViewModel
+                                                      .removeStockApiResponse
+                                                      .status ==
+                                                  Status.ERROR) {
+                                                Get.back();
+
+                                                CommonWidget.getSnackBar(
+                                                    color: Colors.red,
+                                                    duration: 2,
+                                                    colorText: Colors.white,
+                                                    title: "Try again",
+                                                    message: 'Failed');
+                                              }
+                                              controller.isDelete = false;
+                                              await stockController
+                                                  .stockSummaryViewModel(
+                                                      isLoading: false);
+                                              await controllerUser
+                                                  .getUserViewModel(
+                                                      isLoading: false);
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 10, horizontal: 30),
+                                              child:
+                                                  CommonText.textBoldWight700(
+                                                      text: "YES, DELETE",
+                                                      fontSize: 10.sp,
+                                                      color: Colors.white),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                color:
+                                                    CommonColor.themColor9295E2,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      CommonWidget.commonSizedBox(height: 20),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else {
+                              Get.to(() => SearchScreen());
+                            }
+                          },
+                          child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 50),
+                              child: CommonText.textBoldWight700(
+                                  text: controller.isDelete
+                                      ? 'DELETE'
+                                      : 'ADD STOCKS',
+                                  fontSize: 10.sp,
+                                  color: Colors.white),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: CommonColor.themColor9295E2)),
+                        ),
+
+                  respUser.data!.addedStocks!.length == 5 &&
+                          respUser.data!.refferalCount! < 3 &&
+                          !controller.isDelete
+                      ? CommonWidget.commonSizedBox(height: 8.sp)
+                      : CommonWidget.commonSizedBox(height: 13.sp),
+                  respUser.data!.addedStocks!.length == 5 &&
+                          respUser.data!.refferalCount! < 3 &&
+                          !controller.isDelete
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                                height: 40.sp,
+                                child: Text(
+                                    "Please complete 3 referrals to\nadd more than 5 stocks")),
+                            SizedBox(width: 5.sp),
+                            InkWell(
+                              onTap: () {
+                                Get.dialog(referrals());
+                              },
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Positioned(
+                                    left: 4.sp,
+                                    top: 5.sp,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 28.sp,
+                                      width: 77.sp,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(80.sp),
+                                          color: CommonColor.primaryColor),
+                                    ),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: 30.sp,
+                                    width: 80.sp,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(80.sp),
+                                        color: Colors.black),
+                                    child: Text("Refere now",
+                                        style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        )
+                      : SizedBox(),
+                  SizedBox(height: 5.sp)
+                ],
+              );
+            } else
+              return SizedBox();
+          },
+        );
+      } else
+        return SizedBox();
+    });
+  }
+
+  Widget referrals() {
+    String link = "Referral Code";
+
+    return Dialog(
+      child: Padding(
+        padding: EdgeInsets.all(18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: CommonText.textBoldWight500(
+                  text: "Referrals", fontSize: 18.sp, color: Colors.black),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    CommonText.textBoldWight400(
+                        text: "Pending referrals",
+                        fontSize: 10.sp,
+                        color: Colors.black),
+                    CommonText.textBoldWight400(
+                        text: GetStorageServices.getReferralCount() >= 3
+                            ? "0"
+                            : "${3 - GetStorageServices.getReferralCount()}",
+                        fontSize: 10.sp,
+                        color: Colors.grey),
+                  ],
+                ),
+                Column(
+                  children: [
+                    CommonText.textBoldWight400(
+                        text: "Successful referrals",
+                        fontSize: 10.sp,
+                        color: Colors.black),
+                    CommonText.textBoldWight400(
+                        text: "${GetStorageServices.getReferralCount()}",
+                        fontSize: 10.sp,
+                        color: Colors.grey),
+                  ],
+                ),
+              ],
+            ),
+            CommonWidget.commonSizedBox(height: 20.sp),
+            Divider(),
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              children: [
+                Icon(
+                  Icons.lock_open_outlined,
+                  color: CommonColor.primaryColor,
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                CommonText.textBoldWight500(
+                    text: "Unlock all features with 3 successful referrals",
+                    fontSize: 8.sp,
+                    color: Colors.black),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Divider(),
+            CommonWidget.commonSizedBox(height: 20.sp),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CommonText.textBoldWight600(
+                    text: "${GetStorageServices.getReferralCode()}",
+                    fontSize: 12.sp,
+                    color: Colors.black),
+                SizedBox(
+                  width: 5,
+                ),
+                Icon(
+                  Icons.copy,
+                  color: CommonColor.primaryColor,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 7.sp,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () async {
+                    await Share.share(
+                      "${GetStorageServices.getReferralCode()}",
+                      subject: link,
+                    );
+                  },
+                  child: Image.asset(
+                    ImageConst.whatsApp,
+                    height: 20.sp,
+                    width: 20.sp,
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                InkWell(
+                  onTap: () async {
+                    await Share.share(
+                      "${GetStorageServices.getReferralCode()}",
+                      subject: link,
+                    );
+                  },
+                  child: Image.asset(
+                    ImageConst.twitter,
+                    height: 20.sp,
+                    width: 20.sp,
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Icon(
+                  Icons.share,
+                  color: CommonColor.primaryColor,
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 

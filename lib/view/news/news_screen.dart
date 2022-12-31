@@ -391,8 +391,14 @@ class _NewsScreenState extends State<NewsScreen> {
                                                         CommonWidget
                                                             .commonSizedBox(
                                                                 height: 15),
-                                                        // CommonText.textBoldWight400(
-                                                        //     text: 'TANLA', color: Colors.black),
+                                                        CommonText.textBoldWight400(
+                                                            text: news[index]
+                                                                        .companyId !=
+                                                                    null
+                                                                ? '${news[index].companyId!.name}'
+                                                                : "-",
+                                                            color:
+                                                                Colors.black),
                                                         CommonWidget
                                                             .commonSizedBox(
                                                                 height: 15),
@@ -419,7 +425,6 @@ class _NewsScreenState extends State<NewsScreen> {
                                                               onTap: () async {
                                                                 // controller.updateLike(
                                                                 //     response.data![index].isLiked!);
-
                                                                 if (GetStorageServices
                                                                         .getUserLoggedInStatus() ==
                                                                     true) {
@@ -508,7 +513,6 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                       message:
                                                                           'Need to login first, Please complete login steps');
                                                                 }
-
                                                                 /*            if (getAllNewsViewModel.getNewsApiResponse.status ==
                                 Status.COMPLETE) {}
                             if (getAllNewsViewModel.getNewsApiResponse.status ==

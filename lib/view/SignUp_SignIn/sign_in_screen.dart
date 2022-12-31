@@ -344,7 +344,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 55.sp, vertical: 12.sp),
                           child: CommonText.textBoldWight600(
-                              text: "Sign In", color: Colors.white),
+                              text: "Create Account", color: Colors.white),
                         )),
                   ),
                   CommonWidget.commonSizedBox(height: 40.sp),

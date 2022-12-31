@@ -57,228 +57,238 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-          child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            CommonWidget.commonSizedBox(height: 10),
-            appBarWidget(),
-            CommonWidget.commonSizedBox(height: 10),
-            searchBarWidget(),
-            CommonWidget.commonSizedBox(height: 12),
-            GetBuilder<SearchStockViewModel>(
-              builder: (controller) {
-                if (controller.searchStockApiResponse.status ==
-                    Status.LOADING) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (controller.searchStockApiResponse.status ==
-                    Status.COMPLETE) {
-                  SearchStockResponseModel searchStock =
-                      controller.searchStockApiResponse.data;
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          children: [
-                            CommonText.textBoldWight600(
-                                text: 'Search result for '),
-                            CommonText.textBoldWight400(text: "'to'"),
-                          ],
+    return WillPopScope(
+      onWillPop: () async {
+        Get.offAll(() => BottomNavScreen(
+              selectedIndex: 3,
+            ));
+        return true;
+      },
+      child: Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              CommonWidget.commonSizedBox(height: 10),
+              appBarWidget(),
+              CommonWidget.commonSizedBox(height: 10),
+              searchBarWidget(),
+              CommonWidget.commonSizedBox(height: 12),
+              GetBuilder<SearchStockViewModel>(
+                builder: (controller) {
+                  if (controller.searchStockApiResponse.status ==
+                      Status.LOADING) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (controller.searchStockApiResponse.status ==
+                      Status.COMPLETE) {
+                    SearchStockResponseModel searchStock =
+                        controller.searchStockApiResponse.data;
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              CommonText.textBoldWight600(
+                                  text: 'Search result for '),
+                              CommonText.textBoldWight400(text: "'to'"),
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Divider(
-                          color: CommonColor.greyColorD1CDCD,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Divider(
+                            color: CommonColor.greyColorD1CDCD,
+                          ),
                         ),
-                      ),
-                      searchStock.data!.length == 0
-                          ? Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
-                              child: CommonText.textBoldWight400(
-                                  text:
-                                      'No results found. We are constantly working '
-                                      'on adding support for more stocks. Please check again after sometime.'),
-                            )
-                          : ListView.builder(
-                              itemCount: searchStock.data!.length,
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 10),
-                                              child: CommonText.textBoldWight400(
-                                                  text:
-                                                      '${searchStock.data![index].name}'),
-                                            ),
-                                            Spacer(),
-                                            controller.addStockList.contains(
-                                                    searchStock.data![index].id)
-                                                ? InkWell(
-                                                    onTap: () async {
-                                                      await removeStockViewModel
-                                                          .removeStockViewModel(
-                                                              body: {
-                                                            "stockId":
-                                                                "${searchStock.data![index].id!}"
-                                                          });
+                        searchStock.data!.length == 0
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 10),
+                                child: CommonText.textBoldWight400(
+                                    text:
+                                        'No results found. We are constantly working '
+                                        'on adding support for more stocks. Please check again after sometime.'),
+                              )
+                            : ListView.builder(
+                                itemCount: searchStock.data!.length,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 10),
+                                                child: CommonText.textBoldWight400(
+                                                    text:
+                                                        '${searchStock.data![index].name}'),
+                                              ),
+                                              Spacer(),
+                                              controller.addStockList.contains(
+                                                      searchStock
+                                                          .data![index].id)
+                                                  ? InkWell(
+                                                      onTap: () async {
+                                                        await removeStockViewModel
+                                                            .removeStockViewModel(
+                                                                body: {
+                                                              "stockId":
+                                                                  "${searchStock.data![index].id!}"
+                                                            });
 
-                                                      if (removeStockViewModel
-                                                              .removeStockApiResponse
-                                                              .status ==
-                                                          Status.COMPLETE) {
-                                                        controller.addStock(
-                                                            searchStock
-                                                                .data![index]
-                                                                .id!);
+                                                        if (removeStockViewModel
+                                                                .removeStockApiResponse
+                                                                .status ==
+                                                            Status.COMPLETE) {
+                                                          controller.addStock(
+                                                              searchStock
+                                                                  .data![index]
+                                                                  .id!);
 
-                                                        CommonWidget.getSnackBar(
-                                                            color: Colors.green
+                                                          CommonWidget.getSnackBar(
+                                                              color: Colors
+                                                                  .green
+                                                                  .withOpacity(
+                                                                      .5),
+                                                              duration: 2,
+                                                              colorText:
+                                                                  Colors.white,
+                                                              title:
+                                                                  "Stock Removed successfully!",
+                                                              message:
+                                                                  'Successfully');
+                                                        }
+                                                        if (removeStockViewModel
+                                                                .removeStockApiResponse
+                                                                .status ==
+                                                            Status.ERROR) {
+                                                          CommonWidget.getSnackBar(
+                                                              color: Colors.red,
+                                                              duration: 2,
+                                                              colorText:
+                                                                  Colors.white,
+                                                              title:
+                                                                  "Try again",
+                                                              message:
+                                                                  'Failed');
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        height: 25.sp,
+                                                        width: 25.sp,
+                                                        decoration: BoxDecoration(
+                                                            color: Color(
+                                                                    0xff9295E2)
                                                                 .withOpacity(
-                                                                    .5),
-                                                            duration: 2,
-                                                            colorText:
-                                                                Colors.white,
-                                                            title:
-                                                                "Stock Removed successfully!",
-                                                            message:
-                                                                'Successfully');
-                                                      }
-                                                      if (removeStockViewModel
-                                                              .removeStockApiResponse
-                                                              .status ==
-                                                          Status.ERROR) {
-                                                        CommonWidget
-                                                            .getSnackBar(
-                                                                color:
-                                                                    Colors.red,
-                                                                duration: 2,
-                                                                colorText:
-                                                                    Colors
-                                                                        .white,
-                                                                title:
-                                                                    "Try again",
-                                                                message:
-                                                                    'Failed');
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                      height: 25.sp,
-                                                      width: 25.sp,
-                                                      decoration: BoxDecoration(
-                                                          color: Color(
-                                                                  0xff9295E2)
-                                                              .withOpacity(.3),
-                                                          shape:
-                                                              BoxShape.circle),
-                                                      child: Icon(Icons.done,
-                                                          color: CommonColor
-                                                              .themColor9295E2,
-                                                          size: 15.sp),
-                                                    ),
-                                                  )
-                                                : InkWell(
-                                                    onTap: () async {
-                                                      await addStockViewModel
-                                                          .addStockViewModel(
-                                                              body: {
-                                                            "stockId":
-                                                                "${searchStock.data![index].id!}"
-                                                          });
-                                                      if (addStockViewModel
-                                                              .addStockApiResponse
-                                                              .status ==
-                                                          Status.COMPLETE) {
-                                                        controller.addStock(
-                                                            searchStock
-                                                                .data![index]
-                                                                .id!);
+                                                                    .3),
+                                                            shape: BoxShape
+                                                                .circle),
+                                                        child: Icon(Icons.done,
+                                                            color: CommonColor
+                                                                .themColor9295E2,
+                                                            size: 15.sp),
+                                                      ),
+                                                    )
+                                                  : InkWell(
+                                                      onTap: () async {
+                                                        await addStockViewModel
+                                                            .addStockViewModel(
+                                                                body: {
+                                                              "stockId":
+                                                                  "${searchStock.data![index].id!}"
+                                                            });
+                                                        if (addStockViewModel
+                                                                .addStockApiResponse
+                                                                .status ==
+                                                            Status.COMPLETE) {
+                                                          controller.addStock(
+                                                              searchStock
+                                                                  .data![index]
+                                                                  .id!);
 
-                                                        _portFolioController
-                                                            .isAddShare = true;
-                                                        // CommonWidget.getSnackBar(
-                                                        //     color: Colors
-                                                        //         .green
-                                                        //         .withOpacity(
-                                                        //             .5),
-                                                        //     duration: 2,
-                                                        //     colorText:
-                                                        //         Colors
-                                                        //             .white,
-                                                        //     title:
-                                                        //         "Stock Added successfully!",
-                                                        //     message:
-                                                        //         'Successfully');
-                                                      }
-                                                      if (addStockViewModel
-                                                              .addStockApiResponse
-                                                              .status ==
-                                                          Status.ERROR) {
-                                                        CommonWidget.getSnackBar(
-                                                            color: Colors.red
-                                                                .withOpacity(
-                                                                    .5),
-                                                            duration: 2,
-                                                            colorText:
-                                                                Colors.white,
-                                                            title: "Try again",
-                                                            message:
-                                                                'You can only add Max 5 Stocks before Completing 3 referral');
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                      height: 25.sp,
-                                                      width: 25.sp,
-                                                      decoration: BoxDecoration(
-                                                          color: CommonColor
-                                                              .geryColor1EDEDED,
-                                                          shape:
-                                                              BoxShape.circle),
-                                                      child: Icon(Icons.add,
-                                                          color: CommonColor
-                                                              .greyColorA3A3A3),
-                                                    ),
-                                                  )
-                                          ],
+                                                          _portFolioController
+                                                                  .isAddShare =
+                                                              true;
+                                                          // CommonWidget.getSnackBar(
+                                                          //     color: Colors
+                                                          //         .green
+                                                          //         .withOpacity(
+                                                          //             .5),
+                                                          //     duration: 2,
+                                                          //     colorText:
+                                                          //         Colors
+                                                          //             .white,
+                                                          //     title:
+                                                          //         "Stock Added successfully!",
+                                                          //     message:
+                                                          //         'Successfully');
+                                                        }
+                                                        if (addStockViewModel
+                                                                .addStockApiResponse
+                                                                .status ==
+                                                            Status.ERROR) {
+                                                          CommonWidget.getSnackBar(
+                                                              color: Colors.red
+                                                                  .withOpacity(
+                                                                      .5),
+                                                              duration: 2,
+                                                              colorText:
+                                                                  Colors.white,
+                                                              title:
+                                                                  "Try again",
+                                                              message:
+                                                                  'You can only add Max 5 Stocks before Completing 3 referral');
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        height: 25.sp,
+                                                        width: 25.sp,
+                                                        decoration: BoxDecoration(
+                                                            color: CommonColor
+                                                                .geryColor1EDEDED,
+                                                            shape: BoxShape
+                                                                .circle),
+                                                        child: Icon(Icons.add,
+                                                            color: CommonColor
+                                                                .greyColorA3A3A3),
+                                                      ),
+                                                    )
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      CommonWidget.commonSizedBox(height: 6),
-                                      Divider(
-                                          color: CommonColor.greyColorD1CDCD),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                    ],
+                                        CommonWidget.commonSizedBox(height: 6),
+                                        Divider(
+                                            color: CommonColor.greyColorD1CDCD),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                      ],
+                    );
+                  }
+                  return Center(
+                    child: Text('Something went wrong'),
                   );
-                }
-                return Center(
-                  child: Text('Something went wrong'),
-                );
-              },
-            )
-          ],
-        ),
-      )),
+                },
+              )
+            ],
+          ),
+        )),
+      ),
     );
   }
 
@@ -291,7 +301,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Spacer(),
           InkWell(
             onTap: () {
-              Get.off(() => BottomNavScreen(
+              Get.offAll(() => BottomNavScreen(
                     selectedIndex: 3,
                   ));
             },
