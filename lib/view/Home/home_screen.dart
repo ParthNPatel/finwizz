@@ -327,7 +327,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CommonText.textBoldWight700(
-                          text: '${getAllNews.data![index].title}',
+                          text: getAllNews.data![index].title!.length > 17
+                              ? '${getAllNews.data![index].title!.substring(0, 15)}..'
+                              : '${getAllNews.data![index].title}',
                           color: Colors.white),
                     ),
                     Spacer(),
@@ -366,7 +368,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   CommonText.textBoldWight600(
                       fontSize: 10.sp,
                       color: Colors.white,
-                      text: "${getAllNews.data![index].description}")
+                      text: getAllNews.data![index].description!.length > 210
+                          ? "${getAllNews.data![index].description!.substring(0, 208)}.."
+                          : "${getAllNews.data![index].description}")
                 ],
               ),
             );

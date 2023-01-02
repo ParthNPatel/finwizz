@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:finwizz/Models/repo/get_all_movers_repo.dart';
 import 'package:finwizz/Models/responseModel/get_all_movers_res_model.dart';
 import 'package:get/get.dart';
@@ -30,11 +32,11 @@ class GetAllMoverViewModel extends GetxController {
     try {
       GetAllMoversResponseModel response =
           await GetAllMoverRepo.getAllMoverRepo();
-      print("GetMoversResponseModel==>$response");
+      log("GetMoversResponseModel==>$response");
 
       _getMoversApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("GetMoversResponseModel==>$e");
+      log("GetMoversResponseModel==>$e");
       _getMoversApiResponse = ApiResponse.error(message: 'error');
     }
     update();

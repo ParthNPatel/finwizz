@@ -79,6 +79,71 @@ class APIService {
     return response;
   }
 
+  @override
+  Future getMoversResponse(
+      {required String url,
+      required APIType apitype,
+      Map<String, dynamic>? body,
+      Map<String, String>? header,
+      bool fileUpload = false}) async {
+    Map<String, String> headers = GetStorageServices.getBarrierToken() != null
+        ? {
+            'Authorization':
+                'Bearer eyJhbGciOiJIUzI1NiJ9.NjNiMDI2Y2NiNDQ0OTdlMDliODNjZWVh.WWMYdR8wZdejv6bT7lEd8bAqMuNfcXRGXffQWLgIzpA',
+            'Content-Type': 'application/json'
+          }
+        : {'Content-Type': 'application/json'};
+
+    print("Bearer ${GetStorageServices.getBarrierToken()}");
+
+    try {
+      if (apitype == APIType.aGet) {
+        final result =
+            await http.get(Uri.parse(APIConst.baseUrl + url), headers: headers);
+        response = returnResponse(result.statusCode, result.body);
+        log("RES status code ${result.statusCode}");
+        log("res${result.body}");
+      } else /*if (apitype == APIType.aPost)*/ {
+        print("REQUEST PARAMETER url  $url");
+        print("REQUEST PARAMETER $body");
+
+        final result = await http.post(Uri.parse(APIConst.baseUrl + url),
+            body: json.encode(body), headers: headers);
+        print("resp${result.body}");
+        response = returnResponse(result.statusCode, result.body);
+        print(result.statusCode);
+      }
+      /*else {
+        print("REQUEST PARAMETER url  $url");
+        print("REQUEST PARAMETER $body");
+
+        final request =
+            await http.MultipartRequest("PUT", Uri.parse(baseUrl + url));
+
+        request.headers.addAll(headers);
+
+        request.fields["name"] = body!["name"];
+        request.fields["height"] = body["height"];
+        request.files.add(await http.MultipartFile.fromPath(
+            "userImage", body["userImage"],
+            contentType: MediaType('userImage', 'jpg')));
+        request.fields["age"] = body["age"];
+        request.fields["weight"] = body["weight"];
+
+        var result = await request.send();
+        String res = await result.stream.transform(utf8.decoder).join();
+
+        // print("resp${result.body}");
+        response = returnResponse(result.statusCode, res);
+        // print(result.statusCode);
+      }*/
+    } on SocketException {
+      throw FetchDataException('No Internet access');
+    }
+
+    return response;
+  }
+
   Future getPatchResponse(
       {required String url,
       required APIType apitype,

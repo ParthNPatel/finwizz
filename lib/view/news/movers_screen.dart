@@ -204,12 +204,12 @@ class _MoverWidgetState extends State<MoverWidget> {
                         CommonWidget.commonSizedBox(width: 10),
                         CommonText.textBoldWight400(
                             text:
-                                '${widget.response.data![widget.index].priceRange}',
+                                '${widget.response.data![widget.index].startPrice} - ${widget.response.data![widget.index].currentPrice}',
                             color: Colors.black,
                             fontSize: 9.sp),
                         CommonText.textBoldWight400(
                             text:
-                                '${DateFormat("d MMM").format(widget.response.data![widget.index].createdAt!)} - ${DateFormat("d MMM").format(DateTime.now())}',
+                                '${DateFormat("d MMM").format(widget.response.data![widget.index].startDate!)} - ${DateFormat("d MMM").format(widget.response.data![widget.index].endDate!)}',
                             color: Colors.black,
                             fontSize: 9.sp),
                       ],
