@@ -33,6 +33,7 @@ class _MoversScreenState extends State<MoversScreen> {
       Get.put(MoversLikeUnLikeViewModel());
 
   int currentPage = 0;
+  List showDate = [];
 
   @override
   void initState() {
@@ -58,49 +59,98 @@ class _MoversScreenState extends State<MoversScreen> {
                     GetAllMoversResponseModel response =
                         controller.getMoversApiResponse.data;
 
+                    showDate.clear();
+
+                    response.data!.forEach((element) {
+                      if (showDate.contains(
+                              element.createdAt.toString().split(' ').first) ==
+                          false) {
+                        showDate
+                            .add(element.createdAt.toString().split(' ').first);
+                      }
+                    });
+
                     return Column(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 20),
-                          child: Column(
-                            children: [
-                              Divider(
-                                color: Color(0xffD1CDCD),
-                                height: 0,
-                              ),
-                              SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  CommonWidget.commonSvgPitcher(
-                                      image: ImageConst.calender,
-                                      height: 20.sp,
-                                      width: 20.sp),
-                                  SizedBox(width: 10),
-                                  CommonText.textBoldWight500(text: 'Today')
-                                ],
-                              ),
-                              SizedBox(height: 5),
-                              Divider(
-                                color: Color(0xffD1CDCD),
-                                height: 0,
-                              ),
-                            ],
-                          ),
-                        ),
-                        ListView.separated(
+                        ListView.builder(
+                          itemCount: showDate.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: response.data!.length,
-                          separatorBuilder: (context, index) {
-                            return SizedBox(height: 20.sp);
-                          },
-                          itemBuilder: (context, index) {
-                            return MoverWidget(
-                                response: response,
-                                index: index,
-                                controller: controller,
-                                isFavourite: isFavourite);
+                          itemBuilder: (context, index1) {
+                            var dateData = showDate[index1];
+                            var currentDate =
+                                DateTime.now().toString().split(' ').first;
+                            var yesterday = DateTime.now()
+                                .subtract(Duration(days: 1))
+                                .toString()
+                                .split(' ')
+                                .first;
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(
+                                    children: [
+                                      Divider(
+                                        color: Color(0xffD1CDCD),
+                                        height: 0,
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: [
+                                          CommonWidget.commonSvgPitcher(
+                                              image: ImageConst.calender,
+                                              height: 20.sp,
+                                              width: 20.sp),
+                                          SizedBox(width: 10),
+                                          CommonText.textBoldWight500(
+                                            text: dateData == currentDate
+                                                ? 'Today'
+                                                : dateData == yesterday
+                                                    ? 'Yesterday'
+                                                    : '${dateData}',
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Divider(
+                                        color: Color(0xffD1CDCD),
+                                        height: 0,
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: response.data!.length,
+                                  separatorBuilder: (context, index) {
+                                    return SizedBox(height: 20.sp);
+                                  },
+                                  itemBuilder: (context, index) {
+                                    return response.data![index].createdAt
+                                                .toString()
+                                                .split(' ')
+                                                .first ==
+                                            showDate[index1]
+                                        ? MoverWidget(
+                                            response: response,
+                                            index: index,
+                                            controller: controller,
+                                            isFavourite: isFavourite)
+                                        : SizedBox();
+                                  },
+                                ),
+                              ],
+                            );
                           },
                         ),
                       ],

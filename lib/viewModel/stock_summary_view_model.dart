@@ -7,6 +7,13 @@ import 'package:get/get.dart';
 import '../Models/apis/api_response.dart';
 
 class StockSummaryViewModel extends GetxController {
+  bool isShuffle = false;
+
+  wantShuffle() {
+    isShuffle = !isShuffle;
+    update();
+  }
+
   ApiResponse _stockSummaryApiResponse =
       ApiResponse.initial(message: 'Initialization');
 

@@ -20,6 +20,7 @@ import 'package:finwizz/viewModel/get_user_view_model.dart';
 import 'package:finwizz/viewModel/update_user_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -37,8 +38,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
-  TextEditingController _submitController = TextEditingController();
   int pagerIndex = 0;
+  double _initialRating = 0;
   GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
   GetUserViewModel getUserViewModel = Get.put(GetUserViewModel());
 
@@ -78,12 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
         GetStorageServices.setReferralCode(response.data!.refferalCode ?? "");
         GetStorageServices.setReferralCount(response.data!.refferalCount ?? 0);
-
-        print('====== > ${GetStorageServices.getReferralCount()}');
-        print('====== > ${GetStorageServices.getReferralCode()}');
       }
     }
   }
+
+  TextEditingController _submitController = TextEditingController();
 
   // bool isOpen = true;
   @override
@@ -98,107 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
           scrollWidget()
         ]),
       ),
-    );
-  }
-
-  SimpleDialog buildSimpleDialog() {
-    return SimpleDialog(
-      alignment: Alignment.center,
-      children: [
-        Column(
-          children: [
-            CommonWidget.commonSizedBox(height: 12),
-            CommonText.textBoldWight600(
-                text: 'Your opinion matters!', fontSize: 16.sp),
-            CommonWidget.commonSizedBox(height: 9),
-            RatingBar(
-              initialRating: 0,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemSize: 28,
-              itemCount: 5,
-              ratingWidget: RatingWidget(
-                full: Icon(Icons.star, color: CommonColor.yellowColorFFC633),
-                half:
-                    Icon(Icons.star_half, color: CommonColor.yellowColorFFC633),
-                empty: Icon(
-                  Icons.star_border_outlined,
-                ),
-              ),
-              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              onRatingUpdate: (rating) {
-                print(rating);
-              },
-            ),
-            CommonWidget.commonSizedBox(height: 9),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CommonText.textBoldWight400(
-                  text: 'Please tell us how we can improve ',
-                ),
-                CommonText.textBoldWight400(
-                    text: '*', color: CommonColor.redColorFF2950),
-              ],
-            ),
-            CommonWidget.commonSizedBox(height: 9),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: TextFormField(
-                maxLines: 3,
-                controller: _submitController,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: TextConst.fontFamily,
-                ),
-                cursorColor: Colors.black,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
-                  filled: true,
-                  //fillColor: CommonColor.textFiledColorFAFAFA,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        new BorderSide(color: CommonColor.geryColorC9C5C5),
-                    borderRadius: new BorderRadius.circular(25.7),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        new BorderSide(color: CommonColor.geryColorC9C5C5),
-                    borderRadius: new BorderRadius.circular(25.7),
-                  ),
-                  // border: OutlineInputBorder(
-                  //     borderSide: BorderSide.none,
-                  //     borderRadius:
-                  //         BorderRadius.circular(10))
-                ),
-              ),
-            ),
-            CommonWidget.commonSizedBox(height: 20),
-            InkWell(
-              onTap: () {
-                Get.back();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 9),
-                child: CommonText.textBoldWight400(
-                    text: 'Submit', color: Colors.white),
-                decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                          color: CommonColor.themDarkColor6E5DE7,
-                          //blurRadius: 10,
-                          offset: Offset(3, 5),
-                          spreadRadius: 1)
-                    ],
-                    borderRadius: BorderRadius.circular(1010),
-                    color: Colors.black),
-              ),
-            ),
-            CommonWidget.commonSizedBox(height: 12),
-          ],
-        )
-      ],
     );
   }
 
@@ -300,7 +199,95 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-            )
+            ),
+            SizedBox(height: 3.h),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 10.h,
+                    width: 72.w,
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(right: 30),
+                    padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                    decoration: BoxDecoration(
+                        color: CommonColor.lightBlueColorCADCF8,
+                        borderRadius: BorderRadius.circular(11)),
+                    child: CommonText.textBoldWight400(
+                        text:
+                            "Invite 3 friends to FinWizz and unlock all features for free",
+                        fontSize: 10.5.sp),
+                  ),
+                  SizedBox(height: 2.h),
+                  InkWell(
+                    onTap: () {
+                      Get.dialog(referrals());
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+                      child: CommonText.textBoldWight400(
+                          text: 'Refer now', color: Colors.white),
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: CommonColor.themDarkColor6E5DE7,
+                                //blurRadius: 10,
+                                offset: Offset(3, 5),
+                                spreadRadius: 1)
+                          ],
+                          borderRadius: BorderRadius.circular(1010),
+                          color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 7.h),
+            Padding(
+              padding: const EdgeInsets.only(left: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommonText.textBoldWight600(
+                      text: 'Your opinion matters!', fontSize: 16.sp),
+                  CommonWidget.commonSizedBox(height: 7),
+                  CommonText.textBoldWight400(
+                      text: 'Are you enjoying FinWizz?', fontSize: 12.sp),
+                  CommonWidget.commonSizedBox(height: 7),
+                  RatingBar(
+                    initialRating: 0,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemSize: 28,
+                    itemCount: 5,
+                    ratingWidget: RatingWidget(
+                      full: Icon(Icons.star,
+                          color: CommonColor.yellowColorFFC633),
+                      half: Icon(Icons.star_half,
+                          color: CommonColor.yellowColorFFC633),
+                      empty: Icon(
+                        Icons.star_border_outlined,
+                      ),
+                    ),
+                    itemPadding: EdgeInsets.only(right: 5),
+                    onRatingUpdate: (rating) {
+                      if (rating < 4) {
+                        Get.dialog(buildSimpleDialog(
+                                submitController: _submitController,
+                                initialRating: _initialRating))
+                            .then((value) => setState(() {
+                                  _initialRating = 0;
+                                }));
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 3.h),
           ],
         ),
       ),
@@ -433,7 +420,9 @@ class _HomeScreenState extends State<HomeScreen> {
         CommonWidget.commonSizedBox(width: 10),
         GestureDetector(
           onTap: () {
-            Get.to(NotificationScreen());
+            GetStorageServices.getUserLoggedInStatus() == true
+                ? Get.to(NotificationScreen())
+                : Get.to(() => SignInScreen());
           },
           child: Container(
             //padding: EdgeInsets.all(8),
@@ -494,12 +483,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   final message = TextEditingController();
 
+  TextEditingController _submitController = TextEditingController();
+
   bool isCheckedNews = GetStorageServices.getNewsAlerts() ?? false;
 
   bool isCheckedPortfolio = GetStorageServices.getPortfolioAlerts() ?? false;
 
   UpdateUserViewModel updateUserViewModel = Get.put(UpdateUserViewModel());
   bool emailCheck = false;
+
+  double _initialRating = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -577,16 +570,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
               child: InkWell(
                 onTap: () {
-                  if (index == 1) {
+                  if (index == 0) {
                     Get.back();
-                    Get.dialog(referrals());
-                  } else if (index == 3) {
-                    Get.back();
-
-                    Get.dialog(contactUs());
-                  } else if (index == 0) {
-                    Get.back();
-
                     Get.dialog(GetBuilder<UpdateUserViewModel>(
                         builder: (controllerUser) {
                       return StatefulBuilder(
@@ -609,7 +594,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     SizedBox(
-                                      width: 100.sp,
+                                      width: 95.sp,
                                       child: CommonText.textBoldWight500(
                                           text: "News",
                                           fontSize: 13.sp,
@@ -675,7 +660,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     SizedBox(
-                                      width: 100.sp,
+                                      width: 95.sp,
                                       child: CommonText.textBoldWight500(
                                           text: "Portfolio alerts ",
                                           fontSize: 13.sp,
@@ -737,6 +722,20 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ),
                       );
                     }));
+                  } else if (index == 1) {
+                    Get.back();
+                    Get.dialog(referrals());
+                  } else if (index == 2) {
+                    Get.back();
+                    Get.dialog(buildSimpleDialog(
+                            submitController: _submitController,
+                            initialRating: _initialRating))
+                        .then((value) => setState(() {
+                              _initialRating = 0;
+                            }));
+                  } else if (index == 3) {
+                    Get.back();
+                    Get.dialog(contactUs());
                   } else if (index == 5) {
                     GetStorageServices.logOut();
                     Get.offAll(() => BottomNavScreen(selectedIndex: 0));
@@ -770,6 +769,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   print('indexindex   $index');
                   if (index == 1) {
                     Get.back();
+
+                    Get.dialog(contactUs());
                   } else if (index == 3) {
                     Get.back();
                     Get.to(() => SignInScreen());
@@ -799,312 +800,420 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   Dialog contactUs() {
     return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: CommonText.textBoldWight500(
-                  text: "Contact Us", fontSize: 18.sp, color: Colors.black),
-            ),
-            CommonWidget.commonSizedBox(height: 20),
-            CommonText.textBoldWight500(
-                text: "Name", fontSize: 12.sp, color: Colors.black),
-            CommonWidget.commonSizedBox(height: 10),
-            SizedBox(
-              height: 35.sp,
-              width: 130.sp,
-              child: SizedBox(
-                child: TextFormField(
-                  controller: name,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.only(bottom: 3, left: 15),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(
-                        color: Color(0xffC9C5C5),
+      child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: CommonText.textBoldWight500(
+                    text: "Contact Us", fontSize: 18.sp, color: Colors.black),
+              ),
+              CommonWidget.commonSizedBox(height: 20),
+              CommonText.textBoldWight500(
+                  text: "Name", fontSize: 12.sp, color: Colors.black),
+              CommonWidget.commonSizedBox(height: 10),
+              SizedBox(
+                height: 35.sp,
+                width: 130.sp,
+                child: SizedBox(
+                  child: TextFormField(
+                    controller: name,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(bottom: 3, left: 15),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: BorderSide(
+                          color: Color(0xffC9C5C5),
+                        ),
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(
-                        color: Color(0xffC9C5C5),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: BorderSide(
+                          color: Color(0xffC9C5C5),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            CommonWidget.commonSizedBox(height: 20),
-            CommonText.textBoldWight500(
-                text: "Email", fontSize: 12.sp, color: Colors.black),
-            CommonWidget.commonSizedBox(height: 10),
-            SizedBox(
-              height: 35.sp,
-              child: SizedBox(
-                child: TextFormField(
-                  controller: email,
-                  onChanged: (value) {
-                    setState(() {
-                      emailCheck = RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(email.text);
-                    });
-                  },
-                  decoration: InputDecoration(
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 6.sp),
-                      child: CircleAvatar(
-                        radius: 5.sp,
-                        backgroundColor:
-                            emailCheck ? Colors.green : Colors.grey.shade300,
-                        child: Icon(Icons.done,
-                            color: emailCheck ? Colors.white : Colors.grey,
-                            size: 8.sp),
+              CommonWidget.commonSizedBox(height: 20),
+              CommonText.textBoldWight500(
+                  text: "Email", fontSize: 12.sp, color: Colors.black),
+              CommonWidget.commonSizedBox(height: 10),
+              SizedBox(
+                height: 35.sp,
+                child: SizedBox(
+                  child: TextFormField(
+                    controller: email,
+                    onChanged: (value) {
+                      setState(() {
+                        emailCheck = RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(email.text);
+                      });
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.sp),
+                        child: CircleAvatar(
+                          radius: 5.sp,
+                          backgroundColor:
+                              emailCheck ? Colors.green : Colors.grey.shade300,
+                          child: Icon(Icons.done,
+                              color: emailCheck ? Colors.white : Colors.grey,
+                              size: 8.sp),
+                        ),
                       ),
-                    ),
-                    contentPadding: EdgeInsets.only(bottom: 3, left: 15),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(
-                        color: Color(0xffC9C5C5),
+                      contentPadding: EdgeInsets.only(bottom: 3, left: 15),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: BorderSide(
+                          color: Color(0xffC9C5C5),
+                        ),
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(
-                        color: Color(0xffC9C5C5),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: BorderSide(
+                          color: Color(0xffC9C5C5),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            CommonWidget.commonSizedBox(height: 20),
-            CommonText.textBoldWight500(
-                text: "Message", fontSize: 12.sp, color: Colors.black),
-            CommonWidget.commonSizedBox(height: 10),
-            TextFormField(
-              maxLines: 7,
-              controller: message,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(bottom: 3, left: 15),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(
-                    color: Color(0xffC9C5C5),
+              CommonWidget.commonSizedBox(height: 20),
+              CommonText.textBoldWight500(
+                  text: "Message", fontSize: 12.sp, color: Colors.black),
+              CommonWidget.commonSizedBox(height: 10),
+              TextFormField(
+                maxLines: 7,
+                maxLength: 200,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                controller: message,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(
+                      color: Color(0xffC9C5C5),
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(
-                    color: Color(0xffC9C5C5),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(
+                      color: Color(0xffC9C5C5),
+                    ),
                   ),
                 ),
               ),
-            ),
-            CommonWidget.commonSizedBox(height: 20),
-            Center(
-              child: MaterialButton(
-                  elevation: 0,
-                  onPressed: () async {
-                    log("Pressed ");
+              CommonWidget.commonSizedBox(height: 20),
+              Center(
+                child: MaterialButton(
+                    elevation: 0,
+                    onPressed: () async {
+                      log("Pressed ");
 
-                    if (name.text.isNotEmpty &&
-                        email.text.isNotEmpty &&
-                        message.text.isNotEmpty) {
-                      if (RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(email.text)) {
-                        ContactUsResponseModel response =
-                            await ContactUsRepo.contactUsRepo(body: {
-                          "name": "${name.text.trim()}",
-                          "email": "${email.text.trim()}",
-                          "message": "${message.text.trim()}"
-                        });
-                        Get.back();
+                      if (name.text.isNotEmpty &&
+                          email.text.isNotEmpty &&
+                          message.text.isNotEmpty) {
+                        if (RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(email.text)) {
+                          ContactUsResponseModel response =
+                              await ContactUsRepo.contactUsRepo(body: {
+                            "name": "${name.text.trim()}",
+                            "email": "${email.text.trim()}",
+                            "message": "${message.text.trim()}"
+                          });
+                          Get.back();
 
-                        if (response.flag == true) {
-                          CommonWidget.getSnackBar(
-                              color: Colors.green.withOpacity(.5),
-                              duration: 2,
-                              colorText: Colors.white,
-                              title: "${response.flag}",
-                              message: 'Your query delivered successfully');
+                          if (response.flag == true) {
+                            CommonWidget.getSnackBar(
+                                color: Colors.green.withOpacity(.5),
+                                duration: 2,
+                                colorText: Colors.white,
+                                title: "${response.flag}",
+                                message: 'Your query delivered successfully');
+                          } else {
+                            CommonWidget.getSnackBar(
+                                color: Colors.red.withOpacity(.5),
+                                duration: 2,
+                                colorText: Colors.white,
+                                title: "${response.flag}",
+                                message: 'Something went wrong');
+                          }
                         } else {
                           CommonWidget.getSnackBar(
                               color: Colors.red.withOpacity(.5),
                               duration: 2,
                               colorText: Colors.white,
-                              title: "${response.flag}",
-                              message: 'Something went wrong');
+                              title: "Email not valid",
+                              message: 'Please enter valid email address');
                         }
-                      } else {
-                        CommonWidget.getSnackBar(
-                            color: Colors.red.withOpacity(.5),
-                            duration: 2,
-                            colorText: Colors.white,
-                            title: "Email not valid",
-                            message: 'Please enter valid email address');
                       }
-                    }
-                  },
-                  color: Color(0xff9295E2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 55.sp, vertical: 8.sp),
-                    child: CommonText.textBoldWight600(
-                      text: "SUBMIT",
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                    },
+                    color: Color(0xff9295E2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                  )),
-            ),
-          ],
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 55.sp, vertical: 8.sp),
+                      child: CommonText.textBoldWight600(
+                        text: "SUBMIT",
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget referrals() {
-    String link = "Referral Code";
+Widget referrals() {
+  String link = "Referral Code";
 
-    return Dialog(
-      child: Padding(
-        padding: EdgeInsets.all(18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: CommonText.textBoldWight500(
-                  text: "Referrals", fontSize: 18.sp, color: Colors.black),
-            ),
-            CommonWidget.commonSizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    CommonText.textBoldWight400(
-                        text: "Pending referrals",
-                        fontSize: 10.sp,
-                        color: Colors.black),
-                    CommonText.textBoldWight400(
-                        text: GetStorageServices.getReferralCount() >= 3
-                            ? "0"
-                            : "${3 - GetStorageServices.getReferralCount()}",
-                        fontSize: 10.sp,
-                        color: Colors.grey),
-                  ],
+  return Dialog(
+    child: Padding(
+      padding: EdgeInsets.all(18.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Center(
+            child: CommonText.textBoldWight500(
+                text: "Referrals", fontSize: 18.sp, color: Colors.black),
+          ),
+          CommonWidget.commonSizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  CommonText.textBoldWight400(
+                      text: "Pending referrals",
+                      fontSize: 10.sp,
+                      color: Colors.black),
+                  CommonText.textBoldWight400(
+                      text: GetStorageServices.getReferralCount() >= 3
+                          ? "0"
+                          : "${3 - GetStorageServices.getReferralCount()}",
+                      fontSize: 10.sp,
+                      color: Colors.grey),
+                ],
+              ),
+              Column(
+                children: [
+                  CommonText.textBoldWight400(
+                      text: "Successful referrals",
+                      fontSize: 10.sp,
+                      color: Colors.black),
+                  CommonText.textBoldWight400(
+                      text: "${GetStorageServices.getReferralCount()}",
+                      fontSize: 10.sp,
+                      color: Colors.grey),
+                ],
+              ),
+            ],
+          ),
+          CommonWidget.commonSizedBox(height: 20.sp),
+          Divider(),
+          SizedBox(
+            height: 5,
+          ),
+          Row(
+            children: [
+              Icon(
+                Icons.lock_open_outlined,
+                color: CommonColor.primaryColor,
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              CommonText.textBoldWight500(
+                  text: "Unlock all features with 3 successful referrals",
+                  fontSize: 8.sp,
+                  color: Colors.black),
+            ],
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Divider(),
+          CommonWidget.commonSizedBox(height: 20.sp),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CommonText.textBoldWight600(
+                  text: "${GetStorageServices.getReferralCode()}",
+                  fontSize: 12.sp,
+                  color: Colors.black),
+              SizedBox(
+                width: 5,
+              ),
+              Icon(
+                Icons.copy,
+                color: CommonColor.primaryColor,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 7.sp,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () async {
+                  await Share.share(
+                    "${GetStorageServices.getReferralCode()}",
+                    subject: link,
+                  );
+                },
+                child: Image.asset(
+                  ImageConst.whatsApp,
+                  height: 20.sp,
+                  width: 20.sp,
                 ),
-                Column(
-                  children: [
-                    CommonText.textBoldWight400(
-                        text: "Successful referrals",
-                        fontSize: 10.sp,
-                        color: Colors.black),
-                    CommonText.textBoldWight400(
-                        text: "${GetStorageServices.getReferralCount()}",
-                        fontSize: 10.sp,
-                        color: Colors.grey),
-                  ],
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              InkWell(
+                onTap: () async {
+                  await Share.share(
+                    "${GetStorageServices.getReferralCode()}",
+                    subject: link,
+                  );
+                },
+                child: Image.asset(
+                  ImageConst.twitter,
+                  height: 20.sp,
+                  width: 20.sp,
                 ),
-              ],
-            ),
-            CommonWidget.commonSizedBox(height: 20.sp),
-            Divider(),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.lock_open_outlined,
-                  color: CommonColor.primaryColor,
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                CommonText.textBoldWight500(
-                    text: "Unlock all features with 3 successful referrals",
-                    fontSize: 8.sp,
-                    color: Colors.black),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(),
-            CommonWidget.commonSizedBox(height: 20.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CommonText.textBoldWight600(
-                    text: "${GetStorageServices.getReferralCode()}",
-                    fontSize: 12.sp,
-                    color: Colors.black),
-                SizedBox(
-                  width: 5,
-                ),
-                Icon(
-                  Icons.copy,
-                  color: CommonColor.primaryColor,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 7.sp,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    await Share.share(
-                      "${GetStorageServices.getReferralCode()}",
-                      subject: link,
-                    );
-                  },
-                  child: Image.asset(
-                    ImageConst.whatsApp,
-                    height: 20.sp,
-                    width: 20.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                InkWell(
-                  onTap: () async {
-                    await Share.share(
-                      "${GetStorageServices.getReferralCode()}",
-                      subject: link,
-                    );
-                  },
-                  child: Image.asset(
-                    ImageConst.twitter,
-                    height: 20.sp,
-                    width: 20.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Icon(
-                  Icons.share,
-                  color: CommonColor.primaryColor,
-                ),
-              ],
-            )
-          ],
-        ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Icon(
+                Icons.share,
+                color: CommonColor.primaryColor,
+              ),
+            ],
+          )
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+SimpleDialog buildSimpleDialog(
+    {required TextEditingController submitController,
+    required double initialRating}) {
+  return SimpleDialog(
+    alignment: Alignment.center,
+    children: [
+      Column(
+        children: [
+          CommonWidget.commonSizedBox(height: 12),
+          CommonText.textBoldWight600(
+              text: 'Your opinion matters!', fontSize: 16.sp),
+          CommonWidget.commonSizedBox(height: 9),
+          RatingBar(
+            initialRating: initialRating,
+            direction: Axis.horizontal,
+            allowHalfRating: true,
+            itemSize: 28,
+            itemCount: 5,
+            ratingWidget: RatingWidget(
+              full: Icon(Icons.star, color: CommonColor.yellowColorFFC633),
+              half: Icon(Icons.star_half, color: CommonColor.yellowColorFFC633),
+              empty: Icon(
+                Icons.star_border_outlined,
+              ),
+            ),
+            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+            onRatingUpdate: (rating) {
+              print(rating);
+            },
+          ),
+          CommonWidget.commonSizedBox(height: 9),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CommonText.textBoldWight400(
+                text: 'Please tell us how we can improve ',
+              ),
+              CommonText.textBoldWight400(
+                  text: '*', color: CommonColor.redColorFF2950),
+            ],
+          ),
+          CommonWidget.commonSizedBox(height: 9),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: TextFormField(
+              maxLines: 3,
+              controller: submitController,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontFamily: TextConst.fontFamily,
+              ),
+              cursorColor: Colors.black,
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
+                filled: true,
+                //fillColor: CommonColor.textFiledColorFAFAFA,
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      new BorderSide(color: CommonColor.geryColorC9C5C5),
+                  borderRadius: new BorderRadius.circular(25.7),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      new BorderSide(color: CommonColor.geryColorC9C5C5),
+                  borderRadius: new BorderRadius.circular(25.7),
+                ),
+                // border: OutlineInputBorder(
+                //     borderSide: BorderSide.none,
+                //     borderRadius:
+                //         BorderRadius.circular(10))
+              ),
+            ),
+          ),
+          CommonWidget.commonSizedBox(height: 20),
+          InkWell(
+            onTap: () {
+              Get.back();
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+              child: CommonText.textBoldWight400(
+                  text: 'Submit', color: Colors.white),
+              decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                        color: CommonColor.themDarkColor6E5DE7,
+                        //blurRadius: 10,
+                        offset: Offset(3, 5),
+                        spreadRadius: 1)
+                  ],
+                  borderRadius: BorderRadius.circular(1010),
+                  color: Colors.black),
+            ),
+          ),
+          CommonWidget.commonSizedBox(height: 12),
+        ],
+      )
+    ],
+  );
 }

@@ -138,6 +138,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     child: ListView.builder(
                       itemCount: responseModel.data!.length,
                       shrinkWrap: true,
+                      reverse: stockController.isShuffle,
                       physics: BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
                         return Padding(
@@ -152,6 +153,35 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                           '${responseModel.data![index].name}',
                                       companyId:
                                           responseModel.data![index].id!));
+                                },
+                                onLongPress: () {
+                                  Get.dialog(AlertDialog(
+                                    title: Text("Want to shuffle stocks ?"),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            stockController.wantShuffle();
+                                            Get.back();
+                                          },
+                                          child: Text(
+                                            "Yes",
+                                            style: TextStyle(
+                                                color: CommonColor
+                                                    .themColor9295E2),
+                                          )),
+                                      TextButton(
+                                          onPressed: () {
+                                            Get.back();
+                                          },
+                                          child: Text("No",
+                                              style: TextStyle(
+                                                  color: CommonColor
+                                                      .themColor9295E2))),
+                                    ],
+                                  ));
                                 },
                                 child: Row(
                                   children: [

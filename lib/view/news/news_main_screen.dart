@@ -213,7 +213,9 @@ class _NewsMainScreenState extends State<NewsMainScreen>
         CommonWidget.commonSizedBox(width: 10),
         GestureDetector(
           onTap: () {
-            Get.to(NotificationScreen());
+            GetStorageServices.getUserLoggedInStatus() == true
+                ? Get.to(NotificationScreen())
+                : Get.to(() => SignInScreen());
           },
           child: Container(
             // padding: EdgeInsets.all(8),

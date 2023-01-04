@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:country_picker/country_picker.dart';
 import 'package:finwizz/components/common_widget.dart';
+import 'package:finwizz/constant/color_const.dart';
+import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/services/app_notification.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
@@ -173,7 +175,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         text: 'Welcome to FinWizz!', fontSize: 22.sp),
                   ),
                   CommonWidget.commonSizedBox(height: 40.sp),
-                  CommonWidget.textFormField(
+                  textFormField(
                       prefix: SizedBox(
                         width: 60.sp,
                         child: InkWell(
@@ -220,7 +222,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       controller: phoneController,
                       hintText: "Phone Number"),
                   CommonWidget.commonSizedBox(height: 25.sp),
-                  CommonWidget.textFormField(
+                  textFormField(
                       suffix: InkWell(
                         onTap: () {},
                         child: Row(
@@ -336,7 +338,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                 message: "Please enter Phone No or OTP");
                           }
                         },
-                        color: Color(0xffcecef0),
+                        color: phoneController.text.length == 10 &&
+                                otpController.text.length == 6 &&
+                                isChecked
+                            ? CommonColor.themColor9295E2
+                            : Color(0xffcecef0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -371,6 +377,54 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget textFormField(
+      {String? hintText,
+      List<TextInputFormatter>? inpuFormator,
+      required TextEditingController controller,
+      int? maxLength,
+      TextInputType? keyBoardType,
+      bool isObscured = false,
+      Widget? prefix,
+      Widget? suffix}) {
+    return SizedBox(
+      height: 45.sp,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: TextFormField(
+          obscureText: isObscured,
+          inputFormatters: inpuFormator,
+          maxLength: maxLength,
+          controller: controller,
+          keyboardType: keyBoardType,
+          onChanged: (val) {
+            setState(() {});
+          },
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontFamily: TextConst.fontFamily,
+          ),
+          cursorColor: Colors.black,
+          decoration: InputDecoration(
+              counterText: "",
+              prefixIcon: prefix,
+              contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
+              suffixIcon: suffix,
+              filled: true,
+              //fillColor: CommonColor.textFiledColorFAFAFA,
+              hintText: hintText,
+              hintStyle: TextStyle(
+                fontFamily: TextConst.fontFamily,
+                fontWeight: FontWeight.w400,
+                // color: CommonColor.hinTextColor
+              ),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10))),
         ),
       ),
     );

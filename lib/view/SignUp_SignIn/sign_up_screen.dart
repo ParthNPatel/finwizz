@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:country_picker/country_picker.dart';
 import 'package:finwizz/components/common_widget.dart';
+import 'package:finwizz/constant/color_const.dart';
+import 'package:finwizz/constant/text_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/services/app_notification.dart';
@@ -380,7 +382,11 @@ class _CreateAccountState extends State<CreateAccount> {
                                 message: "Please enter Phone No or OTP");
                           }
                         },
-                        color: Color(0xffcecef0),
+                        color: phoneController.text.length == 10 &&
+                                otpController.text.length == 6 &&
+                                isChecked
+                            ? CommonColor.themColor9295E2
+                            : Color(0xffcecef0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -396,5 +402,53 @@ class _CreateAccountState extends State<CreateAccount> {
             );
           },
         ));
+  }
+
+  Widget textFormField(
+      {String? hintText,
+      List<TextInputFormatter>? inpuFormator,
+      required TextEditingController controller,
+      int? maxLength,
+      TextInputType? keyBoardType,
+      bool isObscured = false,
+      Widget? prefix,
+      Widget? suffix}) {
+    return SizedBox(
+      height: 45.sp,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: TextFormField(
+          obscureText: isObscured,
+          inputFormatters: inpuFormator,
+          maxLength: maxLength,
+          controller: controller,
+          keyboardType: keyBoardType,
+          onChanged: (val) {
+            setState(() {});
+          },
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontFamily: TextConst.fontFamily,
+          ),
+          cursorColor: Colors.black,
+          decoration: InputDecoration(
+              counterText: "",
+              prefixIcon: prefix,
+              contentPadding: EdgeInsets.only(top: 7.sp, left: 12.sp),
+              suffixIcon: suffix,
+              filled: true,
+              //fillColor: CommonColor.textFiledColorFAFAFA,
+              hintText: hintText,
+              hintStyle: TextStyle(
+                fontFamily: TextConst.fontFamily,
+                fontWeight: FontWeight.w400,
+                // color: CommonColor.hinTextColor
+              ),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10))),
+        ),
+      ),
+    );
   }
 }
