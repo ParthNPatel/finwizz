@@ -116,6 +116,7 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
                                         text:
                                             "0${response.data![index].createdAt!.difference(DateTime.now()).inDays} Days"),
                                     CommonWidget.commonSizedBox(width: 7),
+                                    Spacer(),
                                     Container(
                                         height: 20,
                                         width: sold.w / 2.7,

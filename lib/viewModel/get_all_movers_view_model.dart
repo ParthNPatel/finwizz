@@ -36,7 +36,7 @@ class GetAllMoverViewModel extends GetxController {
 
       _getMoversApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      log("GetMoversResponseModel==>$e");
+      log("GetMoversResponseModel==eeee==>$e");
       _getMoversApiResponse = ApiResponse.error(message: 'error');
     }
     update();

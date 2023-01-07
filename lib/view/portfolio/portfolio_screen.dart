@@ -312,12 +312,6 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                       ? Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            Positioned(
-                              bottom: 25,
-                              left: -7,
-                              child: Icon(Icons.lock_outline,
-                                  color: CommonColor.primaryColor),
-                            ),
                             Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 50),
@@ -329,6 +323,12 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                     borderRadius: BorderRadius.circular(12),
                                     color: CommonColor.greyColorD1CDCD
                                         .withOpacity(.7))),
+                            Positioned(
+                              bottom: 25,
+                              left: -7,
+                              child: Icon(Icons.lock_outline,
+                                  color: CommonColor.primaryColor),
+                            ),
                           ],
                         )
                       : InkWell(

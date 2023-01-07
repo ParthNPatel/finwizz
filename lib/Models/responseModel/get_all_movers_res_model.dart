@@ -123,13 +123,17 @@
 //
 //     final getAllMoversResponseModel = getAllMoversResponseModelFromJson(jsonString);
 
+// To parse this JSON data, do
+//
+//     final getAllMoversResponseModel = getAllMoversResponseModelFromJson(jsonString);
+
 import 'dart:convert';
 
-GetAllMoversResponseModel getAllMoversResponseModelFromJson(String str) =>
+GetAllMoversResponseModel? getAllMoversResponseModelFromJson(String str) =>
     GetAllMoversResponseModel.fromJson(json.decode(str));
 
-String getAllMoversResponseModelToJson(GetAllMoversResponseModel data) =>
-    json.encode(data.toJson());
+String getAllMoversResponseModelToJson(GetAllMoversResponseModel? data) =>
+    json.encode(data!.toJson());
 
 class GetAllMoversResponseModel {
   GetAllMoversResponseModel({
@@ -138,17 +142,21 @@ class GetAllMoversResponseModel {
   });
 
   bool? flag;
-  List<Datum>? data;
+  List<Datum?>? data;
 
   factory GetAllMoversResponseModel.fromJson(Map<String, dynamic> json) =>
       GetAllMoversResponseModel(
         flag: json["flag"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        data: json["data"] == null
+            ? []
+            : List<Datum?>.from(json["data"]!.map((x) => Datum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "flag": flag,
-        "data": List<dynamic>.from(data!.map((x) => x.toJson())),
+        "data": data == null
+            ? []
+            : List<dynamic>.from(data!.map((x) => x!.toJson())),
       };
 }
 
@@ -159,14 +167,14 @@ class Datum {
     this.description,
     this.companyId,
     this.percentage,
+    this.startDate,
+    this.endDate,
     this.startPrice,
     this.currentPrice,
     this.type,
     this.likes,
     this.createdAt,
     this.updatedAt,
-    this.endDate,
-    this.startDate,
     this.isLiked,
   });
 
@@ -175,14 +183,14 @@ class Datum {
   String? description;
   CompanyId? companyId;
   int? percentage;
+  String? startDate;
+  String? endDate;
   int? startPrice;
   int? currentPrice;
   int? type;
   int? likes;
   DateTime? createdAt;
   DateTime? updatedAt;
-  DateTime? endDate;
-  DateTime? startDate;
   bool? isLiked;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -191,14 +199,14 @@ class Datum {
         description: json["description"],
         companyId: CompanyId.fromJson(json["companyId"]),
         percentage: json["percentage"],
+        startDate: json["startDate"],
+        endDate: json["endDate"],
         startPrice: json["startPrice"],
         currentPrice: json["currentPrice"],
         type: json["type"],
         likes: json["likes"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
-        endDate: DateTime.parse(json["endDate"]),
-        startDate: DateTime.parse(json["startDate"]),
         isLiked: json["isLiked"],
       );
 
@@ -208,16 +216,14 @@ class Datum {
         "description": description,
         "companyId": companyId!.toJson(),
         "percentage": percentage,
+        "startDate": startDate,
+        "endDate": endDate,
         "startPrice": startPrice,
         "currentPrice": currentPrice,
         "type": type,
         "likes": likes,
-        "createdAt": createdAt!.toIso8601String(),
-        "updatedAt": updatedAt!.toIso8601String(),
-        "endDate":
-            "${endDate!.year.toString().padLeft(4, '0')}-${endDate!.month.toString().padLeft(2, '0')}-${endDate!.day.toString().padLeft(2, '0')}",
-        "startDate":
-            "${startDate!.year.toString().padLeft(4, '0')}-${startDate!.month.toString().padLeft(2, '0')}-${startDate!?.day.toString().padLeft(2, '0')}",
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
         "isLiked": isLiked,
       };
 }
@@ -252,8 +258,8 @@ class CompanyId {
         "_id": id,
         "name": name,
         "shortName": shortName,
-        "createdAt": createdAt!.toIso8601String(),
-        "updatedAt": updatedAt!.toIso8601String(),
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
         "id": companyIdId,
       };
 }

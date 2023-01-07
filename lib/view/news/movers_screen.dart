@@ -63,7 +63,7 @@ class _MoversScreenState extends State<MoversScreen> {
 
                     response.data!.forEach((element) {
                       if (showDate.contains(
-                              element.createdAt.toString().split(' ').first) ==
+                              element!.createdAt.toString().split(' ').first) ==
                           false) {
                         showDate
                             .add(element.createdAt.toString().split(' ').first);
@@ -136,7 +136,7 @@ class _MoversScreenState extends State<MoversScreen> {
                                     return SizedBox(height: 20.sp);
                                   },
                                   itemBuilder: (context, index) {
-                                    return response.data![index].createdAt
+                                    return response.data![index]!.createdAt
                                                 .toString()
                                                 .split(' ')
                                                 .first ==
@@ -193,6 +193,54 @@ class _MoverWidgetState extends State<MoverWidget> {
   int sensitivity = 8;
   Duration duration = Duration(milliseconds: 300);
 
+  String formatString = "";
+
+  List tmpList = [];
+
+  String forStStart() {
+    if (widget.response.data![widget.index]!.startDate!.contains(" ")) {
+      tmpList.clear();
+
+      widget.response.data![widget.index]!.startDate!
+          .split(" ")
+          .join("")
+          .split("-")
+          .forEach((element) {
+        if (element.length == 1) {
+          tmpList.add("0" + element);
+        } else {
+          tmpList.add(element);
+        }
+      });
+
+      return formatString = tmpList.reversed.join("-");
+    } else {
+      return formatString = widget.response.data![widget.index]!.startDate!;
+    }
+  }
+
+  String forStEnd() {
+    if (widget.response.data![widget.index]!.endDate!.contains(" ")) {
+      tmpList.clear();
+
+      widget.response.data![widget.index]!.endDate!
+          .split(" ")
+          .join("")
+          .split("-")
+          .forEach((element) {
+        if (element.length == 1) {
+          tmpList.add("0" + element);
+        } else {
+          tmpList.add(element);
+        }
+      });
+
+      return formatString = tmpList.reversed.join("-");
+    } else {
+      return formatString = widget.response.data![widget.index]!.endDate!;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -240,7 +288,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                   children: [
                     CommonWidget.commonSizedBox(height: 10),
                     CommonText.textBoldWight700(
-                        text: '${widget.response.data![widget.index].title}',
+                        text: '${widget.response.data![widget.index]!.title}',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 15),
                     Row(
@@ -248,18 +296,18 @@ class _MoverWidgetState extends State<MoverWidget> {
                       children: [
                         CommonText.textBoldWight400(
                             text:
-                                '${widget.response.data![widget.index].companyId!.name.toString().capitalizeFirst}',
+                                '${widget.response.data![widget.index]!.companyId!.name.toString().capitalizeFirst}',
                             color: Colors.black,
                             fontSize: 9.sp),
                         CommonWidget.commonSizedBox(width: 10),
                         CommonText.textBoldWight400(
                             text:
-                                '${widget.response.data![widget.index].startPrice} - ${widget.response.data![widget.index].currentPrice}',
+                                '${widget.response.data![widget.index]!.startPrice} - ${widget.response.data![widget.index]!.currentPrice}',
                             color: Colors.black,
                             fontSize: 9.sp),
                         CommonText.textBoldWight400(
                             text:
-                                '${DateFormat("d MMM").format(widget.response.data![widget.index].startDate!)} - ${DateFormat("d MMM").format(widget.response.data![widget.index].endDate!)}',
+                                '${DateFormat("d MMM").format(DateTime.parse(forStStart()))} - ${DateFormat("d MMM").format(DateTime.parse(forStEnd()))}',
                             color: Colors.black,
                             fontSize: 9.sp),
                       ],
@@ -284,7 +332,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                           padding: const EdgeInsets.only(bottom: 40),
                           child: CommonText.textBoldWight500(
                               text:
-                                  " ${widget.response.data![widget.index].percentage} %"),
+                                  " ${widget.response.data![widget.index]!.percentage} %"),
                         )
                       ],
                     ),
@@ -395,7 +443,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                         ),
                         CommonText.textBoldWight400(
                             text:
-                                '${widget.response.data![widget.index].likes}',
+                                '${widget.response.data![widget.index]!.likes}',
                             color: Colors.black),
                         Spacer(),
                         // InkResponse(
@@ -431,7 +479,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                     CommonWidget.commonSizedBox(height: 10),
                     CommonText.textBoldWight400(
                         text:
-                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index].createdAt!)} ·| Source : BSE',
+                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 10),
                   ]),
@@ -462,19 +510,19 @@ class _MoverWidgetState extends State<MoverWidget> {
                   children: [
                     CommonWidget.commonSizedBox(height: 10),
                     CommonText.textBoldWight700(
-                        text: '${widget.response.data![widget.index].title}',
+                        text: '${widget.response.data![widget.index]!.title}',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 15),
                     CommonText.textBoldWight400(
                         text:
-                            '${widget.response.data![widget.index].companyId!.name!.toUpperCase()}',
+                            '${widget.response.data![widget.index]!.companyId!.name!.toUpperCase()}',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 15),
                     CommonText.textBoldWight500(
                         color: Color(0xff394452),
                         fontSize: 10.sp,
                         text:
-                            "${widget.response.data![widget.index].description}"),
+                            "${widget.response.data![widget.index]!.description}"),
                     CommonWidget.commonSizedBox(height: 16),
                     // CommonText.textBoldWight500(
                     //     fontSize: 10.sp,
@@ -591,7 +639,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                         ),
                         CommonText.textBoldWight400(
                             text:
-                                '${widget.response.data![widget.index].likes}',
+                                '${widget.response.data![widget.index]!.likes}',
                             color: Colors.black),
                         Spacer(),
                         // InkResponse(
@@ -627,7 +675,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                     CommonWidget.commonSizedBox(height: 10),
                     CommonText.textBoldWight400(
                         text:
-                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index].createdAt!)} ·| Source : BSE',
+                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 10),
                   ]),
@@ -706,7 +754,7 @@ class _MoverWidgetState extends State<MoverWidget> {
             ],
             pointers: <GaugePointer>[
               NeedlePointer(
-                  value: response.data![index].percentage!.toDouble(),
+                  value: response.data![index]!.percentage!.toDouble(),
                   needleLength: 45,
                   needleStartWidth: 0.5,
                   needleEndWidth: 4,
