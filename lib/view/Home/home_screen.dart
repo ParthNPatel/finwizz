@@ -4,8 +4,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/repo/contact_us_repo.dart';
 import 'package:finwizz/Models/responseModel/contact_us_res_model.dart';
-import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/Models/responseModel/get_user_res_model.dart';
+import 'package:finwizz/Models/responseModel/latest_movers_res_model.dart';
 import 'package:finwizz/Models/responseModel/update_user_res_model.dart';
 import 'package:finwizz/components/common_widget.dart';
 import 'package:finwizz/constant/color_const.dart';
@@ -15,8 +15,8 @@ import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/BottomNav/bottom_nav_screen.dart';
 import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
-import 'package:finwizz/viewModel/get_all_news_view_model.dart';
 import 'package:finwizz/viewModel/get_user_view_model.dart';
+import 'package:finwizz/viewModel/latest_movers_view_model.dart';
 import 'package:finwizz/viewModel/update_user_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +40,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
   int pagerIndex = 0;
   double _initialRating = 0;
-  GetAllNewsViewModel getAllNewsViewModel = Get.put(GetAllNewsViewModel());
+
   GetUserViewModel getUserViewModel = Get.put(GetUserViewModel());
+  LatestMoversViewModel latestMoversViewModel =
+      Get.put(LatestMoversViewModel());
 
   List colors = [
     Color(0xffEB7777),
@@ -65,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     getUserData();
-    getAllNewsViewModel.getNewsViewModel(catId: "");
+    latestMoversViewModel.getLatestMoversViewModel();
     super.initState();
   }
 
@@ -108,17 +110,19 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CommonWidget.commonSizedBox(height: 30),
-            GetBuilder<GetAllNewsViewModel>(
+            GetBuilder<LatestMoversViewModel>(
               builder: (controller) {
-                if (controller.getNewsApiResponse.status == Status.LOADING) {
+                if (controller.getLatestMoverssApiResponse.status ==
+                    Status.LOADING) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
                 }
-                if (controller.getNewsApiResponse.status == Status.COMPLETE) {
-                  GetAllNewsModel getAllNews =
-                      controller.getNewsApiResponse.data;
-                  return getAllNews.data!.length == 0
+                if (controller.getLatestMoverssApiResponse.status ==
+                    Status.COMPLETE) {
+                  LatestMoversResponseModel getMovers =
+                      controller.getLatestMoverssApiResponse.data;
+                  return getMovers.data!.docs!.length == 0
                       ? SizedBox()
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,13 +135,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: CommonColor.themDarkColor6E5DE7),
                             ),
                             CommonWidget.commonSizedBox(height: 30),
-                            bannerWidget(getAllNews),
+                            bannerWidget(getMovers),
                             CommonWidget.commonSizedBox(height: 35),
                             PageIndicator(
                                 pagerIndex: pagerIndex,
-                                totalPages: getAllNews.data!.length > 3
-                                    ? 3
-                                    : getAllNews.data!.length),
+                                totalPages: getMovers.data!.docs!.length > 5
+                                    ? 5
+                                    : getMovers.data!.docs!.length),
                             CommonWidget.commonSizedBox(height: 30),
                           ],
                         );
@@ -294,10 +298,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  CarouselSlider bannerWidget(GetAllNewsModel getAllNews) {
+  CarouselSlider bannerWidget(LatestMoversResponseModel getMovers) {
     return CarouselSlider(
         items: List.generate(
-          getAllNews.data!.length > 3 ? 3 : getAllNews.data!.length,
+          getMovers.data!.docs!.length > 5 ? 5 : getMovers.data!.docs!.length,
           (index) {
             return Container(
               width: double.infinity,
@@ -314,9 +318,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CommonText.textBoldWight700(
-                          text: getAllNews.data![index].title!.length > 17
-                              ? '${getAllNews.data![index].title!.substring(0, 15)}..'
-                              : '${getAllNews.data![index].title}',
+                          text: getMovers.data!.docs![index]!.title!.length > 17
+                              ? '${getMovers.data!.docs![index]!.title!.substring(0, 15)}..'
+                              : '${getMovers.data!.docs![index]!.title}',
                           color: Colors.white),
                     ),
                     Spacer(),
@@ -328,17 +332,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             scale: 2.8,
                           ),
                           CommonText.textBoldWight400(
-                              text: '30%', color: Colors.white)
+                              text:
+                                  '${getMovers.data!.docs![index]!.percentage}%',
+                              color: Colors.white)
                         ],
                       ),
                       Row(
                         children: [
                           CommonText.textBoldWight400(
-                              text: '28 JUL -',
+                              text:
+                                  '${getMovers.data!.docs![index]!.startDate!} - ',
                               color: Colors.white,
                               fontSize: 8.sp),
                           CommonText.textBoldWight400(
-                              text: '5 AUG',
+                              text: '${getMovers.data!.docs![index]!.endDate!}',
                               color: Colors.white,
                               fontSize: 8.sp),
                         ],
@@ -355,9 +362,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   CommonText.textBoldWight600(
                       fontSize: 10.sp,
                       color: Colors.white,
-                      text: getAllNews.data![index].description!.length > 210
-                          ? "${getAllNews.data![index].description!.substring(0, 208)}.."
-                          : "${getAllNews.data![index].description}")
+                      text: getMovers.data!.docs![index]!.description!.length >
+                              210
+                          ? "${getMovers.data!.docs![index]!.description!.substring(0, 208)}.."
+                          : "${getMovers.data!.docs![index]!.description}")
                 ],
               ),
             );

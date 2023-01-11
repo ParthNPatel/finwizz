@@ -80,6 +80,36 @@ class APIService {
   }
 
   @override
+  Future getLatestMoversResponse(
+      {required String url,
+      required APIType apitype,
+      Map<String, dynamic>? body,
+      Map<String, String>? header,
+      bool fileUpload = false}) async {
+    Map<String, String> headers = GetStorageServices.getBarrierToken() != null
+        ? {
+            'Authorization':
+                'Bearer eyJhbGciOiJIUzI1NiJ9.NjNiZDZkZWIyYzBjZmJkYmQxMWIzMmQ2.XxjWyJcaxqZv0VT9dYV6acZtTeipfJc0abwkkUYgVhM',
+            'Content-Type': 'application/json'
+          }
+        : {'Content-Type': 'application/json'};
+
+    try {
+      if (apitype == APIType.aGet) {
+        final result =
+            await http.get(Uri.parse(APIConst.baseUrl + url), headers: headers);
+        response = returnResponse(result.statusCode, result.body);
+        log("RES status code ${result.statusCode}");
+        log("res${result.body}");
+      }
+    } on SocketException {
+      throw FetchDataException('No Internet access');
+    }
+
+    return response;
+  }
+
+  @override
   Future getMoversResponse(
       {required String url,
       required APIType apitype,

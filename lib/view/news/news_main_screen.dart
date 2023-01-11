@@ -1,10 +1,12 @@
 import 'package:finwizz/Models/apis/api_response.dart';
+import 'package:finwizz/Models/responseModel/search_movers_res_model.dart';
 import 'package:finwizz/Models/responseModel/search_news_res_model.dart';
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
 import 'package:finwizz/controller/handle_screen_controller.dart';
 import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/notification/notification_screen.dart';
+import 'package:finwizz/viewModel/search_movers_view_model.dart';
 import 'package:finwizz/viewModel/search_news_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,11 +33,16 @@ class _NewsMainScreenState extends State<NewsMainScreen>
   TextEditingController _searchController = TextEditingController();
 
   SearchNewsViewModel searchNewsViewModel = Get.put(SearchNewsViewModel());
+  SearchMoversViewModel searchMoversViewModel =
+      Get.put(SearchMoversViewModel());
   HandleScreenController controller = Get.find();
   SearchNewsResponseModel? response;
+  SearchMoversResponseModel? moversResponse;
 
   bool catVisible = true;
+  bool catMoversVisible = true;
   bool isLoading = false;
+  int tag = 0;
 
   @override
   void initState() {
@@ -54,7 +61,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
             CommonWidget.commonSizedBox(height: 10),
             appWidget(),
             CommonWidget.commonSizedBox(height: 10),
-            searchWidget(),
+            tag == 0 ? searchWidget() : searchMoversWidget(),
             Stack(
               fit: StackFit.passthrough,
               alignment: Alignment.bottomCenter,
@@ -74,7 +81,12 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                   indicator: UnderlineTabIndicator(
                     borderSide: BorderSide(color: Color(0xff9295E2), width: 4),
                   ),
-                  //onTap: (index) => tabsModel.value = listTabsModel[index],
+                  onTap: (value) {
+                    setState(() {
+                      tag = value;
+                      _searchController.clear();
+                    });
+                  },
                   tabs: [
                     Text(
                       'News',
@@ -102,7 +114,10 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                       isCategoryVisible: catVisible,
                       response: response,
                       isLoading: isLoading),
-                  MoversScreen(),
+                  MoversScreen(
+                      isCategoryVisible: catMoversVisible,
+                      response: moversResponse,
+                      isLoading: isLoading),
                 ],
               ),
             )
@@ -149,6 +164,61 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 setState(() {
                   isLoading = false;
                   response = controller.searchNewsApiResponse.data;
+                });
+              }
+            },
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.only(top: 2),
+              hintText: 'Search',
+              suffixIcon: Icon(
+                Icons.search,
+                color: Color(0xff858C94),
+              ),
+              border: InputBorder.none,
+            ),
+          ));
+    });
+  }
+
+  GetBuilder searchMoversWidget() {
+    return GetBuilder<SearchMoversViewModel>(builder: (controller) {
+      return Container(
+          height: 44,
+          padding: EdgeInsets.only(top: 11, bottom: 11, left: 30, right: 15),
+          margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          decoration: BoxDecoration(
+            color: CommonColor.whiteColorF4F6F9,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: TextFormField(
+            controller: _searchController,
+            onChanged: (value) async {
+              if (_searchController.text.isNotEmpty &&
+                  _searchController.text != "") {
+                setState(() {
+                  catMoversVisible = false;
+                });
+              } else {
+                setState(() {
+                  catMoversVisible = true;
+                });
+              }
+
+              await controller.searchMoversViewModel(
+                  searchText: _searchController.text.trim(), isLoading: false);
+
+              if (controller.searchMoversApiResponse.status == Status.LOADING) {
+                setState(() {
+                  isLoading = true;
+                });
+              }
+
+              if (controller.searchMoversApiResponse.status ==
+                  Status.COMPLETE) {
+                setState(() {
+                  isLoading = false;
+                  moversResponse = controller.searchMoversApiResponse.data;
                 });
               }
             },

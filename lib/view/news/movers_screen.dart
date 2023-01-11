@@ -1,5 +1,6 @@
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_movers_res_model.dart';
+import 'package:finwizz/Models/responseModel/search_movers_res_model.dart';
 import 'package:finwizz/viewModel/get_all_movers_view_model.dart';
 import 'package:finwizz/viewModel/movers_like_unlike_view_model.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,15 @@ import '../../get_storage_services/get_storage_service.dart';
 import '../SignUp_SignIn/sign_up_screen.dart';
 
 class MoversScreen extends StatefulWidget {
-  const MoversScreen({Key? key}) : super(key: key);
+  final bool? isCategoryVisible;
+  final bool? isLoading;
+  SearchMoversResponseModel? response;
+  MoversScreen(
+      {Key? key,
+      this.isCategoryVisible = false,
+      this.isLoading = false,
+      this.response})
+      : super(key: key);
 
   @override
   State<MoversScreen> createState() => _MoversScreenState();
@@ -49,115 +58,136 @@ class _MoversScreenState extends State<MoversScreen> {
             child: Column(
               children: [
                 CommonWidget.commonSizedBox(height: 20),
-                GetBuilder<GetAllMoverViewModel>(builder: (controller) {
-                  if (controller.getMoversApiResponse.status ==
-                      Status.LOADING) {
-                    return CircularProgressIndicator();
-                  }
-                  if (controller.getMoversApiResponse.status ==
-                      Status.COMPLETE) {
-                    GetAllMoversResponseModel response =
-                        controller.getMoversApiResponse.data;
+                widget.isCategoryVisible!
+                    ? GetBuilder<GetAllMoverViewModel>(builder: (controller) {
+                        if (controller.getMoversApiResponse.status ==
+                            Status.LOADING) {
+                          return CircularProgressIndicator();
+                        }
+                        if (controller.getMoversApiResponse.status ==
+                            Status.COMPLETE) {
+                          GetAllMoversResponseModel response =
+                              controller.getMoversApiResponse.data;
 
-                    showDate.clear();
+                          showDate.clear();
 
-                    response.data!.forEach((element) {
-                      if (showDate.contains(
-                              element!.createdAt.toString().split(' ').first) ==
-                          false) {
-                        showDate
-                            .add(element.createdAt.toString().split(' ').first);
-                      }
-                    });
+                          response.data!.forEach((element) {
+                            if (showDate.contains(element!.createdAt
+                                    .toString()
+                                    .split(' ')
+                                    .first) ==
+                                false) {
+                              showDate.add(element.createdAt
+                                  .toString()
+                                  .split(' ')
+                                  .first);
+                            }
+                          });
 
-                    return Column(
-                      children: [
-                        ListView.builder(
-                          itemCount: showDate.length,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index1) {
-                            var dateData = showDate[index1];
-                            var currentDate =
-                                DateTime.now().toString().split(' ').first;
-                            var yesterday = DateTime.now()
-                                .subtract(Duration(days: 1))
-                                .toString()
-                                .split(' ')
-                                .first;
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Column(
+                          return Column(
+                            children: [
+                              ListView.builder(
+                                itemCount: showDate.length,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index1) {
+                                  var dateData = showDate[index1];
+                                  var currentDate = DateTime.now()
+                                      .toString()
+                                      .split(' ')
+                                      .first;
+                                  var yesterday = DateTime.now()
+                                      .subtract(Duration(days: 1))
+                                      .toString()
+                                      .split(' ')
+                                      .first;
+                                  return Column(
                                     children: [
-                                      Divider(
-                                        color: Color(0xffD1CDCD),
-                                        height: 0,
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        child: Column(
+                                          children: [
+                                            Divider(
+                                              color: Color(0xffD1CDCD),
+                                              height: 0,
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Row(
+                                              children: [
+                                                CommonWidget.commonSvgPitcher(
+                                                    image: ImageConst.calender,
+                                                    height: 20.sp,
+                                                    width: 20.sp),
+                                                SizedBox(width: 10),
+                                                CommonText.textBoldWight500(
+                                                  text: dateData == currentDate
+                                                      ? 'Today'
+                                                      : dateData == yesterday
+                                                          ? 'Yesterday'
+                                                          : '${dateData}',
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Divider(
+                                              color: Color(0xffD1CDCD),
+                                              height: 0,
+                                            ),
+                                            SizedBox(
+                                              height: 16,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        children: [
-                                          CommonWidget.commonSvgPitcher(
-                                              image: ImageConst.calender,
-                                              height: 20.sp,
-                                              width: 20.sp),
-                                          SizedBox(width: 10),
-                                          CommonText.textBoldWight500(
-                                            text: dateData == currentDate
-                                                ? 'Today'
-                                                : dateData == yesterday
-                                                    ? 'Yesterday'
-                                                    : '${dateData}',
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Divider(
-                                        color: Color(0xffD1CDCD),
-                                        height: 0,
-                                      ),
-                                      SizedBox(
-                                        height: 16,
+                                      ListView.separated(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: response.data!.length,
+                                        separatorBuilder: (context, index) {
+                                          return SizedBox(height: 20.sp);
+                                        },
+                                        itemBuilder: (context, index) {
+                                          return response
+                                                      .data![index]!.createdAt
+                                                      .toString()
+                                                      .split(' ')
+                                                      .first ==
+                                                  showDate[index1]
+                                              ? MoverWidget(
+                                                  response: response,
+                                                  index: index,
+                                                  isFavourite: isFavourite)
+                                              : SizedBox();
+                                        },
                                       ),
                                     ],
-                                  ),
-                                ),
-                                ListView.separated(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: response.data!.length,
-                                  separatorBuilder: (context, index) {
-                                    return SizedBox(height: 20.sp);
-                                  },
-                                  itemBuilder: (context, index) {
-                                    return response.data![index]!.createdAt
-                                                .toString()
-                                                .split(' ')
-                                                .first ==
-                                            showDate[index1]
-                                        ? MoverWidget(
-                                            response: response,
-                                            index: index,
-                                            controller: controller,
-                                            isFavourite: isFavourite)
-                                        : SizedBox();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  } else
-                    return SizedBox();
-                }),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        } else
+                          return SizedBox();
+                      })
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: widget.response!.data!.docs!.length,
+                        separatorBuilder: (context, index) {
+                          return SizedBox(height: 20.sp);
+                        },
+                        itemBuilder: (context, index) {
+                          return SearchMoverWidget(
+                              response: widget.response!,
+                              index: index,
+                              isFavourite: isFavourite);
+                        },
+                      ),
               ],
             ),
           )
@@ -169,14 +199,12 @@ class _MoversScreenState extends State<MoversScreen> {
 }
 
 class MoverWidget extends StatefulWidget {
-  GetAllMoverViewModel controller;
   GetAllMoversResponseModel response;
   int index;
   bool isFavourite;
 
   MoverWidget({
     Key? key,
-    required this.controller,
     required this.response,
     required this.index,
     required this.isFavourite,
@@ -199,19 +227,10 @@ class _MoverWidgetState extends State<MoverWidget> {
 
   String forStStart() {
     if (widget.response.data![widget.index]!.startDate!.contains(" ")) {
-      tmpList.clear();
-
       widget.response.data![widget.index]!.startDate!
           .split(" ")
           .join("")
-          .split("-")
-          .forEach((element) {
-        if (element.length == 1) {
-          tmpList.add("0" + element);
-        } else {
-          tmpList.add(element);
-        }
-      });
+          .replaceAll("-", "/");
 
       return formatString = tmpList.reversed.join("-");
     } else {
@@ -288,15 +307,16 @@ class _MoverWidgetState extends State<MoverWidget> {
                   children: [
                     CommonWidget.commonSizedBox(height: 10),
                     CommonText.textBoldWight700(
-                        text: '${widget.response.data![widget.index]!.title}',
+                        text:
+                            '${widget.response.data![widget.index]!.companyId!.name}',
                         color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 15),
+                    CommonWidget.commonSizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CommonText.textBoldWight400(
                             text:
-                                '${widget.response.data![widget.index]!.companyId!.name.toString().capitalizeFirst}',
+                                '${widget.response.data![widget.index]!.companyId!.shortName.toString().capitalizeFirst}',
                             color: Colors.black,
                             fontSize: 9.sp),
                         CommonWidget.commonSizedBox(width: 10),
@@ -307,7 +327,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                             fontSize: 9.sp),
                         CommonText.textBoldWight400(
                             text:
-                                '${DateFormat("d MMM").format(DateTime.parse(forStStart()))} - ${DateFormat("d MMM").format(DateTime.parse(forStEnd()))}',
+                                '${widget.response.data![widget.index]!.startDate!.split(" ").join("").replaceAll("-", "/")} - ${widget.response.data![widget.index]!.endDate!.split(" ").join("").replaceAll("-", "/")}',
                             color: Colors.black,
                             fontSize: 9.sp),
                       ],
@@ -317,7 +337,7 @@ class _MoverWidgetState extends State<MoverWidget> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(
-                            height: 125.sp,
+                            height: 100.sp,
                             width: 125.sp,
                             child: gaugeWidget(widget.response, widget.index)),
                         CommonWidget.commonSizedBox(width: 20),
@@ -344,7 +364,6 @@ class _MoverWidgetState extends State<MoverWidget> {
                               widget.isFavourite = !widget.isFavourite;
                             });
                           },
-
                           // onTap: () async {
                           //   // controller.updateLike(
                           //   //     response.data![index].isLiked!);
@@ -430,7 +449,6 @@ class _MoverWidgetState extends State<MoverWidget> {
                           //             'Try Again.');
                           //   }
                           // },
-
                           child: Icon(
                             widget.isFavourite == true
                                 ? Icons.favorite
@@ -510,19 +528,20 @@ class _MoverWidgetState extends State<MoverWidget> {
                   children: [
                     CommonWidget.commonSizedBox(height: 10),
                     CommonText.textBoldWight700(
-                        text: '${widget.response.data![widget.index]!.title}',
+                        text:
+                            '${widget.response.data![widget.index]!.companyId!.name}',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 15),
                     CommonText.textBoldWight400(
                         text:
-                            '${widget.response.data![widget.index]!.companyId!.name!.toUpperCase()}',
+                            '${widget.response.data![widget.index]!.companyId!.shortName!.toUpperCase()}',
                         color: Colors.black),
                     CommonWidget.commonSizedBox(height: 15),
-                    CommonText.textBoldWight500(
-                        color: Color(0xff394452),
-                        fontSize: 10.sp,
-                        text:
-                            "${widget.response.data![widget.index]!.description}"),
+                    // CommonText.textBoldWight500(
+                    //     color: Color(0xff394452),
+                    //     fontSize: 10.sp,
+                    //     text:
+                    //         "${widget.response.data![widget.index]!.description}"),
                     CommonWidget.commonSizedBox(height: 16),
                     // CommonText.textBoldWight500(
                     //     fontSize: 10.sp,
@@ -755,6 +774,599 @@ class _MoverWidgetState extends State<MoverWidget> {
             pointers: <GaugePointer>[
               NeedlePointer(
                   value: response.data![index]!.percentage!.toDouble(),
+                  needleLength: 45,
+                  needleStartWidth: 0.5,
+                  needleEndWidth: 4,
+                  knobStyle: KnobStyle(
+                      knobRadius: 0.11,
+                      sizeUnit: GaugeSizeUnit.factor,
+                      color: CommonColor.greenColor2ECC71),
+                  lengthUnit: GaugeSizeUnit.logicalPixel)
+            ],
+          )
+        ]);
+  }
+}
+
+class SearchMoverWidget extends StatefulWidget {
+  SearchMoversResponseModel response;
+  int index;
+  bool isFavourite;
+
+  SearchMoverWidget({
+    Key? key,
+    required this.response,
+    required this.index,
+    required this.isFavourite,
+  }) : super(key: key);
+
+  @override
+  State<SearchMoverWidget> createState() => _SearchMoverWidgetState();
+}
+
+class _SearchMoverWidgetState extends State<SearchMoverWidget> {
+  int currentPage = 0;
+  double gaugeContainerWidth = Get.width - 50;
+  double otherContainerWidth = 0;
+  int sensitivity = 8;
+  Duration duration = Duration(milliseconds: 300);
+
+  String formatString = "";
+
+  List tmpList = [];
+
+  String forStStart() {
+    if (widget.response.data!.docs![widget.index]!.startDate!.contains(" ")) {
+      widget.response.data!.docs![widget.index]!.startDate!
+          .split(" ")
+          .join("")
+          .replaceAll("-", "/");
+
+      return formatString = tmpList.reversed.join("-");
+    } else {
+      return formatString =
+          widget.response.data!.docs![widget.index]!.startDate!;
+    }
+  }
+
+  String forStEnd() {
+    if (widget.response.data!.docs![widget.index]!.endDate!.contains(" ")) {
+      tmpList.clear();
+
+      widget.response.data!.docs![widget.index]!.endDate!
+          .split(" ")
+          .join("")
+          .split("-")
+          .forEach((element) {
+        if (element.length == 1) {
+          tmpList.add("0" + element);
+        } else {
+          tmpList.add(element);
+        }
+      });
+
+      return formatString = tmpList.reversed.join("-");
+    } else {
+      return formatString = widget.response.data!.docs![widget.index]!.endDate!;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      width: Get.width,
+      child: Row(
+        children: [
+          currentPage == 1
+              ? InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentPage = 0;
+                      gaugeContainerWidth = Get.width - 50;
+                      otherContainerWidth = 0;
+                    });
+                  },
+                  child: CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/left_arrow.svg'),
+                )
+              : CommonWidget.commonSvgPitcher(
+                  image: 'assets/svg/left_arrow.svg',
+                  color: Colors.transparent),
+          GestureDetector(
+            onHorizontalDragUpdate: (details) {
+              if (details.delta.dx < -sensitivity) {
+                setState(() {
+                  currentPage = 1;
+                  otherContainerWidth = Get.width - 50;
+                  gaugeContainerWidth = 0;
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: duration,
+              width: gaugeContainerWidth,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color(0xffD1CDCD),
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight700(
+                        text:
+                            '${widget.response.data!.docs![widget.index]!.companyId!}',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data!.docs![widget.index]!.companyId!.toString().capitalizeFirst}',
+                            color: Colors.black,
+                            fontSize: 9.sp),
+                        CommonWidget.commonSizedBox(width: 10),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data!.docs![widget.index]!.startPrice} - ${widget.response.data!.docs![widget.index]!.currentPrice}',
+                            color: Colors.black,
+                            fontSize: 9.sp),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data!.docs![widget.index]!.startDate!.split(" ").join("").replaceAll("-", "/")} - ${widget.response.data!.docs![widget.index]!.endDate!.split(" ").join("").replaceAll("-", "/")}',
+                            color: Colors.black,
+                            fontSize: 9.sp),
+                      ],
+                    ),
+                    Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                            height: 100.sp,
+                            width: 125.sp,
+                            child: gaugeSearchWidget(
+                                widget.response, widget.index)),
+                        CommonWidget.commonSizedBox(width: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: Image.asset(
+                            'assets/png/up_arrow_iphone.png',
+                            scale: 4,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: CommonText.textBoldWight500(
+                              text:
+                                  " ${widget.response.data!.docs![widget.index]!.percentage} %"),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        InkResponse(
+                          onTap: () {
+                            setState(() {
+                              widget.isFavourite = !widget.isFavourite;
+                            });
+                          },
+                          // onTap: () async {
+                          //   // controller.updateLike(
+                          //   //     response.data![index].isLiked!);
+                          //   if (response.data![index].
+                          //           .isLiked ==
+                          //       false) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "like",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //
+                          //     if (moversLikeUnLikeViewModel
+                          //             .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   } else if (response
+                          //           .data![index]
+                          //           .isLiked ==
+                          //       true) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "unlike",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   }
+                          //   await getAllMoverViewModel
+                          //       .getMoversViewModel(
+                          //           isLoading: false
+                          //   );
+                          //   if (getAllMoverViewModel
+                          //           .getMoversApiResponse
+                          //           .status ==
+                          //       Status.COMPLETE) {}
+                          //   if (getAllMoverViewModel
+                          //       .getMoversApiResponse
+                          //           .status ==
+                          //       Status.ERROR) {
+                          //     CommonWidget.getSnackBar(
+                          //         color: Colors.red,
+                          //         duration: 2,
+                          //         colorText:
+                          //             Colors.white,
+                          //         title:
+                          //             "Refresh Page",
+                          //         message:
+                          //             'Try Again.');
+                          //   }
+                          // },
+                          child: Icon(
+                            widget.isFavourite == true
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data!.docs![widget.index]!.likes}',
+                            color: Colors.black),
+                        Spacer(),
+                        // InkResponse(
+                        //   onTap: () {
+                        //     setState(() {
+                        //       isFavourite1 =
+                        //           !isFavourite1;
+                        //     });
+                        //   },
+                        //   child: Icon(
+                        //     isFavourite1 == true
+                        //         ? Icons.bookmark
+                        //         : Icons
+                        //             .bookmark_outline_sharp,
+                        //     color: CommonColor
+                        //         .yellowColorFFB800,
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   width: 10,
+                        // ),
+                        InkResponse(
+                          onTap: () {
+                            Share.share("Test");
+                          },
+                          child: Icon(
+                            Icons.share,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight400(
+                        text:
+                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data!.docs![widget.index]!.createdAt!)} ·| Source : BSE',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 10),
+                  ]),
+            ),
+          ),
+          GestureDetector(
+            onHorizontalDragUpdate: (details) {
+              if (details.delta.dx > sensitivity) {
+                setState(() {
+                  currentPage = 0;
+                  gaugeContainerWidth = Get.width - 50;
+                  otherContainerWidth = 0;
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: duration,
+              width: otherContainerWidth,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color(0xffD1CDCD),
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight700(
+                        text:
+                            '${widget.response.data!.docs![widget.index]!.companyId!}',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 15),
+                    CommonText.textBoldWight400(
+                        text:
+                            '${widget.response.data!.docs![widget.index]!.companyId!.toUpperCase()}',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 15),
+                    // CommonText.textBoldWight500(
+                    //     color: Color(0xff394452),
+                    //     fontSize: 10.sp,
+                    //     text:
+                    //         "${widget.response.data![widget.index]!.description}"),
+                    CommonWidget.commonSizedBox(height: 16),
+                    // CommonText.textBoldWight500(
+                    //     fontSize: 10.sp,
+                    //     color:
+                    //         Color(0xff394452),
+                    //     text:
+                    //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                    // CommonWidget.commonSizedBox(
+                    //     height: 10),
+                    Row(
+                      children: [
+                        InkResponse(
+                          onTap: () {
+                            setState(() {
+                              widget.isFavourite = !widget.isFavourite;
+                            });
+                          },
+
+                          // onTap: () async {
+                          //   // controller.updateLike(
+                          //   //     response.data![index].isLiked!);
+                          //   if (response.data![index].
+                          //           .isLiked ==
+                          //       false) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "like",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //
+                          //     if (moversLikeUnLikeViewModel
+                          //             .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   } else if (response
+                          //           .data![index]
+                          //           .isLiked ==
+                          //       true) {
+                          //     await moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeViewModel(
+                          //             body: {
+                          //           "type": "unlike",
+                          //           "newsId":
+                          //               "${response.data![index].id}"
+                          //         });
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.COMPLETE) {}
+                          //     if (moversLikeUnLikeViewModel
+                          //         .moversLikeUnLikeApiResponse
+                          //             .status ==
+                          //         Status.ERROR) {
+                          //       // CommonWidget.getSnackBar(
+                          //       //     color: Colors.red,
+                          //       //     duration: 2,
+                          //       //     colorText:
+                          //       //         Colors.white,
+                          //       //     title:
+                          //       //         "Something went wrong",
+                          //       //     message:
+                          //       //         'Try Again.');
+                          //     }
+                          //   }
+                          //   await getAllMoverViewModel
+                          //       .getMoversViewModel(
+                          //           isLoading: false
+                          //   );
+                          //   if (getAllMoverViewModel
+                          //           .getMoversApiResponse
+                          //           .status ==
+                          //       Status.COMPLETE) {}
+                          //   if (getAllMoverViewModel
+                          //       .getMoversApiResponse
+                          //           .status ==
+                          //       Status.ERROR) {
+                          //     CommonWidget.getSnackBar(
+                          //         color: Colors.red,
+                          //         duration: 2,
+                          //         colorText:
+                          //             Colors.white,
+                          //         title:
+                          //             "Refresh Page",
+                          //         message:
+                          //             'Try Again.');
+                          //   }
+                          // },
+
+                          child: Icon(
+                            widget.isFavourite == true
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${widget.response.data!.docs![widget.index]!.likes}',
+                            color: Colors.black),
+                        Spacer(),
+                        // InkResponse(
+                        //   onTap: () {
+                        //     setState(() {
+                        //       isFavourite1 =
+                        //           !isFavourite1;
+                        //     });
+                        //   },
+                        //   child: Icon(
+                        //     isFavourite1 == true
+                        //         ? Icons.bookmark
+                        //         : Icons
+                        //             .bookmark_outline_sharp,
+                        //     color: CommonColor
+                        //         .yellowColorFFB800,
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   width: 10,
+                        // ),
+                        InkResponse(
+                          onTap: () {
+                            Share.share("Test");
+                          },
+                          child: Icon(
+                            Icons.share,
+                            color: CommonColor.yellowColorFFB800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    CommonWidget.commonSizedBox(height: 10),
+                    CommonText.textBoldWight400(
+                        text:
+                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data!.docs![widget.index]!.createdAt!)} ·| Source : BSE',
+                        color: Colors.black),
+                    CommonWidget.commonSizedBox(height: 10),
+                  ]),
+            ),
+          ),
+          currentPage == 0
+              ? InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentPage = 1;
+                      otherContainerWidth = Get.width - 50;
+                      gaugeContainerWidth = 0;
+                    });
+                  },
+                  child: CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/right_arrow.svg'),
+                )
+              : CommonWidget.commonSvgPitcher(
+                  image: 'assets/svg/left_arrow.svg', color: Colors.transparent)
+        ],
+      ),
+    );
+  }
+
+  SfRadialGauge gaugeSearchWidget(
+      SearchMoversResponseModel response, int index) {
+    return SfRadialGauge(
+        enableLoadingAnimation: true,
+        animationDuration: 1500,
+        axes: <RadialAxis>[
+          RadialAxis(
+            showFirstLabel: false,
+            interval: 120,
+            startAngle: 180,
+            endAngle: 0,
+            minimum: 0,
+            maximum: 100,
+            axisLineStyle: AxisLineStyle(thickness: 35),
+            showTicks: false,
+            ranges: <GaugeRange>[
+              GaugeRange(
+                  startValue: 0,
+                  endValue: 16.66,
+                  color: Color(0xffFF2424),
+                  startWidth: 35,
+                  endWidth: 35),
+              GaugeRange(
+                  startValue: 16.66,
+                  endValue: 33.32,
+                  color: Color(0xffFC8451),
+                  startWidth: 35,
+                  endWidth: 35),
+              GaugeRange(
+                  startValue: 33.32,
+                  endValue: 49.98,
+                  color: Color(0xffF6AC3E),
+                  startWidth: 35,
+                  endWidth: 35),
+              GaugeRange(
+                  startValue: 49.98,
+                  endValue: 66.64,
+                  color: Color(0xffC6F85E),
+                  startWidth: 35,
+                  endWidth: 35),
+              GaugeRange(
+                  startValue: 66.64,
+                  endValue: 83.30,
+                  color: Color(0xff57F954),
+                  startWidth: 35,
+                  endWidth: 35),
+              GaugeRange(
+                  startValue: 83.30,
+                  endValue: 100,
+                  color: Color(0xff01B549),
+                  startWidth: 35,
+                  endWidth: 35)
+            ],
+            pointers: <GaugePointer>[
+              NeedlePointer(
+                  value: response.data!.docs![index]!.percentage!.toDouble(),
                   needleLength: 45,
                   needleStartWidth: 0.5,
                   needleEndWidth: 4,
