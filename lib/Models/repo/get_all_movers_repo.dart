@@ -11,7 +11,7 @@ class GetAllMoverRepo extends BaseService {
     log('LINK response===>>>  ${APIConst.movers}');
 
     var response = await APIService()
-        .getMoversResponse(url: '${APIConst.movers}', apitype: APIType.aGet);
+        .getMoversResponse(url: APIConst.movers, apitype: APIType.aGet);
     log('GetAllMoverResponse===>>>  $response');
     GetAllMoversResponseModel getAllMoversResponseModel =
         GetAllMoversResponseModel.fromJson(response);

@@ -204,9 +204,9 @@ class _NewsScreenState extends State<NewsScreen> {
         showSearchDate.clear();
 
         if (!widget.isCategoryVisible!) {
-          widget.response?.data!.docs!.forEach((element) {
+          widget.response?.data!.forEach((element) {
             if (showSearchDate
-                    .contains(element.createdAt.toString().split(' ').first) ==
+                    .contains(element!.createdAt.toString().split(' ').first) ==
                 false) {
               showSearchDate.add(element.createdAt.toString().split(' ').first);
             }
@@ -234,7 +234,6 @@ class _NewsScreenState extends State<NewsScreen> {
                                   selected = index;
                                 });
                                 news.clear();
-
                                 await getNewsByPage(
                                     catId: "${resp.data![selected].sId}",
                                     isRefresh: true);
@@ -1115,17 +1114,16 @@ class _NewsScreenState extends State<NewsScreen> {
                                       height: 16,
                                     ),
                                     ListView.builder(
-                                      itemCount:
-                                          widget.response!.data!.docs!.length,
+                                      itemCount: widget.response!.data!.length,
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
                                       itemBuilder: (context, index) {
                                         var time = DateFormat('kk:mm:a').format(
-                                            widget.response!.data!.docs![index]
+                                            widget.response!.data![index]!
                                                 .createdAt!);
                                         var date = DateFormat.yMMMEd()
-                                            .format(widget.response!.data!
-                                                .docs![index].createdAt!)
+                                            .format(widget.response!
+                                                .data![index]!.createdAt!)
                                             .toString()
                                             .split(', ')[1];
                                         return Container(
@@ -1149,7 +1147,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                     height: 10),
                                                 CommonText.textBoldWight700(
                                                     text:
-                                                        '${widget.response!.data!.docs![index].title}',
+                                                        '${widget.response!.data![index]!.title}',
                                                     color: Colors.black),
                                                 CommonWidget.commonSizedBox(
                                                     height: 15),
@@ -1159,7 +1157,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                     color: Color(0xff394452),
                                                     fontSize: 10.sp,
                                                     text:
-                                                        "${widget.response!.data!.docs![index].description}"),
+                                                        "${widget.response!.data![index]!.description}"),
                                                 CommonWidget.commonSizedBox(
                                                     height: 6),
                                                 CommonWidget.commonSizedBox(
@@ -1173,9 +1171,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                                             true) {
                                                           if (widget
                                                                   .response!
-                                                                  .data!
-                                                                  .docs![index]
-                                                                  .isLiked ==
+                                                                  .data![index]!
+                                                                  .generic ==
                                                               false) {
                                                             await likeUnLikeViewModel
                                                                 .likeUnLikeViewModel(
@@ -1183,7 +1180,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                   "type":
                                                                       "like",
                                                                   "newsId":
-                                                                      "${widget.response!.data!.docs![index].id}"
+                                                                      "${widget.response!.data![index]!.id}"
                                                                 });
 
                                                             if (likeUnLikeViewModel
@@ -1206,9 +1203,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                 Status.ERROR) {}
                                                           } else if (widget
                                                                   .response!
-                                                                  .data!
-                                                                  .docs![index]
-                                                                  .isLiked ==
+                                                                  .data![index]!
+                                                                  .generic ==
                                                               true) {
                                                             await likeUnLikeViewModel
                                                                 .likeUnLikeViewModel(
@@ -1216,7 +1212,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                   "type":
                                                                       "unlike",
                                                                   "newsId":
-                                                                      "${widget.response!.data!.docs![index].id}"
+                                                                      "${widget.response!.data![index]!.id}"
                                                                 });
                                                             if (likeUnLikeViewModel
                                                                     .likeUnlikeApiResponse
@@ -1254,10 +1250,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       child: Icon(
                                                         widget
                                                                     .response!
-                                                                    .data!
-                                                                    .docs![
-                                                                        index]
-                                                                    .isLiked ==
+                                                                    .data![
+                                                                        index]!
+                                                                    .generic ==
                                                                 true
                                                             ? Icons.favorite
                                                             : Icons
@@ -1272,12 +1267,11 @@ class _NewsScreenState extends State<NewsScreen> {
                                                     CommonText.textBoldWight400(
                                                         text: widget
                                                                     .response!
-                                                                    .data!
-                                                                    .docs![
-                                                                        index]
+                                                                    .data![
+                                                                        index]!
                                                                     .likes !=
                                                                 null
-                                                            ? '${widget.response!.data!.docs![index].likes}'
+                                                            ? '${widget.response!.data![index]!.likes}'
                                                             : "0",
                                                         color: Colors.black),
                                                     Spacer(),
@@ -1288,9 +1282,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                                             true) {
                                                           if (widget
                                                                   .response!
-                                                                  .data!
-                                                                  .docs![index]
-                                                                  .isFavourite ==
+                                                                  .data![index]!
+                                                                  .generic ==
                                                               false) {
                                                             await favUnFavViewModel
                                                                 .favUnFavViewModel(
@@ -1298,7 +1291,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                   "type":
                                                                       "favourite",
                                                                   "newsId":
-                                                                      "${widget.response!.data!.docs![index].id}"
+                                                                      "${widget.response!.data![index]!.id}"
                                                                 });
                                                             if (favUnFavViewModel
                                                                     .favUnFavApiResponse
@@ -1321,9 +1314,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                 Status.ERROR) {}
                                                           } else if (widget
                                                                   .response!
-                                                                  .data!
-                                                                  .docs![index]
-                                                                  .isFavourite ==
+                                                                  .data![index]!
+                                                                  .generic ==
                                                               true) {
                                                             await favUnFavViewModel
                                                                 .favUnFavViewModel(
@@ -1331,7 +1323,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                   "type":
                                                                       "unfavourite",
                                                                   "newsId":
-                                                                      "${widget.response!.data!.docs![index].id}"
+                                                                      "${widget.response!.data![index]!.id}"
                                                                 });
                                                             if (favUnFavViewModel
                                                                     .favUnFavApiResponse
@@ -1370,10 +1362,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       child: Icon(
                                                         widget
                                                                     .response!
-                                                                    .data!
-                                                                    .docs![
-                                                                        index]
-                                                                    .isFavourite ==
+                                                                    .data![
+                                                                        index]!
+                                                                    .generic ==
                                                                 true
                                                             ? Icons.bookmark
                                                             : Icons

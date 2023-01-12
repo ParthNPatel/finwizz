@@ -1,8 +1,10 @@
 import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_movers_res_model.dart';
 import 'package:finwizz/Models/responseModel/search_movers_res_model.dart';
+import 'package:finwizz/Models/responseModel/search_news_res_model.dart';
 import 'package:finwizz/viewModel/get_all_movers_view_model.dart';
 import 'package:finwizz/viewModel/movers_like_unlike_view_model.dart';
+import 'package:finwizz/viewModel/search_news_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -41,7 +43,6 @@ class _MoversScreenState extends State<MoversScreen> {
   MoversLikeUnLikeViewModel moversLikeUnLikeViewModel =
       Get.put(MoversLikeUnLikeViewModel());
 
-  int currentPage = 0;
   List showDate = [];
 
   @override
@@ -177,7 +178,7 @@ class _MoversScreenState extends State<MoversScreen> {
                     : ListView.separated(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: widget.response!.data!.docs!.length,
+                        itemCount: widget.response!.data!.length,
                         separatorBuilder: (context, index) {
                           return SizedBox(height: 20.sp);
                         },
@@ -219,504 +220,516 @@ class _MoverWidgetState extends State<MoverWidget> {
   double gaugeContainerWidth = Get.width - 50;
   double otherContainerWidth = 0;
   int sensitivity = 8;
-  Duration duration = Duration(milliseconds: 300);
 
   String formatString = "";
 
   List tmpList = [];
 
-  String forStStart() {
-    if (widget.response.data![widget.index]!.startDate!.contains(" ")) {
-      widget.response.data![widget.index]!.startDate!
-          .split(" ")
-          .join("")
-          .replaceAll("-", "/");
+  SearchNewsViewModel searchNewsViewModel = Get.put(SearchNewsViewModel());
 
-      return formatString = tmpList.reversed.join("-");
-    } else {
-      return formatString = widget.response.data![widget.index]!.startDate!;
-    }
-  }
-
-  String forStEnd() {
-    if (widget.response.data![widget.index]!.endDate!.contains(" ")) {
-      tmpList.clear();
-
-      widget.response.data![widget.index]!.endDate!
-          .split(" ")
-          .join("")
-          .split("-")
-          .forEach((element) {
-        if (element.length == 1) {
-          tmpList.add("0" + element);
-        } else {
-          tmpList.add(element);
-        }
-      });
-
-      return formatString = tmpList.reversed.join("-");
-    } else {
-      return formatString = widget.response.data![widget.index]!.endDate!;
-    }
+  @override
+  void initState() {
+    searchNewsViewModel.searchNewsViewModel(
+        companyId: widget.response.data![widget.index]!.companyId!.id!,
+        isLoading: false);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      width: Get.width,
-      child: Row(
-        children: [
-          currentPage == 1
-              ? InkWell(
-                  onTap: () {
-                    setState(() {
-                      currentPage = 0;
-                      gaugeContainerWidth = Get.width - 50;
-                      otherContainerWidth = 0;
-                    });
-                  },
-                  child: CommonWidget.commonSvgPitcher(
-                      image: 'assets/svg/left_arrow.svg'),
-                )
-              : CommonWidget.commonSvgPitcher(
-                  image: 'assets/svg/left_arrow.svg',
-                  color: Colors.transparent),
-          GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              if (details.delta.dx < -sensitivity) {
-                setState(() {
-                  currentPage = 1;
-                  otherContainerWidth = Get.width - 50;
-                  gaugeContainerWidth = 0;
-                });
-              }
-            },
-            child: AnimatedContainer(
-              duration: duration,
-              width: gaugeContainerWidth,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color(0xffD1CDCD),
-                ),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight700(
-                        text:
-                            '${widget.response.data![widget.index]!.companyId!.name}',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data![widget.index]!.companyId!.shortName.toString().capitalizeFirst}',
-                            color: Colors.black,
-                            fontSize: 9.sp),
-                        CommonWidget.commonSizedBox(width: 10),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data![widget.index]!.startPrice} - ${widget.response.data![widget.index]!.currentPrice}',
-                            color: Colors.black,
-                            fontSize: 9.sp),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data![widget.index]!.startDate!.split(" ").join("").replaceAll("-", "/")} - ${widget.response.data![widget.index]!.endDate!.split(" ").join("").replaceAll("-", "/")}',
-                            color: Colors.black,
-                            fontSize: 9.sp),
-                      ],
-                    ),
-                    Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                            height: 100.sp,
-                            width: 125.sp,
-                            child: gaugeWidget(widget.response, widget.index)),
-                        CommonWidget.commonSizedBox(width: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 40),
-                          child: Image.asset(
-                            'assets/png/up_arrow_iphone.png',
-                            scale: 4,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 40),
-                          child: CommonText.textBoldWight500(
-                              text:
-                                  " ${widget.response.data![widget.index]!.percentage} %"),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        InkResponse(
-                          onTap: () {
-                            setState(() {
-                              widget.isFavourite = !widget.isFavourite;
-                            });
-                          },
-                          // onTap: () async {
-                          //   // controller.updateLike(
-                          //   //     response.data![index].isLiked!);
-                          //   if (response.data![index].
-                          //           .isLiked ==
-                          //       false) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "like",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //
-                          //     if (moversLikeUnLikeViewModel
-                          //             .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   } else if (response
-                          //           .data![index]
-                          //           .isLiked ==
-                          //       true) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "unlike",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   }
-                          //   await getAllMoverViewModel
-                          //       .getMoversViewModel(
-                          //           isLoading: false
-                          //   );
-                          //   if (getAllMoverViewModel
-                          //           .getMoversApiResponse
-                          //           .status ==
-                          //       Status.COMPLETE) {}
-                          //   if (getAllMoverViewModel
-                          //       .getMoversApiResponse
-                          //           .status ==
-                          //       Status.ERROR) {
-                          //     CommonWidget.getSnackBar(
-                          //         color: Colors.red,
-                          //         duration: 2,
-                          //         colorText:
-                          //             Colors.white,
-                          //         title:
-                          //             "Refresh Page",
-                          //         message:
-                          //             'Try Again.');
-                          //   }
-                          // },
-                          child: Icon(
-                            widget.isFavourite == true
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data![widget.index]!.likes}',
-                            color: Colors.black),
-                        Spacer(),
-                        // InkResponse(
-                        //   onTap: () {
-                        //     setState(() {
-                        //       isFavourite1 =
-                        //           !isFavourite1;
-                        //     });
-                        //   },
-                        //   child: Icon(
-                        //     isFavourite1 == true
-                        //         ? Icons.bookmark
-                        //         : Icons
-                        //             .bookmark_outline_sharp,
-                        //     color: CommonColor
-                        //         .yellowColorFFB800,
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   width: 10,
-                        // ),
-                        InkResponse(
-                          onTap: () {
-                            Share.share("Test");
-                          },
-                          child: Icon(
-                            Icons.share,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                      ],
-                    ),
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight400(
-                        text:
-                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 10),
-                  ]),
-            ),
-          ),
-          GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              if (details.delta.dx > sensitivity) {
-                setState(() {
-                  currentPage = 0;
-                  gaugeContainerWidth = Get.width - 50;
-                  otherContainerWidth = 0;
-                });
-              }
-            },
-            child: AnimatedContainer(
-              duration: duration,
-              width: otherContainerWidth,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color(0xffD1CDCD),
-                ),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight700(
-                        text:
-                            '${widget.response.data![widget.index]!.companyId!.name}',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 15),
-                    CommonText.textBoldWight400(
-                        text:
-                            '${widget.response.data![widget.index]!.companyId!.shortName!.toUpperCase()}',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 15),
-                    // CommonText.textBoldWight500(
-                    //     color: Color(0xff394452),
-                    //     fontSize: 10.sp,
-                    //     text:
-                    //         "${widget.response.data![widget.index]!.description}"),
-                    CommonWidget.commonSizedBox(height: 16),
-                    // CommonText.textBoldWight500(
-                    //     fontSize: 10.sp,
-                    //     color:
-                    //         Color(0xff394452),
-                    //     text:
-                    //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                    // CommonWidget.commonSizedBox(
-                    //     height: 10),
-                    Row(
-                      children: [
-                        InkResponse(
-                          onTap: () {
-                            setState(() {
-                              widget.isFavourite = !widget.isFavourite;
-                            });
-                          },
+    return GetBuilder<SearchNewsViewModel>(builder: (controller) {
+      if (controller.searchNewsApiResponse.status == Status.LOADING) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      if (controller.searchNewsApiResponse.status == Status.COMPLETE) {
+        SearchNewsResponseModel resp = controller.searchNewsApiResponse.data;
 
-                          // onTap: () async {
-                          //   // controller.updateLike(
-                          //   //     response.data![index].isLiked!);
-                          //   if (response.data![index].
-                          //           .isLiked ==
-                          //       false) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "like",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //
-                          //     if (moversLikeUnLikeViewModel
-                          //             .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   } else if (response
-                          //           .data![index]
-                          //           .isLiked ==
-                          //       true) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "unlike",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   }
-                          //   await getAllMoverViewModel
-                          //       .getMoversViewModel(
-                          //           isLoading: false
-                          //   );
-                          //   if (getAllMoverViewModel
-                          //           .getMoversApiResponse
-                          //           .status ==
-                          //       Status.COMPLETE) {}
-                          //   if (getAllMoverViewModel
-                          //       .getMoversApiResponse
-                          //           .status ==
-                          //       Status.ERROR) {
-                          //     CommonWidget.getSnackBar(
-                          //         color: Colors.red,
-                          //         duration: 2,
-                          //         colorText:
-                          //             Colors.white,
-                          //         title:
-                          //             "Refresh Page",
-                          //         message:
-                          //             'Try Again.');
-                          //   }
-                          // },
-
-                          child: Icon(
-                            widget.isFavourite == true
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data![widget.index]!.likes}',
-                            color: Colors.black),
-                        Spacer(),
-                        // InkResponse(
-                        //   onTap: () {
-                        //     setState(() {
-                        //       isFavourite1 =
-                        //           !isFavourite1;
-                        //     });
-                        //   },
-                        //   child: Icon(
-                        //     isFavourite1 == true
-                        //         ? Icons.bookmark
-                        //         : Icons
-                        //             .bookmark_outline_sharp,
-                        //     color: CommonColor
-                        //         .yellowColorFFB800,
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   width: 10,
-                        // ),
-                        InkResponse(
-                          onTap: () {
-                            Share.share("Test");
-                          },
-                          child: Icon(
-                            Icons.share,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                      ],
-                    ),
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight400(
-                        text:
-                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 10),
-                  ]),
-            ),
-          ),
-          currentPage == 0
-              ? InkWell(
-                  onTap: () {
+        return SizedBox(
+          height: 315,
+          width: Get.width,
+          child: Row(
+            children: [
+              currentPage != 0
+                  ? InkWell(
+                      onTap: () {
+                        if (currentPage == 1) {
+                          setState(() {
+                            currentPage -= 1;
+                            gaugeContainerWidth = Get.width - 50;
+                            otherContainerWidth = 0;
+                          });
+                        } else {
+                          setState(() {
+                            currentPage -= 1;
+                          });
+                        }
+                      },
+                      child: CommonWidget.commonSvgPitcher(
+                          image: 'assets/svg/left_arrow.svg'),
+                    )
+                  : CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/left_arrow.svg',
+                      color: Colors.transparent),
+              GestureDetector(
+                onHorizontalDragUpdate: (details) {
+                  if (details.delta.dx < -sensitivity) {
                     setState(() {
-                      currentPage = 1;
+                      currentPage += 1;
                       otherContainerWidth = Get.width - 50;
                       gaugeContainerWidth = 0;
                     });
-                  },
-                  child: CommonWidget.commonSvgPitcher(
-                      image: 'assets/svg/right_arrow.svg'),
-                )
-              : CommonWidget.commonSvgPitcher(
-                  image: 'assets/svg/left_arrow.svg', color: Colors.transparent)
-        ],
-      ),
-    );
+                  }
+                },
+                child: Container(
+                  width: gaugeContainerWidth,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color(0xffD1CDCD),
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CommonWidget.commonSizedBox(height: 10),
+                        CommonText.textBoldWight700(
+                            text:
+                                '${widget.response.data![widget.index]!.companyId!.name}',
+                            color: Colors.black),
+                        CommonWidget.commonSizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${widget.response.data![widget.index]!.companyId!.shortName.toString().capitalizeFirst}',
+                                color: Colors.black,
+                                fontSize: 9.sp),
+                            CommonWidget.commonSizedBox(width: 10),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${widget.response.data![widget.index]!.startPrice} - ${widget.response.data![widget.index]!.currentPrice}',
+                                color: Colors.black,
+                                fontSize: 9.sp),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${DateFormat("d MMM").format(DateTime.parse(widget.response.data![widget.index]!.startDate!.toString()))} - ${DateFormat("d MMM").format(DateTime.parse(widget.response.data![widget.index]!.endDate!.toString()))}',
+                                color: Colors.black,
+                                fontSize: 9.sp),
+                          ],
+                        ),
+                        Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                                height: 100.sp,
+                                width: 125.sp,
+                                child:
+                                    gaugeWidget(widget.response, widget.index)),
+                            CommonWidget.commonSizedBox(width: 20),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 40),
+                              child: Image.asset(
+                                'assets/png/up_arrow_iphone.png',
+                                scale: 4,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 40),
+                              child: CommonText.textBoldWight500(
+                                  text:
+                                      " ${widget.response.data![widget.index]!.percentage} %"),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            InkResponse(
+                              onTap: () {
+                                setState(() {
+                                  widget.isFavourite = !widget.isFavourite;
+                                });
+                              },
+                              // onTap: () async {
+                              //   // controller.updateLike(
+                              //   //     response.data![index].isLiked!);
+                              //   if (response.data![index].
+                              //           .isLiked ==
+                              //       false) {
+                              //     await moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeViewModel(
+                              //             body: {
+                              //           "type": "like",
+                              //           "newsId":
+                              //               "${response.data![index].id}"
+                              //         });
+                              //
+                              //     if (moversLikeUnLikeViewModel
+                              //             .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.COMPLETE) {}
+                              //     if (moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.ERROR) {
+                              //       // CommonWidget.getSnackBar(
+                              //       //     color: Colors.red,
+                              //       //     duration: 2,
+                              //       //     colorText:
+                              //       //         Colors.white,
+                              //       //     title:
+                              //       //         "Something went wrong",
+                              //       //     message:
+                              //       //         'Try Again.');
+                              //     }
+                              //   } else if (response
+                              //           .data![index]
+                              //           .isLiked ==
+                              //       true) {
+                              //     await moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeViewModel(
+                              //             body: {
+                              //           "type": "unlike",
+                              //           "newsId":
+                              //               "${response.data![index].id}"
+                              //         });
+                              //     if (moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.COMPLETE) {}
+                              //     if (moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.ERROR) {
+                              //       // CommonWidget.getSnackBar(
+                              //       //     color: Colors.red,
+                              //       //     duration: 2,
+                              //       //     colorText:
+                              //       //         Colors.white,
+                              //       //     title:
+                              //       //         "Something went wrong",
+                              //       //     message:
+                              //       //         'Try Again.');
+                              //     }
+                              //   }
+                              //   await getAllMoverViewModel
+                              //       .getMoversViewModel(
+                              //           isLoading: false
+                              //   );
+                              //   if (getAllMoverViewModel
+                              //           .getMoversApiResponse
+                              //           .status ==
+                              //       Status.COMPLETE) {}
+                              //   if (getAllMoverViewModel
+                              //       .getMoversApiResponse
+                              //           .status ==
+                              //       Status.ERROR) {
+                              //     CommonWidget.getSnackBar(
+                              //         color: Colors.red,
+                              //         duration: 2,
+                              //         colorText:
+                              //             Colors.white,
+                              //         title:
+                              //             "Refresh Page",
+                              //         message:
+                              //             'Try Again.');
+                              //   }
+                              // },
+                              child: Icon(
+                                widget.isFavourite == true
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: CommonColor.yellowColorFFB800,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${widget.response.data![widget.index]!.likes}',
+                                color: Colors.black),
+                            Spacer(),
+                            // InkResponse(
+                            //   onTap: () {
+                            //     setState(() {
+                            //       isFavourite1 =
+                            //           !isFavourite1;
+                            //     });
+                            //   },
+                            //   child: Icon(
+                            //     isFavourite1 == true
+                            //         ? Icons.bookmark
+                            //         : Icons
+                            //             .bookmark_outline_sharp,
+                            //     color: CommonColor
+                            //         .yellowColorFFB800,
+                            //   ),
+                            // ),
+                            // SizedBox(
+                            //   width: 10,
+                            // ),
+                            InkResponse(
+                              onTap: () {
+                                Share.share("Test");
+                              },
+                              child: Icon(
+                                Icons.share,
+                                color: CommonColor.yellowColorFFB800,
+                              ),
+                            ),
+                          ],
+                        ),
+                        CommonWidget.commonSizedBox(height: 10),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
+                            color: Colors.black),
+                        CommonWidget.commonSizedBox(height: 10),
+                      ]),
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: resp.data!.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onHorizontalDragUpdate: (details) {
+                      // if (details.delta.dx > sensitivity) {
+                      //   log("left to right");
+                      //   setState(() {
+                      //     currentPage = 0;
+                      //     gaugeContainerWidth = Get.width - 50;
+                      //     otherContainerWidth = 0;
+                      //   });
+                      // } else if (details.delta.dx < -sensitivity) {
+                      //   if (index == 3) {
+                      //     log("3 true");
+                      //     setState(() {
+                      //       currentPage = 1;
+                      //       gaugeContainerWidth = 0;
+                      //       otherContainerWidth = Get.width - 50;
+                      //     });
+                      //   }
+                      // }
+                    },
+                    child: Container(
+                      width: index == currentPage - 1 ? otherContainerWidth : 0,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color(0xffD1CDCD),
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CommonWidget.commonSizedBox(height: 10),
+                            CommonText.textBoldWight700(
+                                text: '${resp.data![index]!.title}',
+                                color: Colors.black),
+                            CommonWidget.commonSizedBox(height: 15),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${resp.data![index]!.companyId!.shortName!.toUpperCase()}',
+                                color: Colors.black),
+                            CommonWidget.commonSizedBox(height: 15),
+                            CommonText.textBoldWight500(
+                                color: Color(0xff394452),
+                                fontSize: 10.sp,
+                                text: resp.data![index]!.description!.length >
+                                        200
+                                    ? "${resp.data![index]!.description!.substring(0, 200)}..."
+                                    : "${resp.data![index]!.description}"),
+                            // CommonText.textBoldWight500(
+                            //     color: Color(0xff394452),
+                            //     fontSize: 10.sp,
+                            //     text:
+                            //         "${widget.response.data![widget.index]!.description}"),
+                            CommonWidget.commonSizedBox(height: 16),
+                            // CommonText.textBoldWight500(
+                            //     fontSize: 10.sp,
+                            //     color:
+                            //         Color(0xff394452),
+                            //     text:
+                            //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                            // CommonWidget.commonSizedBox(
+                            //     height: 10),
+
+                            Row(
+                              children: [
+                                InkResponse(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.isFavourite = !widget.isFavourite;
+                                    });
+                                  },
+                                  // onTap: () async {
+                                  //   // controller.updateLike(
+                                  //   //     response.data![index].isLiked!);
+                                  //   if (response.data![index].
+                                  //           .isLiked ==
+                                  //       false) {
+                                  //     await moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeViewModel(
+                                  //             body: {
+                                  //           "type": "like",
+                                  //           "newsId":
+                                  //               "${response.data![index].id}"
+                                  //         });
+                                  //
+                                  //     if (moversLikeUnLikeViewModel
+                                  //             .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.COMPLETE) {}
+                                  //     if (moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.ERROR) {
+                                  //       // CommonWidget.getSnackBar(
+                                  //       //     color: Colors.red,
+                                  //       //     duration: 2,
+                                  //       //     colorText:
+                                  //       //         Colors.white,
+                                  //       //     title:
+                                  //       //         "Something went wrong",
+                                  //       //     message:
+                                  //       //         'Try Again.');
+                                  //     }
+                                  //   } else if (response
+                                  //           .data![index]
+                                  //           .isLiked ==
+                                  //       true) {
+                                  //     await moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeViewModel(
+                                  //             body: {
+                                  //           "type": "unlike",
+                                  //           "newsId":
+                                  //               "${response.data![index].id}"
+                                  //         });
+                                  //     if (moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.COMPLETE) {}
+                                  //     if (moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.ERROR) {
+                                  //       // CommonWidget.getSnackBar(
+                                  //       //     color: Colors.red,
+                                  //       //     duration: 2,
+                                  //       //     colorText:
+                                  //       //         Colors.white,
+                                  //       //     title:
+                                  //       //         "Something went wrong",
+                                  //       //     message:
+                                  //       //         'Try Again.');
+                                  //     }
+                                  //   }
+                                  //   await getAllMoverViewModel
+                                  //       .getMoversViewModel(
+                                  //           isLoading: false
+                                  //   );
+                                  //   if (getAllMoverViewModel
+                                  //           .getMoversApiResponse
+                                  //           .status ==
+                                  //       Status.COMPLETE) {}
+                                  //   if (getAllMoverViewModel
+                                  //       .getMoversApiResponse
+                                  //           .status ==
+                                  //       Status.ERROR) {
+                                  //     CommonWidget.getSnackBar(
+                                  //         color: Colors.red,
+                                  //         duration: 2,
+                                  //         colorText:
+                                  //             Colors.white,
+                                  //         title:
+                                  //             "Refresh Page",
+                                  //         message:
+                                  //             'Try Again.');
+                                  //   }
+                                  // },
+                                  child: Icon(
+                                    widget.isFavourite == true
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: CommonColor.yellowColorFFB800,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                CommonText.textBoldWight400(
+                                    text:
+                                        '${widget.response.data![widget.index]!.likes}',
+                                    color: Colors.black),
+                                Spacer(),
+                                InkResponse(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.isFavourite = !widget.isFavourite;
+                                    });
+                                  },
+                                  child: Icon(
+                                    widget.isFavourite == true
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_outline_sharp,
+                                    color: CommonColor.yellowColorFFB800,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                InkResponse(
+                                  onTap: () {
+                                    Share.share("Test");
+                                  },
+                                  child: Icon(
+                                    Icons.share,
+                                    color: CommonColor.yellowColorFFB800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CommonWidget.commonSizedBox(height: 10),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
+                                color: Colors.black),
+                            CommonWidget.commonSizedBox(height: 10),
+                          ]),
+                    ),
+                  );
+                },
+              ),
+              currentPage != resp.data!.length
+                  ? InkWell(
+                      onTap: () {
+                        setState(() {
+                          currentPage += 1;
+                          otherContainerWidth = Get.width - 50;
+                          gaugeContainerWidth = 0;
+                        });
+                      },
+                      child: CommonWidget.commonSvgPitcher(
+                          image: 'assets/svg/right_arrow.svg'),
+                    )
+                  : CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/left_arrow.svg',
+                      color: Colors.transparent)
+            ],
+          ),
+        );
+      } else
+        return SizedBox();
+    });
   }
 
   SfRadialGauge gaugeWidget(GetAllMoversResponseModel response, int index) {
@@ -809,506 +822,516 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
   double gaugeContainerWidth = Get.width - 50;
   double otherContainerWidth = 0;
   int sensitivity = 8;
-  Duration duration = Duration(milliseconds: 300);
 
   String formatString = "";
 
   List tmpList = [];
 
-  String forStStart() {
-    if (widget.response.data!.docs![widget.index]!.startDate!.contains(" ")) {
-      widget.response.data!.docs![widget.index]!.startDate!
-          .split(" ")
-          .join("")
-          .replaceAll("-", "/");
+  SearchNewsViewModel searchNewsViewModel = Get.put(SearchNewsViewModel());
 
-      return formatString = tmpList.reversed.join("-");
-    } else {
-      return formatString =
-          widget.response.data!.docs![widget.index]!.startDate!;
-    }
-  }
-
-  String forStEnd() {
-    if (widget.response.data!.docs![widget.index]!.endDate!.contains(" ")) {
-      tmpList.clear();
-
-      widget.response.data!.docs![widget.index]!.endDate!
-          .split(" ")
-          .join("")
-          .split("-")
-          .forEach((element) {
-        if (element.length == 1) {
-          tmpList.add("0" + element);
-        } else {
-          tmpList.add(element);
-        }
-      });
-
-      return formatString = tmpList.reversed.join("-");
-    } else {
-      return formatString = widget.response.data!.docs![widget.index]!.endDate!;
-    }
+  @override
+  void initState() {
+    searchNewsViewModel.searchNewsViewModel(
+        companyId: widget.response.data![widget.index]!.companyId!.id!,
+        isLoading: false);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      width: Get.width,
-      child: Row(
-        children: [
-          currentPage == 1
-              ? InkWell(
-                  onTap: () {
-                    setState(() {
-                      currentPage = 0;
-                      gaugeContainerWidth = Get.width - 50;
-                      otherContainerWidth = 0;
-                    });
-                  },
-                  child: CommonWidget.commonSvgPitcher(
-                      image: 'assets/svg/left_arrow.svg'),
-                )
-              : CommonWidget.commonSvgPitcher(
-                  image: 'assets/svg/left_arrow.svg',
-                  color: Colors.transparent),
-          GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              if (details.delta.dx < -sensitivity) {
-                setState(() {
-                  currentPage = 1;
-                  otherContainerWidth = Get.width - 50;
-                  gaugeContainerWidth = 0;
-                });
-              }
-            },
-            child: AnimatedContainer(
-              duration: duration,
-              width: gaugeContainerWidth,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color(0xffD1CDCD),
-                ),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight700(
-                        text:
-                            '${widget.response.data!.docs![widget.index]!.companyId!}',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data!.docs![widget.index]!.companyId!.toString().capitalizeFirst}',
-                            color: Colors.black,
-                            fontSize: 9.sp),
-                        CommonWidget.commonSizedBox(width: 10),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data!.docs![widget.index]!.startPrice} - ${widget.response.data!.docs![widget.index]!.currentPrice}',
-                            color: Colors.black,
-                            fontSize: 9.sp),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data!.docs![widget.index]!.startDate!.split(" ").join("").replaceAll("-", "/")} - ${widget.response.data!.docs![widget.index]!.endDate!.split(" ").join("").replaceAll("-", "/")}',
-                            color: Colors.black,
-                            fontSize: 9.sp),
-                      ],
-                    ),
-                    Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                            height: 100.sp,
-                            width: 125.sp,
-                            child: gaugeSearchWidget(
-                                widget.response, widget.index)),
-                        CommonWidget.commonSizedBox(width: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 40),
-                          child: Image.asset(
-                            'assets/png/up_arrow_iphone.png',
-                            scale: 4,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 40),
-                          child: CommonText.textBoldWight500(
-                              text:
-                                  " ${widget.response.data!.docs![widget.index]!.percentage} %"),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        InkResponse(
-                          onTap: () {
-                            setState(() {
-                              widget.isFavourite = !widget.isFavourite;
-                            });
-                          },
-                          // onTap: () async {
-                          //   // controller.updateLike(
-                          //   //     response.data![index].isLiked!);
-                          //   if (response.data![index].
-                          //           .isLiked ==
-                          //       false) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "like",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //
-                          //     if (moversLikeUnLikeViewModel
-                          //             .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   } else if (response
-                          //           .data![index]
-                          //           .isLiked ==
-                          //       true) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "unlike",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   }
-                          //   await getAllMoverViewModel
-                          //       .getMoversViewModel(
-                          //           isLoading: false
-                          //   );
-                          //   if (getAllMoverViewModel
-                          //           .getMoversApiResponse
-                          //           .status ==
-                          //       Status.COMPLETE) {}
-                          //   if (getAllMoverViewModel
-                          //       .getMoversApiResponse
-                          //           .status ==
-                          //       Status.ERROR) {
-                          //     CommonWidget.getSnackBar(
-                          //         color: Colors.red,
-                          //         duration: 2,
-                          //         colorText:
-                          //             Colors.white,
-                          //         title:
-                          //             "Refresh Page",
-                          //         message:
-                          //             'Try Again.');
-                          //   }
-                          // },
-                          child: Icon(
-                            widget.isFavourite == true
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data!.docs![widget.index]!.likes}',
-                            color: Colors.black),
-                        Spacer(),
-                        // InkResponse(
-                        //   onTap: () {
-                        //     setState(() {
-                        //       isFavourite1 =
-                        //           !isFavourite1;
-                        //     });
-                        //   },
-                        //   child: Icon(
-                        //     isFavourite1 == true
-                        //         ? Icons.bookmark
-                        //         : Icons
-                        //             .bookmark_outline_sharp,
-                        //     color: CommonColor
-                        //         .yellowColorFFB800,
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   width: 10,
-                        // ),
-                        InkResponse(
-                          onTap: () {
-                            Share.share("Test");
-                          },
-                          child: Icon(
-                            Icons.share,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                      ],
-                    ),
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight400(
-                        text:
-                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data!.docs![widget.index]!.createdAt!)} ·| Source : BSE',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 10),
-                  ]),
-            ),
-          ),
-          GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              if (details.delta.dx > sensitivity) {
-                setState(() {
-                  currentPage = 0;
-                  gaugeContainerWidth = Get.width - 50;
-                  otherContainerWidth = 0;
-                });
-              }
-            },
-            child: AnimatedContainer(
-              duration: duration,
-              width: otherContainerWidth,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color(0xffD1CDCD),
-                ),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight700(
-                        text:
-                            '${widget.response.data!.docs![widget.index]!.companyId!}',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 15),
-                    CommonText.textBoldWight400(
-                        text:
-                            '${widget.response.data!.docs![widget.index]!.companyId!.toUpperCase()}',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 15),
-                    // CommonText.textBoldWight500(
-                    //     color: Color(0xff394452),
-                    //     fontSize: 10.sp,
-                    //     text:
-                    //         "${widget.response.data![widget.index]!.description}"),
-                    CommonWidget.commonSizedBox(height: 16),
-                    // CommonText.textBoldWight500(
-                    //     fontSize: 10.sp,
-                    //     color:
-                    //         Color(0xff394452),
-                    //     text:
-                    //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                    // CommonWidget.commonSizedBox(
-                    //     height: 10),
-                    Row(
-                      children: [
-                        InkResponse(
-                          onTap: () {
-                            setState(() {
-                              widget.isFavourite = !widget.isFavourite;
-                            });
-                          },
+    return GetBuilder<SearchNewsViewModel>(builder: (controller) {
+      if (controller.searchNewsApiResponse.status == Status.LOADING) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      if (controller.searchNewsApiResponse.status == Status.COMPLETE) {
+        SearchNewsResponseModel resp = controller.searchNewsApiResponse.data;
 
-                          // onTap: () async {
-                          //   // controller.updateLike(
-                          //   //     response.data![index].isLiked!);
-                          //   if (response.data![index].
-                          //           .isLiked ==
-                          //       false) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "like",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //
-                          //     if (moversLikeUnLikeViewModel
-                          //             .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   } else if (response
-                          //           .data![index]
-                          //           .isLiked ==
-                          //       true) {
-                          //     await moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeViewModel(
-                          //             body: {
-                          //           "type": "unlike",
-                          //           "newsId":
-                          //               "${response.data![index].id}"
-                          //         });
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.COMPLETE) {}
-                          //     if (moversLikeUnLikeViewModel
-                          //         .moversLikeUnLikeApiResponse
-                          //             .status ==
-                          //         Status.ERROR) {
-                          //       // CommonWidget.getSnackBar(
-                          //       //     color: Colors.red,
-                          //       //     duration: 2,
-                          //       //     colorText:
-                          //       //         Colors.white,
-                          //       //     title:
-                          //       //         "Something went wrong",
-                          //       //     message:
-                          //       //         'Try Again.');
-                          //     }
-                          //   }
-                          //   await getAllMoverViewModel
-                          //       .getMoversViewModel(
-                          //           isLoading: false
-                          //   );
-                          //   if (getAllMoverViewModel
-                          //           .getMoversApiResponse
-                          //           .status ==
-                          //       Status.COMPLETE) {}
-                          //   if (getAllMoverViewModel
-                          //       .getMoversApiResponse
-                          //           .status ==
-                          //       Status.ERROR) {
-                          //     CommonWidget.getSnackBar(
-                          //         color: Colors.red,
-                          //         duration: 2,
-                          //         colorText:
-                          //             Colors.white,
-                          //         title:
-                          //             "Refresh Page",
-                          //         message:
-                          //             'Try Again.');
-                          //   }
-                          // },
-
-                          child: Icon(
-                            widget.isFavourite == true
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CommonText.textBoldWight400(
-                            text:
-                                '${widget.response.data!.docs![widget.index]!.likes}',
-                            color: Colors.black),
-                        Spacer(),
-                        // InkResponse(
-                        //   onTap: () {
-                        //     setState(() {
-                        //       isFavourite1 =
-                        //           !isFavourite1;
-                        //     });
-                        //   },
-                        //   child: Icon(
-                        //     isFavourite1 == true
-                        //         ? Icons.bookmark
-                        //         : Icons
-                        //             .bookmark_outline_sharp,
-                        //     color: CommonColor
-                        //         .yellowColorFFB800,
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   width: 10,
-                        // ),
-                        InkResponse(
-                          onTap: () {
-                            Share.share("Test");
-                          },
-                          child: Icon(
-                            Icons.share,
-                            color: CommonColor.yellowColorFFB800,
-                          ),
-                        ),
-                      ],
-                    ),
-                    CommonWidget.commonSizedBox(height: 10),
-                    CommonText.textBoldWight400(
-                        text:
-                            '${DateFormat('MMM dd, kk:mm a').format(widget.response.data!.docs![widget.index]!.createdAt!)} ·| Source : BSE',
-                        color: Colors.black),
-                    CommonWidget.commonSizedBox(height: 10),
-                  ]),
-            ),
-          ),
-          currentPage == 0
-              ? InkWell(
-                  onTap: () {
+        return SizedBox(
+          height: 310,
+          width: Get.width,
+          child: Row(
+            children: [
+              currentPage != 0
+                  ? InkWell(
+                      onTap: () {
+                        if (currentPage == 1) {
+                          setState(() {
+                            currentPage -= 1;
+                            gaugeContainerWidth = Get.width - 50;
+                            otherContainerWidth = 0;
+                          });
+                        } else {
+                          setState(() {
+                            currentPage -= 1;
+                          });
+                        }
+                      },
+                      child: CommonWidget.commonSvgPitcher(
+                          image: 'assets/svg/left_arrow.svg'),
+                    )
+                  : CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/left_arrow.svg',
+                      color: Colors.transparent),
+              GestureDetector(
+                onHorizontalDragUpdate: (details) {
+                  if (details.delta.dx < -sensitivity) {
                     setState(() {
                       currentPage = 1;
                       otherContainerWidth = Get.width - 50;
                       gaugeContainerWidth = 0;
                     });
-                  },
-                  child: CommonWidget.commonSvgPitcher(
-                      image: 'assets/svg/right_arrow.svg'),
-                )
-              : CommonWidget.commonSvgPitcher(
-                  image: 'assets/svg/left_arrow.svg', color: Colors.transparent)
-        ],
-      ),
-    );
+                  }
+                },
+                child: Container(
+                  width: gaugeContainerWidth,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color(0xffD1CDCD),
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CommonWidget.commonSizedBox(height: 10),
+                        CommonText.textBoldWight700(
+                            text:
+                                '${widget.response.data![widget.index]!.companyId!.name}',
+                            color: Colors.black),
+                        CommonWidget.commonSizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${widget.response.data![widget.index]!.companyId!.shortName!.capitalizeFirst}',
+                                color: Colors.black,
+                                fontSize: 9.sp),
+                            CommonWidget.commonSizedBox(width: 10),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${widget.response.data![widget.index]!.startPrice} - ${widget.response.data![widget.index]!.currentPrice}',
+                                color: Colors.black,
+                                fontSize: 9.sp),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${DateFormat("d MMM").format(DateTime.parse(widget.response.data![widget.index]!.startDate!.toString()))} - ${DateFormat("d MMM").format(DateTime.parse(widget.response.data![widget.index]!.endDate!.toString()))}',
+                                color: Colors.black,
+                                fontSize: 9.sp),
+                          ],
+                        ),
+                        Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                                height: 100.sp,
+                                width: 125.sp,
+                                child: gaugeSearchWidget(
+                                    widget.response, widget.index)),
+                            CommonWidget.commonSizedBox(width: 20),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 40),
+                              child: Image.asset(
+                                'assets/png/up_arrow_iphone.png',
+                                scale: 4,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 40),
+                              child: CommonText.textBoldWight500(
+                                  text:
+                                      " ${widget.response.data![widget.index]!.percentage} %"),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            InkResponse(
+                              onTap: () {
+                                setState(() {
+                                  widget.isFavourite = !widget.isFavourite;
+                                });
+                              },
+                              // onTap: () async {
+                              //   // controller.updateLike(
+                              //   //     response.data![index].isLiked!);
+                              //   if (response.data![index].
+                              //           .isLiked ==
+                              //       false) {
+                              //     await moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeViewModel(
+                              //             body: {
+                              //           "type": "like",
+                              //           "newsId":
+                              //               "${response.data![index].id}"
+                              //         });
+                              //
+                              //     if (moversLikeUnLikeViewModel
+                              //             .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.COMPLETE) {}
+                              //     if (moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.ERROR) {
+                              //       // CommonWidget.getSnackBar(
+                              //       //     color: Colors.red,
+                              //       //     duration: 2,
+                              //       //     colorText:
+                              //       //         Colors.white,
+                              //       //     title:
+                              //       //         "Something went wrong",
+                              //       //     message:
+                              //       //         'Try Again.');
+                              //     }
+                              //   } else if (response
+                              //           .data![index]
+                              //           .isLiked ==
+                              //       true) {
+                              //     await moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeViewModel(
+                              //             body: {
+                              //           "type": "unlike",
+                              //           "newsId":
+                              //               "${response.data![index].id}"
+                              //         });
+                              //     if (moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.COMPLETE) {}
+                              //     if (moversLikeUnLikeViewModel
+                              //         .moversLikeUnLikeApiResponse
+                              //             .status ==
+                              //         Status.ERROR) {
+                              //       // CommonWidget.getSnackBar(
+                              //       //     color: Colors.red,
+                              //       //     duration: 2,
+                              //       //     colorText:
+                              //       //         Colors.white,
+                              //       //     title:
+                              //       //         "Something went wrong",
+                              //       //     message:
+                              //       //         'Try Again.');
+                              //     }
+                              //   }
+                              //   await getAllMoverViewModel
+                              //       .getMoversViewModel(
+                              //           isLoading: false
+                              //   );
+                              //   if (getAllMoverViewModel
+                              //           .getMoversApiResponse
+                              //           .status ==
+                              //       Status.COMPLETE) {}
+                              //   if (getAllMoverViewModel
+                              //       .getMoversApiResponse
+                              //           .status ==
+                              //       Status.ERROR) {
+                              //     CommonWidget.getSnackBar(
+                              //         color: Colors.red,
+                              //         duration: 2,
+                              //         colorText:
+                              //             Colors.white,
+                              //         title:
+                              //             "Refresh Page",
+                              //         message:
+                              //             'Try Again.');
+                              //   }
+                              // },
+                              child: Icon(
+                                widget.isFavourite == true
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: CommonColor.yellowColorFFB800,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${widget.response.data![widget.index]!.likes}',
+                                color: Colors.black),
+                            Spacer(),
+                            // InkResponse(
+                            //   onTap: () {
+                            //     setState(() {
+                            //       isFavourite1 =
+                            //           !isFavourite1;
+                            //     });
+                            //   },
+                            //   child: Icon(
+                            //     isFavourite1 == true
+                            //         ? Icons.bookmark
+                            //         : Icons
+                            //             .bookmark_outline_sharp,
+                            //     color: CommonColor
+                            //         .yellowColorFFB800,
+                            //   ),
+                            // ),
+                            // SizedBox(
+                            //   width: 10,
+                            // ),
+                            InkResponse(
+                              onTap: () {
+                                Share.share("Test");
+                              },
+                              child: Icon(
+                                Icons.share,
+                                color: CommonColor.yellowColorFFB800,
+                              ),
+                            ),
+                          ],
+                        ),
+                        CommonWidget.commonSizedBox(height: 10),
+                        CommonText.textBoldWight400(
+                            text:
+                                '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
+                            color: Colors.black),
+                        CommonWidget.commonSizedBox(height: 10),
+                      ]),
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: resp.data!.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onHorizontalDragUpdate: (details) {
+                      // if (details.delta.dx > sensitivity) {
+                      //   log("left to right");
+                      //   setState(() {
+                      //     currentPage = 0;
+                      //     gaugeContainerWidth = Get.width - 50;
+                      //     otherContainerWidth = 0;
+                      //   });
+                      // } else if (details.delta.dx < -sensitivity) {
+                      //   if (index == 3) {
+                      //     log("3 true");
+                      //     setState(() {
+                      //       currentPage = 1;
+                      //       gaugeContainerWidth = 0;
+                      //       otherContainerWidth = Get.width - 50;
+                      //     });
+                      //   }
+                      // }
+                    },
+                    child: Container(
+                      width: index == currentPage - 1 ? otherContainerWidth : 0,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color(0xffD1CDCD),
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CommonWidget.commonSizedBox(height: 10),
+                            CommonText.textBoldWight700(
+                                text: '${resp.data![index]!.title}',
+                                color: Colors.black),
+                            CommonWidget.commonSizedBox(height: 15),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${resp.data![index]!.companyId!.shortName!.toUpperCase()}',
+                                color: Colors.black),
+                            CommonWidget.commonSizedBox(height: 15),
+                            CommonText.textBoldWight500(
+                                color: Color(0xff394452),
+                                fontSize: 10.sp,
+                                text: resp.data![index]!.description!.length >
+                                        200
+                                    ? "${resp.data![index]!.description!.substring(0, 200)}..."
+                                    : "${resp.data![index]!.description}"),
+                            // CommonText.textBoldWight500(
+                            //     color: Color(0xff394452),
+                            //     fontSize: 10.sp,
+                            //     text:
+                            //         "${widget.response.data![widget.index]!.description}"),
+                            CommonWidget.commonSizedBox(height: 16),
+                            // CommonText.textBoldWight500(
+                            //     fontSize: 10.sp,
+                            //     color:
+                            //         Color(0xff394452),
+                            //     text:
+                            //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
+                            // CommonWidget.commonSizedBox(
+                            //     height: 10),
+
+                            Row(
+                              children: [
+                                InkResponse(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.isFavourite = !widget.isFavourite;
+                                    });
+                                  },
+                                  // onTap: () async {
+                                  //   // controller.updateLike(
+                                  //   //     response.data![index].isLiked!);
+                                  //   if (response.data![index].
+                                  //           .isLiked ==
+                                  //       false) {
+                                  //     await moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeViewModel(
+                                  //             body: {
+                                  //           "type": "like",
+                                  //           "newsId":
+                                  //               "${response.data![index].id}"
+                                  //         });
+                                  //
+                                  //     if (moversLikeUnLikeViewModel
+                                  //             .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.COMPLETE) {}
+                                  //     if (moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.ERROR) {
+                                  //       // CommonWidget.getSnackBar(
+                                  //       //     color: Colors.red,
+                                  //       //     duration: 2,
+                                  //       //     colorText:
+                                  //       //         Colors.white,
+                                  //       //     title:
+                                  //       //         "Something went wrong",
+                                  //       //     message:
+                                  //       //         'Try Again.');
+                                  //     }
+                                  //   } else if (response
+                                  //           .data![index]
+                                  //           .isLiked ==
+                                  //       true) {
+                                  //     await moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeViewModel(
+                                  //             body: {
+                                  //           "type": "unlike",
+                                  //           "newsId":
+                                  //               "${response.data![index].id}"
+                                  //         });
+                                  //     if (moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.COMPLETE) {}
+                                  //     if (moversLikeUnLikeViewModel
+                                  //         .moversLikeUnLikeApiResponse
+                                  //             .status ==
+                                  //         Status.ERROR) {
+                                  //       // CommonWidget.getSnackBar(
+                                  //       //     color: Colors.red,
+                                  //       //     duration: 2,
+                                  //       //     colorText:
+                                  //       //         Colors.white,
+                                  //       //     title:
+                                  //       //         "Something went wrong",
+                                  //       //     message:
+                                  //       //         'Try Again.');
+                                  //     }
+                                  //   }
+                                  //   await getAllMoverViewModel
+                                  //       .getMoversViewModel(
+                                  //           isLoading: false
+                                  //   );
+                                  //   if (getAllMoverViewModel
+                                  //           .getMoversApiResponse
+                                  //           .status ==
+                                  //       Status.COMPLETE) {}
+                                  //   if (getAllMoverViewModel
+                                  //       .getMoversApiResponse
+                                  //           .status ==
+                                  //       Status.ERROR) {
+                                  //     CommonWidget.getSnackBar(
+                                  //         color: Colors.red,
+                                  //         duration: 2,
+                                  //         colorText:
+                                  //             Colors.white,
+                                  //         title:
+                                  //             "Refresh Page",
+                                  //         message:
+                                  //             'Try Again.');
+                                  //   }
+                                  // },
+                                  child: Icon(
+                                    widget.isFavourite == true
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: CommonColor.yellowColorFFB800,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                CommonText.textBoldWight400(
+                                    text:
+                                        '${widget.response.data![widget.index]!.likes}',
+                                    color: Colors.black),
+                                Spacer(),
+                                InkResponse(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.isFavourite = !widget.isFavourite;
+                                    });
+                                  },
+                                  child: Icon(
+                                    widget.isFavourite == true
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_outline_sharp,
+                                    color: CommonColor.yellowColorFFB800,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                InkResponse(
+                                  onTap: () {
+                                    Share.share("Test");
+                                  },
+                                  child: Icon(
+                                    Icons.share,
+                                    color: CommonColor.yellowColorFFB800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CommonWidget.commonSizedBox(height: 10),
+                            CommonText.textBoldWight400(
+                                text:
+                                    '${DateFormat('MMM dd, kk:mm a').format(widget.response.data![widget.index]!.createdAt!)} ·| Source : BSE',
+                                color: Colors.black),
+                            CommonWidget.commonSizedBox(height: 10),
+                          ]),
+                    ),
+                  );
+                },
+              ),
+              currentPage != resp.data!.length
+                  ? InkWell(
+                      onTap: () {
+                        setState(() {
+                          currentPage += 1;
+                          otherContainerWidth = Get.width - 50;
+                          gaugeContainerWidth = 0;
+                        });
+                      },
+                      child: CommonWidget.commonSvgPitcher(
+                          image: 'assets/svg/right_arrow.svg'),
+                    )
+                  : CommonWidget.commonSvgPitcher(
+                      image: 'assets/svg/left_arrow.svg',
+                      color: Colors.transparent)
+            ],
+          ),
+        );
+      } else
+        return SizedBox();
+    });
   }
 
   SfRadialGauge gaugeSearchWidget(
@@ -1366,7 +1389,7 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
             ],
             pointers: <GaugePointer>[
               NeedlePointer(
-                  value: response.data!.docs![index]!.percentage!.toDouble(),
+                  value: response.data![index]!.percentage!.toDouble(),
                   needleLength: 45,
                   needleStartWidth: 0.5,
                   needleEndWidth: 4,
@@ -1380,756 +1403,3 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
         ]);
   }
 }
-
-//   SizedBox moverWidget(
-//     GetAllMoverViewModel controller,
-//     GetAllMoversResponseModel response,
-//     int index,
-//   ) {
-//     int currentPage = 0;
-//     return SizedBox(
-//       height: 300,
-//       width: Get.width,
-//       child: Row(
-//         children: [
-//           InkWell(
-//             onTap: () {
-//               setState(() {
-//                 currentPage = 0;
-//               });
-//             },
-//             child: CommonWidget.commonSvgPitcher(
-//                 image: 'assets/svg/left_arrow.svg'),
-//           ),
-//           currentPage == 0
-//               ? Container(
-//                   width: Get.width - 50,
-//                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//                   decoration: BoxDecoration(
-//                     border: Border.all(
-//                       color: Color(0xffD1CDCD),
-//                     ),
-//                     borderRadius: BorderRadius.circular(14),
-//                   ),
-//                   child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         CommonWidget.commonSizedBox(height: 10),
-//                         CommonText.textBoldWight700(
-//                             text: '${response.data![index].title}',
-//                             color: Colors.black),
-//                         CommonWidget.commonSizedBox(height: 15),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             CommonText.textBoldWight400(
-//                                 text:
-//                                     '${response.data![index].companyId!.name.toString().capitalizeFirst}',
-//                                 color: Colors.black,
-//                                 fontSize: 9.sp),
-//                             CommonWidget.commonSizedBox(width: 10),
-//                             CommonText.textBoldWight400(
-//                                 text: '${response.data![index].priceRange}',
-//                                 color: Colors.black,
-//                                 fontSize: 9.sp),
-//                             CommonText.textBoldWight400(
-//                                 text:
-//                                     '${DateFormat("d MMM").format(response.data![index].createdAt!)} - ${DateFormat("d MMM").format(DateTime.now())}',
-//                                 color: Colors.black,
-//                                 fontSize: 9.sp),
-//                           ],
-//                         ),
-//                         Spacer(),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.start,
-//                           children: [
-//                             SizedBox(
-//                                 height: 125.sp,
-//                                 width: 125.sp,
-//                                 child: gaugeWidget(response, index)),
-//                             CommonWidget.commonSizedBox(width: 20),
-//                             Padding(
-//                               padding: const EdgeInsets.only(bottom: 40),
-//                               child: Image.asset(
-//                                 'assets/png/up_arrow_iphone.png',
-//                                 scale: 4,
-//                               ),
-//                             ),
-//                             Padding(
-//                               padding: const EdgeInsets.only(bottom: 40),
-//                               child: CommonText.textBoldWight500(
-//                                   text:
-//                                       " ${response.data![index].percentage} %"),
-//                             )
-//                           ],
-//                         ),
-//                         Row(
-//                           children: [
-//                             InkResponse(
-//                               onTap: () {
-//                                 setState(() {
-//                                   isFavourite = !isFavourite;
-//                                 });
-//                               },
-//
-//                               // onTap: () async {
-//                               //   // controller.updateLike(
-//                               //   //     response.data![index].isLiked!);
-//                               //   if (response.data![index].
-//                               //           .isLiked ==
-//                               //       false) {
-//                               //     await moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeViewModel(
-//                               //             body: {
-//                               //           "type": "like",
-//                               //           "newsId":
-//                               //               "${response.data![index].id}"
-//                               //         });
-//                               //
-//                               //     if (moversLikeUnLikeViewModel
-//                               //             .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.COMPLETE) {}
-//                               //     if (moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.ERROR) {
-//                               //       // CommonWidget.getSnackBar(
-//                               //       //     color: Colors.red,
-//                               //       //     duration: 2,
-//                               //       //     colorText:
-//                               //       //         Colors.white,
-//                               //       //     title:
-//                               //       //         "Something went wrong",
-//                               //       //     message:
-//                               //       //         'Try Again.');
-//                               //     }
-//                               //   } else if (response
-//                               //           .data![index]
-//                               //           .isLiked ==
-//                               //       true) {
-//                               //     await moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeViewModel(
-//                               //             body: {
-//                               //           "type": "unlike",
-//                               //           "newsId":
-//                               //               "${response.data![index].id}"
-//                               //         });
-//                               //     if (moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.COMPLETE) {}
-//                               //     if (moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.ERROR) {
-//                               //       // CommonWidget.getSnackBar(
-//                               //       //     color: Colors.red,
-//                               //       //     duration: 2,
-//                               //       //     colorText:
-//                               //       //         Colors.white,
-//                               //       //     title:
-//                               //       //         "Something went wrong",
-//                               //       //     message:
-//                               //       //         'Try Again.');
-//                               //     }
-//                               //   }
-//                               //   await getAllMoverViewModel
-//                               //       .getMoversViewModel(
-//                               //           isLoading: false
-//                               //   );
-//                               //   if (getAllMoverViewModel
-//                               //           .getMoversApiResponse
-//                               //           .status ==
-//                               //       Status.COMPLETE) {}
-//                               //   if (getAllMoverViewModel
-//                               //       .getMoversApiResponse
-//                               //           .status ==
-//                               //       Status.ERROR) {
-//                               //     CommonWidget.getSnackBar(
-//                               //         color: Colors.red,
-//                               //         duration: 2,
-//                               //         colorText:
-//                               //             Colors.white,
-//                               //         title:
-//                               //             "Refresh Page",
-//                               //         message:
-//                               //             'Try Again.');
-//                               //   }
-//                               // },
-//
-//                               child: Icon(
-//                                 isFavourite == true
-//                                     ? Icons.favorite
-//                                     : Icons.favorite_border,
-//                                 color: CommonColor.yellowColorFFB800,
-//                               ),
-//                             ),
-//                             SizedBox(
-//                               width: 10,
-//                             ),
-//                             CommonText.textBoldWight400(
-//                                 text: '${response.data![index].likes}',
-//                                 color: Colors.black),
-//                             Spacer(),
-//                             // InkResponse(
-//                             //   onTap: () {
-//                             //     setState(() {
-//                             //       isFavourite1 =
-//                             //           !isFavourite1;
-//                             //     });
-//                             //   },
-//                             //   child: Icon(
-//                             //     isFavourite1 == true
-//                             //         ? Icons.bookmark
-//                             //         : Icons
-//                             //             .bookmark_outline_sharp,
-//                             //     color: CommonColor
-//                             //         .yellowColorFFB800,
-//                             //   ),
-//                             // ),
-//                             // SizedBox(
-//                             //   width: 10,
-//                             // ),
-//                             InkResponse(
-//                               onTap: () {
-//                                 Share.share("Test");
-//                               },
-//                               child: Icon(
-//                                 Icons.share,
-//                                 color: CommonColor.yellowColorFFB800,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                         CommonWidget.commonSizedBox(height: 10),
-//                         CommonText.textBoldWight400(
-//                             text:
-//                                 '${DateFormat('MMM dd, kk:mm a').format(response.data![index].createdAt!)} ·| Source : BSE',
-//                             color: Colors.black),
-//                         CommonWidget.commonSizedBox(height: 10),
-//                       ]),
-//                 )
-//               : Container(
-//                   width: Get.width - 50,
-//                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//                   decoration: BoxDecoration(
-//                     border: Border.all(
-//                       color: Color(0xffD1CDCD),
-//                     ),
-//                     borderRadius: BorderRadius.circular(14),
-//                   ),
-//                   child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         CommonWidget.commonSizedBox(height: 10),
-//                         CommonText.textBoldWight700(
-//                             text: '${response.data![index].title}',
-//                             color: Colors.black),
-//                         CommonWidget.commonSizedBox(height: 15),
-//                         CommonText.textBoldWight400(
-//                             text:
-//                                 '${response.data![index].companyId!.name!.toUpperCase()}',
-//                             color: Colors.black),
-//                         CommonWidget.commonSizedBox(height: 15),
-//                         CommonText.textBoldWight500(
-//                             color: Color(0xff394452),
-//                             fontSize: 10.sp,
-//                             text: "${response.data![index].description}"),
-//                         CommonWidget.commonSizedBox(height: 16),
-//                         // CommonText.textBoldWight500(
-//                         //     fontSize: 10.sp,
-//                         //     color:
-//                         //         Color(0xff394452),
-//                         //     text:
-//                         //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-//                         // CommonWidget.commonSizedBox(
-//                         //     height: 10),
-//                         Row(
-//                           children: [
-//                             InkResponse(
-//                               onTap: () {
-//                                 setState(() {
-//                                   isFavourite = !isFavourite;
-//                                 });
-//                               },
-//
-//                               // onTap: () async {
-//                               //   // controller.updateLike(
-//                               //   //     response.data![index].isLiked!);
-//                               //   if (response.data![index].
-//                               //           .isLiked ==
-//                               //       false) {
-//                               //     await moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeViewModel(
-//                               //             body: {
-//                               //           "type": "like",
-//                               //           "newsId":
-//                               //               "${response.data![index].id}"
-//                               //         });
-//                               //
-//                               //     if (moversLikeUnLikeViewModel
-//                               //             .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.COMPLETE) {}
-//                               //     if (moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.ERROR) {
-//                               //       // CommonWidget.getSnackBar(
-//                               //       //     color: Colors.red,
-//                               //       //     duration: 2,
-//                               //       //     colorText:
-//                               //       //         Colors.white,
-//                               //       //     title:
-//                               //       //         "Something went wrong",
-//                               //       //     message:
-//                               //       //         'Try Again.');
-//                               //     }
-//                               //   } else if (response
-//                               //           .data![index]
-//                               //           .isLiked ==
-//                               //       true) {
-//                               //     await moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeViewModel(
-//                               //             body: {
-//                               //           "type": "unlike",
-//                               //           "newsId":
-//                               //               "${response.data![index].id}"
-//                               //         });
-//                               //     if (moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.COMPLETE) {}
-//                               //     if (moversLikeUnLikeViewModel
-//                               //         .moversLikeUnLikeApiResponse
-//                               //             .status ==
-//                               //         Status.ERROR) {
-//                               //       // CommonWidget.getSnackBar(
-//                               //       //     color: Colors.red,
-//                               //       //     duration: 2,
-//                               //       //     colorText:
-//                               //       //         Colors.white,
-//                               //       //     title:
-//                               //       //         "Something went wrong",
-//                               //       //     message:
-//                               //       //         'Try Again.');
-//                               //     }
-//                               //   }
-//                               //   await getAllMoverViewModel
-//                               //       .getMoversViewModel(
-//                               //           isLoading: false
-//                               //   );
-//                               //   if (getAllMoverViewModel
-//                               //           .getMoversApiResponse
-//                               //           .status ==
-//                               //       Status.COMPLETE) {}
-//                               //   if (getAllMoverViewModel
-//                               //       .getMoversApiResponse
-//                               //           .status ==
-//                               //       Status.ERROR) {
-//                               //     CommonWidget.getSnackBar(
-//                               //         color: Colors.red,
-//                               //         duration: 2,
-//                               //         colorText:
-//                               //             Colors.white,
-//                               //         title:
-//                               //             "Refresh Page",
-//                               //         message:
-//                               //             'Try Again.');
-//                               //   }
-//                               // },
-//
-//                               child: Icon(
-//                                 isFavourite == true
-//                                     ? Icons.favorite
-//                                     : Icons.favorite_border,
-//                                 color: CommonColor.yellowColorFFB800,
-//                               ),
-//                             ),
-//                             SizedBox(
-//                               width: 10,
-//                             ),
-//                             CommonText.textBoldWight400(
-//                                 text: '${response.data![index].likes}',
-//                                 color: Colors.black),
-//                             Spacer(),
-//                             // InkResponse(
-//                             //   onTap: () {
-//                             //     setState(() {
-//                             //       isFavourite1 =
-//                             //           !isFavourite1;
-//                             //     });
-//                             //   },
-//                             //   child: Icon(
-//                             //     isFavourite1 == true
-//                             //         ? Icons.bookmark
-//                             //         : Icons
-//                             //             .bookmark_outline_sharp,
-//                             //     color: CommonColor
-//                             //         .yellowColorFFB800,
-//                             //   ),
-//                             // ),
-//                             // SizedBox(
-//                             //   width: 10,
-//                             // ),
-//                             InkResponse(
-//                               onTap: () {
-//                                 Share.share("Test");
-//                               },
-//                               child: Icon(
-//                                 Icons.share,
-//                                 color: CommonColor.yellowColorFFB800,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                         CommonWidget.commonSizedBox(height: 10),
-//                         CommonText.textBoldWight400(
-//                             text:
-//                                 '${DateFormat('MMM dd, kk:mm a').format(response.data![index].createdAt!)} ·| Source : BSE',
-//                             color: Colors.black),
-//                         CommonWidget.commonSizedBox(height: 10),
-//                       ]),
-//                 ),
-//           InkWell(
-//             onTap: () {
-//               setState(() {
-//                 currentPage = 1;
-//               });
-//             },
-//             child: CommonWidget.commonSvgPitcher(
-//                 image: 'assets/svg/right_arrow.svg'),
-//           )
-//         ],
-//       ),
-//     );
-//
-// //     return Row(
-// //       children: [
-// //         /*      currentPage == 1
-// //             ? */
-// //         InkWell(
-// //           onTap: () {
-// //             pageController.animateToPage(--currentPage,
-// //                 duration: Duration(milliseconds: 600), curve: Curves.easeIn);
-// //           },
-// //           child:
-// //               CommonWidget.commonSvgPitcher(image: 'assets/svg/left_arrow.svg'),
-// //         )
-// // /*            : SizedBox(
-// //                 child: CommonWidget.commonSvgPitcher(
-// //                     image: 'assets/svg/left_arrow.svg',
-// //                     color: Colors.transparent))*/
-// //         ,
-// //         SizedBox(
-// //           height: 300,
-// //           width: Get.width - 50,
-// //           child: PageView(
-// //             pageSnapping: true,
-// //             controller: pageController,
-// //             scrollDirection: Axis.horizontal,
-// //             // onPageChanged: (value) {
-// //             //   setState(() {
-// //             //     currentPage = value;
-// //             //   });
-// //             //
-// //             //   print(' ==== 1 ? ${currentPage}');
-// //             // },
-// //             children: [
-// //
-// //
-// //             ],
-// //             //scrollDirection: Axis.horizontal,
-// //             // itemBuilder: (context, indexPage) {
-// //             //   return indexPage == 0
-// //             //       ? Container(
-// //             //           /* margin:
-// //             //           EdgeInsets.symmetric(horizontal: 20),*/
-// //             //           width: double.infinity,
-// //             //           padding: EdgeInsets.symmetric(
-// //             //               horizontal: 20, vertical: 10),
-// //             //           decoration: BoxDecoration(
-// //             //             border: Border.all(
-// //             //               color: Color(0xffD1CDCD),
-// //             //             ),
-// //             //             borderRadius:
-// //             //                 BorderRadius.circular(14),
-// //             //           ),
-// //             //           child: Column(
-// //             //               crossAxisAlignment:
-// //             //                   CrossAxisAlignment.start,
-// //             //               children: [
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 10),
-// //             //                 CommonText.textBoldWight700(
-// //             //                     text:
-// //             //                         '${response.data![index].title}',
-// //             //                     color: Colors.black),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 15),
-// //             //                 Row(
-// //             //                   mainAxisAlignment:
-// //             //                       MainAxisAlignment
-// //             //                           .spaceBetween,
-// //             //                   children: [
-// //             //                     CommonText.textBoldWight400(
-// //             //                         text:
-// //             //                             '${response.data![index].companyId!.name.toString().capitalizeFirst}',
-// //             //                         color: Colors.black,
-// //             //                         fontSize: 9.sp),
-// //             //                     CommonWidget
-// //             //                         .commonSizedBox(
-// //             //                             width: 10),
-// //             //                     CommonText.textBoldWight400(
-// //             //                         text:
-// //             //                             '${response.data![index].priceRange}',
-// //             //                         color: Colors.black,
-// //             //                         fontSize: 9.sp),
-// //             //                     CommonText.textBoldWight400(
-// //             //                         text:
-// //             //                             '29 jul - 2 sep',
-// //             //                         color: Colors.black,
-// //             //                         fontSize: 9.sp),
-// //             //                   ],
-// //             //                 ),
-// //             //                 Spacer(),
-// //             //                 Row(
-// //             //                   mainAxisAlignment:
-// //             //                       MainAxisAlignment
-// //             //                           .start,
-// //             //                   children: [
-// //             //                     SizedBox(
-// //             //                         height: 125.sp,
-// //             //                         width: 125.sp,
-// //             //                         child: gaugeWidget(
-// //             //                             response,
-// //             //                             index)),
-// //             //                     CommonWidget
-// //             //                         .commonSizedBox(
-// //             //                             width: 20),
-// //             //                     Padding(
-// //             //                       padding:
-// //             //                           const EdgeInsets
-// //             //                                   .only(
-// //             //                               bottom: 40),
-// //             //                       child: Image.asset(
-// //             //                         'assets/png/up_arrow_iphone.png',
-// //             //                         scale: 4,
-// //             //                       ),
-// //             //                     ),
-// //             //                     Padding(
-// //             //                       padding:
-// //             //                           const EdgeInsets
-// //             //                                   .only(
-// //             //                               bottom: 40),
-// //             //                       child: CommonText
-// //             //                           .textBoldWight500(
-// //             //                               text:
-// //             //                                   " ${response.data![index].percentage} %"),
-// //             //                     )
-// //             //                   ],
-// //             //                 ),
-// //             //                 Row(
-// //             //                   children: [
-// //             //                     InkResponse(
-// //             //                       onTap: () {
-// //             //                         setState(() {
-// //             //                           isFavourite =
-// //             //                               !isFavourite;
-// //             //                         });
-// //             //                       },
-// //             //                       child: Icon(
-// //             //                         isFavourite == true
-// //             //                             ? Icons.favorite
-// //             //                             : Icons
-// //             //                                 .favorite_border,
-// //             //                         color: CommonColor
-// //             //                             .yellowColorFFB800,
-// //             //                       ),
-// //             //                     ),
-// //             //                     SizedBox(
-// //             //                       width: 10,
-// //             //                     ),
-// //             //                     CommonText
-// //             //                         .textBoldWight400(
-// //             //                             text: '120.1K',
-// //             //                             color: Colors
-// //             //                                 .black),
-// //             //                     Spacer(),
-// //             //                     InkResponse(
-// //             //                       onTap: () {
-// //             //                         setState(() {
-// //             //                           isFavourite1 =
-// //             //                               !isFavourite1;
-// //             //                         });
-// //             //                       },
-// //             //                       child: Icon(
-// //             //                         isFavourite1 == true
-// //             //                             ? Icons.bookmark
-// //             //                             : Icons
-// //             //                                 .bookmark_outline_sharp,
-// //             //                         color: CommonColor
-// //             //                             .yellowColorFFB800,
-// //             //                       ),
-// //             //                     ),
-// //             //                     SizedBox(
-// //             //                       width: 10,
-// //             //                     ),
-// //             //                     InkResponse(
-// //             //                       onTap: () {
-// //             //                         Share.share("Test");
-// //             //                       },
-// //             //                       child: Icon(
-// //             //                         Icons.share,
-// //             //                         color: CommonColor
-// //             //                             .yellowColorFFB800,
-// //             //                       ),
-// //             //                     ),
-// //             //                   ],
-// //             //                 ),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 10),
-// //             //                 CommonText.textBoldWight400(
-// //             //                     text:
-// //             //                         '${DateFormat('MMM dd, hh:mm').format(response.data![index].createdAt!)} ·| Source : BSE',
-// //             //                     color: Colors.black),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 10),
-// //             //               ]),
-// //             //         )
-// //             //       : Container(
-// //             //           /* margin:
-// //             //           EdgeInsets.symmetric(horizontal: 20),*/
-// //             //           width: double.infinity,
-// //             //           padding: EdgeInsets.symmetric(
-// //             //               horizontal: 20, vertical: 10),
-// //             //           decoration: BoxDecoration(
-// //             //             border: Border.all(
-// //             //               color: Color(0xffD1CDCD),
-// //             //             ),
-// //             //             borderRadius:
-// //             //                 BorderRadius.circular(14),
-// //             //           ),
-// //             //           child: Column(
-// //             //               crossAxisAlignment:
-// //             //                   CrossAxisAlignment.start,
-// //             //               children: [
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 10),
-// //             //                 CommonText.textBoldWight700(
-// //             //                     text:
-// //             //                         '${response.data![index].title}',
-// //             //                     color: Colors.black),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 15),
-// //             //                 CommonText.textBoldWight400(
-// //             //                     text:
-// //             //                         '${response.data![index].companyId!.name!.toUpperCase()}',
-// //             //                     color: Colors.black),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 15),
-// //             //                 CommonText.textBoldWight500(
-// //             //                     color:
-// //             //                         Color(0xff394452),
-// //             //                     fontSize: 10.sp,
-// //             //                     text:
-// //             //                         "${response.data![index].description}"),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 16),
-// //             //                 // CommonText.textBoldWight500(
-// //             //                 //     fontSize: 10.sp,
-// //             //                 //     color:
-// //             //                 //         Color(0xff394452),
-// //             //                 //     text:
-// //             //                 //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-// //             //                 // CommonWidget.commonSizedBox(
-// //             //                 //     height: 10),
-// //             //                 Row(
-// //             //                   children: [
-// //             //                     InkResponse(
-// //             //                       onTap: () {
-// //             //                         setState(() {
-// //             //                           isFavourite =
-// //             //                               !isFavourite;
-// //             //                         });
-// //             //                       },
-// //             //                       child: Icon(
-// //             //                         isFavourite == true
-// //             //                             ? Icons.favorite
-// //             //                             : Icons
-// //             //                                 .favorite_border,
-// //             //                         color: CommonColor
-// //             //                             .yellowColorFFB800,
-// //             //                       ),
-// //             //                     ),
-// //             //                     SizedBox(
-// //             //                       width: 10,
-// //             //                     ),
-// //             //                     CommonText
-// //             //                         .textBoldWight400(
-// //             //                             text: '120.1K',
-// //             //                             color: Colors
-// //             //                                 .black),
-// //             //                     Spacer(),
-// //             //                     InkResponse(
-// //             //                       onTap: () {
-// //             //                         setState(() {
-// //             //                           isFavourite1 =
-// //             //                               !isFavourite1;
-// //             //                         });
-// //             //                       },
-// //             //                       child: Icon(
-// //             //                         isFavourite1 == true
-// //             //                             ? Icons.bookmark
-// //             //                             : Icons
-// //             //                                 .bookmark_outline_sharp,
-// //             //                         color: CommonColor
-// //             //                             .yellowColorFFB800,
-// //             //                       ),
-// //             //                     ),
-// //             //                     SizedBox(
-// //             //                       width: 10,
-// //             //                     ),
-// //             //                     InkResponse(
-// //             //                       onTap: () {
-// //             //                         Share.share("Test");
-// //             //                       },
-// //             //                       child: Icon(
-// //             //                         Icons.share,
-// //             //                         color: CommonColor
-// //             //                             .yellowColorFFB800,
-// //             //                       ),
-// //             //                     ),
-// //             //                   ],
-// //             //                 ),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 10),
-// //             //                 CommonText.textBoldWight400(
-// //             //                     text:
-// //             //                         'Sep 7,  12:38 ·| Source : BSE',
-// //             //                     color: Colors.black),
-// //             //                 CommonWidget.commonSizedBox(
-// //             //                     height: 10),
-// //             //               ]),
-// //             //         );
-// //             // },
-// //           ),
-// //         ),
-// //         /*   currentPage == 0
-// //             ?*/
-// //         InkWell(
-// //           onTap: () {
-// //             pageController.animateToPage(++currentPage,
-// //                 duration: Duration(milliseconds: 600), curve: Curves.easeIn);
-// //           },
-// //           child: CommonWidget.commonSvgPitcher(
-// //               image: 'assets/svg/right_arrow.svg'),
-// //         )
-// //         /* : SizedBox(
-// //                 child: CommonWidget.commonSvgPitcher(
-// //                     image: 'assets/svg/right_arrow.svg',
-// //                     color: Colors.transparent)),*/
-// //       ],
-// //     );
-//   }

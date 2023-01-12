@@ -20,7 +20,11 @@ import 'movers_screen.dart';
 import 'news_screen.dart';
 
 class NewsMainScreen extends StatefulWidget {
-  const NewsMainScreen({Key? key}) : super(key: key);
+  final String? newsId;
+  bool isNoti = false;
+
+  NewsMainScreen({Key? key, this.newsId, required this.isNoti})
+      : super(key: key);
 
   @override
   State<NewsMainScreen> createState() => _NewsMainScreenState();
@@ -47,6 +51,9 @@ class _NewsMainScreenState extends State<NewsMainScreen>
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
+    if (widget.isNoti) {
+      searchNewsViewModel.searchNewsViewModel(companyId: "${widget.newsId}");
+    }
     super.initState();
   }
 

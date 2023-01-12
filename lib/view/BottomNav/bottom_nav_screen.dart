@@ -16,7 +16,11 @@ import '../portfolio/portfolio_screen.dart';
 
 class BottomNavScreen extends StatefulWidget {
   final int? selectedIndex;
-  const BottomNavScreen({Key? key, this.selectedIndex = 0}) : super(key: key);
+  final String? newsId;
+  final bool? isNoti;
+  const BottomNavScreen(
+      {Key? key, this.selectedIndex = 0, this.newsId, this.isNoti = false})
+      : super(key: key);
 
   @override
   State<BottomNavScreen> createState() => _BottomNavScreenState();
@@ -72,7 +76,10 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                 : selected == 1
                     ? controller.isTapped == true
                         ? BookMarkScreen()
-                        : NewsMainScreen()
+                        : NewsMainScreen(
+                            isNoti: widget.isNoti!,
+                            newsId: widget.newsId,
+                          )
                     : GetStorageServices.getUserLoggedInStatus() == true
                         ? PortfolioScreen()
                         : SignUpScreen(),

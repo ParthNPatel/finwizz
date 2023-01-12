@@ -467,16 +467,15 @@ class DrawerWidget extends StatefulWidget {
 class _DrawerWidgetState extends State<DrawerWidget> {
   List drawerDataList = [
     {'icon': ImageConst.bellIcon, 'text': 'Notifications'},
-    {'icon': ImageConst.userPlus, 'text': 'Referrals'},
+    {'icon': ImageConst.userPlus, 'text': 'Share with a \nfriend'},
     {'icon': ImageConst.googlePlayIcon, 'text': 'Rate us on play \nstore'},
     {'icon': ImageConst.chatIcon, 'text': 'Contact us'},
-    {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
     {'icon': ImageConst.signOutICON, 'text': 'Logout'},
   ];
   List drawerWithoutLogin = [
     {'icon': ImageConst.googlePlayIcon, 'text': 'Rate us on play \nstore'},
+    {'icon': ImageConst.userPlus, 'text': 'Share with a \nfriend'},
     {'icon': ImageConst.chatIcon, 'text': 'Contact us'},
-    {'icon': ImageConst.shareIcon, 'text': 'Share with a \nfriend'},
     {'icon': ImageConst.signOutICON, 'text': 'Login'},
   ];
   List platFormIcon = [
@@ -744,7 +743,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   } else if (index == 3) {
                     Get.back();
                     Get.dialog(contactUs());
-                  } else if (index == 5) {
+                  } else if (index == 4) {
                     GetStorageServices.logOut();
                     Get.offAll(() => BottomNavScreen(selectedIndex: 0));
                   }
@@ -768,27 +767,30 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 
   List<Widget> withoutLogin() {
+    String link = "Referral Code";
+
     return List.generate(
         drawerWithoutLogin.length,
         (index) => Padding(
               padding: EdgeInsets.only(left: 24, top: 8, bottom: 8),
               child: InkWell(
-                onTap: () {
+                onTap: () async {
                   print('indexindex   $index');
-                  if (index == 1) {
-                    Get.back();
 
+                  if (index == 0) {
+                    Get.back();
+                  } else if (index == 1) {
+                    Get.back();
+                    await Share.share(
+                      "${GetStorageServices.getReferralCode()}",
+                      subject: link,
+                    );
+                  } else if (index == 2) {
+                    Get.back();
                     Get.dialog(contactUs());
                   } else if (index == 3) {
                     Get.back();
                     Get.to(() => SignInScreen());
-                  } else if (index == 0) {
-                    Get.back();
-                  } else if (index == 4) {
-                    // GetStorageServices.logOut();
-
-                  } else if (index == 2) {
-                    Get.back();
                   }
                 },
                 child: Row(

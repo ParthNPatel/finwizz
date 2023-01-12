@@ -17,58 +17,26 @@ class SearchMoversResponseModel {
   });
 
   bool? flag;
-  Data? data;
+  List<Datum?>? data;
 
   factory SearchMoversResponseModel.fromJson(Map<String, dynamic> json) =>
       SearchMoversResponseModel(
         flag: json["flag"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] == null
+            ? []
+            : List<Datum?>.from(json["data"]!.map((x) => Datum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "flag": flag,
-        "data": data!.toJson(),
+        "data": data == null
+            ? []
+            : List<dynamic>.from(data!.map((x) => x!.toJson())),
       };
 }
 
-class Data {
-  Data({
-    this.docs,
-    this.total,
-    this.limit,
-    this.page,
-    this.pages,
-  });
-
-  List<Doc?>? docs;
-  int? total;
-  int? limit;
-  int? page;
-  int? pages;
-
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        docs: json["docs"] == null
-            ? []
-            : List<Doc?>.from(json["docs"]!.map((x) => Doc.fromJson(x))),
-        total: json["total"],
-        limit: json["limit"],
-        page: json["page"],
-        pages: json["pages"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "docs": docs == null
-            ? []
-            : List<dynamic>.from(docs!.map((x) => x!.toJson())),
-        "total": total,
-        "limit": limit,
-        "page": page,
-        "pages": pages,
-      };
-}
-
-class Doc {
-  Doc({
+class Datum {
+  Datum({
     this.id,
     this.companyId,
     this.percentage,
@@ -80,45 +48,85 @@ class Doc {
     this.likes,
     this.createdAt,
     this.updatedAt,
+    this.isLiked,
   });
 
   String? id;
-  String? companyId;
+  CompanyId? companyId;
   int? percentage;
-  String? startDate;
-  String? endDate;
+  DateTime? startDate;
+  DateTime? endDate;
   int? startPrice;
   int? currentPrice;
   int? type;
   int? likes;
   DateTime? createdAt;
   DateTime? updatedAt;
+  bool? isLiked;
 
-  factory Doc.fromJson(Map<String, dynamic> json) => Doc(
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["_id"],
-        companyId: json["companyId"],
+        companyId: CompanyId.fromJson(json["companyId"]),
         percentage: json["percentage"],
-        startDate: json["startDate"],
-        endDate: json["endDate"],
+        startDate: DateTime.parse(json["startDate"]),
+        endDate: DateTime.parse(json["endDate"]),
         startPrice: json["startPrice"],
         currentPrice: json["currentPrice"],
         type: json["type"],
         likes: json["likes"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
+        isLiked: json["isLiked"],
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "companyId": companyId,
+        "companyId": companyId!.toJson(),
         "percentage": percentage,
-        "startDate": startDate,
-        "endDate": endDate,
+        "startDate": startDate?.toIso8601String(),
+        "endDate": endDate?.toIso8601String(),
         "startPrice": startPrice,
         "currentPrice": currentPrice,
         "type": type,
         "likes": likes,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
+        "isLiked": isLiked,
+      };
+}
+
+class CompanyId {
+  CompanyId({
+    this.id,
+    this.name,
+    this.shortName,
+    this.createdAt,
+    this.updatedAt,
+    this.companyIdId,
+  });
+
+  String? id;
+  String? name;
+  String? shortName;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String? companyIdId;
+
+  factory CompanyId.fromJson(Map<String, dynamic> json) => CompanyId(
+        id: json["_id"],
+        name: json["name"],
+        shortName: json["shortName"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+        companyIdId: json["id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "name": name,
+        "shortName": shortName,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+        "id": companyIdId,
       };
 }

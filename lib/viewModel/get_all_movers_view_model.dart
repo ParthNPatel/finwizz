@@ -11,17 +11,6 @@ class GetAllMoverViewModel extends GetxController {
       ApiResponse.initial(message: 'Initialization');
 
   ApiResponse get getMoversApiResponse => _getMoversApiResponse;
-  // bool like = false;
-  // updateLike(bool val) {
-  //   like = val;
-  //   update();
-  // }
-  //
-  // bool isFavourite = false;
-  // updateFavourite(bool val) {
-  //   isFavourite = val;
-  //   update();
-  // }
 
   Future<void> getMoversViewModel({bool isLoading = true}) async {
     if (isLoading) {

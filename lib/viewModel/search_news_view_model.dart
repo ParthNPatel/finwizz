@@ -37,7 +37,7 @@ class SearchNewsViewModel extends GetxController {
 
       _searchNewsApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("SearchNewsResponseModel==>$e");
+      print("SearchNewsResponseModel== eee >$e");
       _searchNewsApiResponse = ApiResponse.error(message: 'error');
     }
     update();

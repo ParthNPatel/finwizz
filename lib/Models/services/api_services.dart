@@ -118,13 +118,10 @@ class APIService {
       bool fileUpload = false}) async {
     Map<String, String> headers = GetStorageServices.getBarrierToken() != null
         ? {
-            'Authorization':
-                'Bearer eyJhbGciOiJIUzI1NiJ9.NjNiMDI2Y2NiNDQ0OTdlMDliODNjZWVh.WWMYdR8wZdejv6bT7lEd8bAqMuNfcXRGXffQWLgIzpA',
+            'Authorization': 'Bearer ${GetStorageServices.getBarrierToken()}',
             'Content-Type': 'application/json'
           }
         : {'Content-Type': 'application/json'};
-
-    print("Bearer ${GetStorageServices.getBarrierToken()}");
 
     try {
       if (apitype == APIType.aGet) {
@@ -133,15 +130,6 @@ class APIService {
         response = returnResponse(result.statusCode, result.body);
         log("RES status code ${result.statusCode}");
         log("res${result.body}");
-      } else /*if (apitype == APIType.aPost)*/ {
-        print("REQUEST PARAMETER url  $url");
-        print("REQUEST PARAMETER $body");
-
-        final result = await http.post(Uri.parse(APIConst.baseUrl + url),
-            body: json.encode(body), headers: headers);
-        print("resp${result.body}");
-        response = returnResponse(result.statusCode, result.body);
-        print(result.statusCode);
       }
       /*else {
         print("REQUEST PARAMETER url  $url");
@@ -170,7 +158,6 @@ class APIService {
     } on SocketException {
       throw FetchDataException('No Internet access');
     }
-
     return response;
   }
 

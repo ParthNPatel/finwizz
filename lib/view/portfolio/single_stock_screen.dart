@@ -235,20 +235,20 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
         SearchNewsResponseModel response =
             controller.searchNewsApiResponse.data;
 
-        if (response.data!.docs!.isNotEmpty && response.data!.docs! != []) {
+        if (response.data!.isNotEmpty && response.data! != []) {
           showDate.clear();
 
-          response.data!.docs!.forEach((element) {
+          response.data!.forEach((element) {
             if (widget.filterSelected != 10) {
               if (showDate.contains(
-                          element.createdAt.toString().split(' ').first) ==
+                          element!.createdAt.toString().split(' ').first) ==
                       false &&
                   element.type == widget.filterSelected) {
                 showDate.add(element.createdAt.toString().split(' ').first);
               }
             } else {
               if (showDate.contains(
-                      element.createdAt.toString().split(' ').first) ==
+                      element!.createdAt.toString().split(' ').first) ==
                   false) {
                 showDate.add(element.createdAt.toString().split(' ').first);
               }
@@ -306,14 +306,14 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                         height: 16,
                       ),
                       ListView.builder(
-                        itemCount: response.data!.docs!.length,
+                        itemCount: response.data!.length,
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
                           var time = DateFormat('kk:mm:a')
-                              .format(response.data!.docs![index].createdAt!);
+                              .format(response.data![index]!.createdAt!);
                           var date = DateFormat.yMMMEd()
-                              .format(response.data!.docs![index].createdAt!)
+                              .format(response.data![index]!.createdAt!)
                               .toString()
                               .split(', ')[1];
                           return widget.filterSelected == 10
@@ -325,11 +325,9 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                       horizontal: 20, vertical: 10),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: response.data!.docs![index].type ==
-                                              1
+                                      color: response.data![index]!.type == 1
                                           ? Colors.green.shade500
-                                          : response.data!.docs![index].type ==
-                                                  -1
+                                          : response.data![index]!.type == -1
                                               ? Colors.red.shade500
                                               : Color(0xffD1CDCD),
                                     ),
@@ -342,7 +340,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                         CommonWidget.commonSizedBox(height: 10),
                                         CommonText.textBoldWight700(
                                             text:
-                                                '${response.data!.docs![index].title}',
+                                                '${response.data![index]!.title}',
                                             color: Colors.black),
                                         CommonWidget.commonSizedBox(height: 15),
                                         CommonWidget.commonSizedBox(height: 15),
@@ -350,7 +348,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                             color: Color(0xff394452),
                                             fontSize: 10.sp,
                                             text:
-                                                "${response.data!.docs![index].description}"),
+                                                "${response.data![index]!.description}"),
                                         CommonWidget.commonSizedBox(height: 6),
                                         CommonWidget.commonSizedBox(height: 10),
                                         Row(
@@ -360,17 +358,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 if (GetStorageServices
                                                         .getUserLoggedInStatus() ==
                                                     true) {
-                                                  if (response
-                                                          .data!
-                                                          .docs![index]
-                                                          .isLiked ==
+                                                  if (response.data![index]!
+                                                          .generic ==
                                                       false) {
                                                     await likeUnLikeViewModel
                                                         .likeUnLikeViewModel(
                                                             body: {
                                                           "type": "like",
                                                           "newsId":
-                                                              "${response.data!.docs![index].id}"
+                                                              "${response.data![index]!.id}"
                                                         });
 
                                                     if (likeUnLikeViewModel
@@ -390,16 +386,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                             .status ==
                                                         Status.ERROR) {}
                                                   } else if (response
-                                                          .data!
-                                                          .docs![index]
-                                                          .isLiked ==
+                                                          .data![index]!
+                                                          .generic ==
                                                       true) {
                                                     await likeUnLikeViewModel
                                                         .likeUnLikeViewModel(
                                                             body: {
                                                           "type": "unlike",
                                                           "newsId":
-                                                              "${response.data!.docs![index].id}"
+                                                              "${response.data![index]!.id}"
                                                         });
                                                     if (likeUnLikeViewModel
                                                             .likeUnlikeApiResponse
@@ -431,8 +426,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 }
                                               },
                                               child: Icon(
-                                                response.data!.docs![index]
-                                                            .isLiked ==
+                                                response.data![index]!
+                                                            .generic ==
                                                         true
                                                     ? Icons.favorite
                                                     : Icons.favorite_border,
@@ -444,12 +439,10 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                               width: 10,
                                             ),
                                             CommonText.textBoldWight400(
-                                                text: response
-                                                            .data!
-                                                            .docs![index]
+                                                text: response.data![index]!
                                                             .likes !=
                                                         null
-                                                    ? '${response.data!.docs![index].likes}'
+                                                    ? '${response.data![index]!.likes}'
                                                     : "0",
                                                 color: Colors.black),
                                             Spacer(),
@@ -458,17 +451,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 if (GetStorageServices
                                                         .getUserLoggedInStatus() ==
                                                     true) {
-                                                  if (response
-                                                          .data!
-                                                          .docs![index]
-                                                          .isFavourite ==
+                                                  if (response.data![index]!
+                                                          .generic ==
                                                       false) {
                                                     await favUnFavViewModel
                                                         .favUnFavViewModel(
                                                             body: {
                                                           "type": "favourite",
                                                           "newsId":
-                                                              "${response.data!.docs![index].id}"
+                                                              "${response.data![index]!.id}"
                                                         });
                                                     if (favUnFavViewModel
                                                             .favUnFavApiResponse
@@ -487,16 +478,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                             .status ==
                                                         Status.ERROR) {}
                                                   } else if (response
-                                                          .data!
-                                                          .docs![index]
-                                                          .isFavourite ==
+                                                          .data![index]!
+                                                          .generic ==
                                                       true) {
                                                     await favUnFavViewModel
                                                         .favUnFavViewModel(
                                                             body: {
                                                           "type": "unfavourite",
                                                           "newsId":
-                                                              "${response.data!.docs![index].id}"
+                                                              "${response.data![index]!.id}"
                                                         });
                                                     if (favUnFavViewModel
                                                             .favUnFavApiResponse
@@ -528,8 +518,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 }
                                               },
                                               child: Icon(
-                                                response.data!.docs![index]
-                                                            .isFavourite ==
+                                                response.data![index]!
+                                                            .generic ==
                                                         true
                                                     ? Icons.bookmark
                                                     : Icons
@@ -556,13 +546,13 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                         CommonWidget.commonSizedBox(height: 10),
                                         CommonText.textBoldWight400(
                                             text:
-                                                '${date},  ${time} ·|  ${response.data!.docs![index].source != null ? "Source : ${response.data!.docs![index].source}" : ""}',
+                                                '${date},  ${time} ·|  ${response.data![index]!.source != null ? "Source : ${response.data![index]!.source}" : ""}',
                                             color: Colors.black),
                                         CommonWidget.commonSizedBox(height: 10),
                                       ]),
                                 )
                               : widget.filterSelected ==
-                                      response.data!.docs![index].type
+                                      response.data![index]!.type
                                   ? Container(
                                       margin: EdgeInsets.only(
                                           left: 20, right: 20, bottom: 20),
@@ -571,12 +561,10 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                           horizontal: 20, vertical: 10),
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color: response.data!.docs![index]
-                                                      .type ==
+                                          color: response.data![index]!.type ==
                                                   1
                                               ? Colors.green.shade500
-                                              : response.data!.docs![index]
-                                                          .type ==
+                                              : response.data![index]!.type ==
                                                       -1
                                                   ? Colors.red.shade500
                                                   : Color(0xffD1CDCD),
@@ -591,7 +579,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 height: 10),
                                             CommonText.textBoldWight700(
                                                 text:
-                                                    '${response.data!.docs![index].title}',
+                                                    '${response.data![index]!.title}',
                                                 color: Colors.black),
                                             CommonWidget.commonSizedBox(
                                                 height: 15),
@@ -601,7 +589,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 color: Color(0xff394452),
                                                 fontSize: 10.sp,
                                                 text:
-                                                    "${response.data!.docs![index].description}"),
+                                                    "${response.data![index]!.description}"),
                                             CommonWidget.commonSizedBox(
                                                 height: 6),
                                             CommonWidget.commonSizedBox(
@@ -613,17 +601,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                     if (GetStorageServices
                                                             .getUserLoggedInStatus() ==
                                                         true) {
-                                                      if (response
-                                                              .data!
-                                                              .docs![index]
-                                                              .isLiked ==
+                                                      if (response.data![index]!
+                                                              .generic ==
                                                           false) {
                                                         await likeUnLikeViewModel
                                                             .likeUnLikeViewModel(
                                                                 body: {
                                                               "type": "like",
                                                               "newsId":
-                                                                  "${response.data!.docs![index].id}"
+                                                                  "${response.data![index]!.id}"
                                                             });
 
                                                         if (likeUnLikeViewModel
@@ -643,16 +629,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                                 .status ==
                                                             Status.ERROR) {}
                                                       } else if (response
-                                                              .data!
-                                                              .docs![index]
-                                                              .isLiked ==
+                                                              .data![index]!
+                                                              .generic ==
                                                           true) {
                                                         await likeUnLikeViewModel
                                                             .likeUnLikeViewModel(
                                                                 body: {
                                                               "type": "unlike",
                                                               "newsId":
-                                                                  "${response.data!.docs![index].id}"
+                                                                  "${response.data![index]!.id}"
                                                             });
                                                         if (likeUnLikeViewModel
                                                                 .likeUnlikeApiResponse
@@ -685,8 +670,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                     }
                                                   },
                                                   child: Icon(
-                                                    response.data!.docs![index]
-                                                                .isLiked ==
+                                                    response.data![index]!
+                                                                .generic ==
                                                             true
                                                         ? Icons.favorite
                                                         : Icons.favorite_border,
@@ -698,12 +683,10 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                   width: 10,
                                                 ),
                                                 CommonText.textBoldWight400(
-                                                    text: response
-                                                                .data!
-                                                                .docs![index]
+                                                    text: response.data![index]!
                                                                 .likes !=
                                                             null
-                                                        ? '${response.data!.docs![index].likes}'
+                                                        ? '${response.data![index]!.likes}'
                                                         : "0",
                                                     color: Colors.black),
                                                 Spacer(),
@@ -712,10 +695,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                     if (GetStorageServices
                                                             .getUserLoggedInStatus() ==
                                                         true) {
-                                                      if (response
-                                                              .data!
-                                                              .docs![index]
-                                                              .isFavourite ==
+                                                      if (response.data![index]!
+                                                              .generic ==
                                                           false) {
                                                         await favUnFavViewModel
                                                             .favUnFavViewModel(
@@ -723,7 +704,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                               "type":
                                                                   "favourite",
                                                               "newsId":
-                                                                  "${response.data!.docs![index].id}"
+                                                                  "${response.data![index]!.id}"
                                                             });
                                                         if (favUnFavViewModel
                                                                 .favUnFavApiResponse
@@ -742,9 +723,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                                 .status ==
                                                             Status.ERROR) {}
                                                       } else if (response
-                                                              .data!
-                                                              .docs![index]
-                                                              .isFavourite ==
+                                                              .data![index]!
+                                                              .generic ==
                                                           true) {
                                                         await favUnFavViewModel
                                                             .favUnFavViewModel(
@@ -752,7 +732,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                               "type":
                                                                   "unfavourite",
                                                               "newsId":
-                                                                  "${response.data!.docs![index].id}"
+                                                                  "${response.data![index]!.id}"
                                                             });
                                                         if (favUnFavViewModel
                                                                 .favUnFavApiResponse
@@ -785,8 +765,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                     }
                                                   },
                                                   child: Icon(
-                                                    response.data!.docs![index]
-                                                                .isFavourite ==
+                                                    response.data![index]!
+                                                                .generic ==
                                                             true
                                                         ? Icons.bookmark
                                                         : Icons
@@ -814,7 +794,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 height: 10),
                                             CommonText.textBoldWight400(
                                                 text:
-                                                    '${date},  ${time} ·|  ${response.data!.docs![index].source != null ? "Source : ${response.data!.docs![index].source}" : ""}',
+                                                    '${date},  ${time} ·|  ${response.data![index]!.source != null ? "Source : ${response.data![index]!.source}" : ""}',
                                                 color: Colors.black),
                                             CommonWidget.commonSizedBox(
                                                 height: 10),

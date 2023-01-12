@@ -54,8 +54,8 @@ class Datum {
   String? id;
   CompanyId? companyId;
   int? percentage;
-  String? startDate;
-  String? endDate;
+  DateTime? startDate;
+  DateTime? endDate;
   int? startPrice;
   int? currentPrice;
   int? type;
@@ -68,8 +68,8 @@ class Datum {
         id: json["_id"],
         companyId: CompanyId.fromJson(json["companyId"]),
         percentage: json["percentage"],
-        startDate: json["startDate"],
-        endDate: json["endDate"],
+        startDate: DateTime.parse(json["startDate"]),
+        endDate: DateTime.parse(json["endDate"]),
         startPrice: json["startPrice"],
         currentPrice: json["currentPrice"],
         type: json["type"],
@@ -83,8 +83,8 @@ class Datum {
         "_id": id,
         "companyId": companyId!.toJson(),
         "percentage": percentage,
-        "startDate": startDate,
-        "endDate": endDate,
+        "startDate": startDate?.toIso8601String(),
+        "endDate": endDate?.toIso8601String(),
         "startPrice": startPrice,
         "currentPrice": currentPrice,
         "type": type,
