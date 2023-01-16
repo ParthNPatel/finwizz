@@ -54,7 +54,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         Status.COMPLETE) {
                       GetNotificationResponseModel response =
                           controller.getNotificationApiResponse.data;
-                      if (response.message!.length != 0) {
+                      if (response.message!.length != 0 &&
+                          response.message != [] &&
+                          response.message!.isNotEmpty) {
                         return ListView.separated(
                           shrinkWrap: true,
                           padding: EdgeInsets.only(
@@ -152,14 +154,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           },
                         );
                       } else {
-                        return Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CommonText.textBoldWight500(
-                                  text: "No Message Received yet."),
-                            ],
-                          ),
+                        return Column(
+                          children: [
+                            SizedBox(height: 50.sp),
+                            CommonText.textBoldWight500(
+                                text: "No Message Received yet."),
+                          ],
                         );
                       }
                     } else

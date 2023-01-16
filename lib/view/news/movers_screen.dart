@@ -2,7 +2,9 @@ import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_movers_res_model.dart';
 import 'package:finwizz/Models/responseModel/search_movers_res_model.dart';
 import 'package:finwizz/Models/responseModel/search_news_res_model.dart';
+import 'package:finwizz/viewModel/fav_unFav_view_model.dart';
 import 'package:finwizz/viewModel/get_all_movers_view_model.dart';
+import 'package:finwizz/viewModel/like_unlike_view_model.dart';
 import 'package:finwizz/viewModel/movers_like_unlike_view_model.dart';
 import 'package:finwizz/viewModel/search_news_view_model.dart';
 import 'package:flutter/material.dart';
@@ -36,12 +38,8 @@ class MoversScreen extends StatefulWidget {
 
 class _MoversScreenState extends State<MoversScreen> {
   bool isFavourite = true;
-  PageController pageController =
-      PageController(initialPage: 0, keepPage: true);
 
   GetAllMoverViewModel getAllMoverViewModel = Get.put(GetAllMoverViewModel());
-  MoversLikeUnLikeViewModel moversLikeUnLikeViewModel =
-      Get.put(MoversLikeUnLikeViewModel());
 
   List showDate = [];
 
@@ -226,6 +224,11 @@ class _MoverWidgetState extends State<MoverWidget> {
   List tmpList = [];
 
   SearchNewsViewModel searchNewsViewModel = Get.put(SearchNewsViewModel());
+  LikeUnLikeViewModel likeUnLikeViewModel = Get.put(LikeUnLikeViewModel());
+  FavUnFavViewModel favUnFavViewModel = Get.put(FavUnFavViewModel());
+  MoversLikeUnLikeViewModel moversLikeUnLikeViewModel =
+      Get.put(MoversLikeUnLikeViewModel());
+  GetAllMoverViewModel getAllMoverViewModel = Get.put(GetAllMoverViewModel());
 
   @override
   void initState() {
@@ -247,8 +250,7 @@ class _MoverWidgetState extends State<MoverWidget> {
         SearchNewsResponseModel resp = controller.searchNewsApiResponse.data;
 
         return SizedBox(
-          height: 315,
-          width: Get.width,
+          height: 260.sp,
           child: Row(
             children: [
               currentPage != 0
@@ -275,11 +277,11 @@ class _MoverWidgetState extends State<MoverWidget> {
               GestureDetector(
                 onHorizontalDragUpdate: (details) {
                   if (details.delta.dx < -sensitivity) {
-                    setState(() {
-                      currentPage += 1;
-                      otherContainerWidth = Get.width - 50;
-                      gaugeContainerWidth = 0;
-                    });
+                    /*  setState(() {
+                          currentPage += 1;
+                          otherContainerWidth = Get.width - 50;
+                          gaugeContainerWidth = 0;
+                        });*/
                   }
                 },
                 child: Container(
@@ -349,98 +351,51 @@ class _MoverWidgetState extends State<MoverWidget> {
                         Row(
                           children: [
                             InkResponse(
-                              onTap: () {
-                                setState(() {
-                                  widget.isFavourite = !widget.isFavourite;
-                                });
+                              onTap: () async {
+                                if (GetStorageServices
+                                        .getUserLoggedInStatus() ==
+                                    true) {
+                                  if (widget.response.data![widget.index]!
+                                          .isLiked ==
+                                      false) {
+                                    await moversLikeUnLikeViewModel
+                                        .moversLikeUnLikeViewModel(body: {
+                                      "type": "like",
+                                      "moversId":
+                                          "${widget.response.data![widget.index]!.id}"
+                                    });
+                                  } else if (widget.response
+                                          .data![widget.index]!.isLiked ==
+                                      true) {
+                                    await moversLikeUnLikeViewModel
+                                        .moversLikeUnLikeViewModel(body: {
+                                      "type": "unlike",
+                                      "moversId":
+                                          "${widget.response.data![widget.index]!.id}"
+                                    });
+                                  }
+                                } else {
+                                  CommonWidget.getSnackBar(
+                                      color: Colors.red.withOpacity(.5),
+                                      duration: 2,
+                                      colorText: Colors.white,
+                                      title: "Want to like news ??",
+                                      message:
+                                          'Need to login first, Please complete login steps');
+                                }
+                                await getAllMoverViewModel.getMoversViewModel(
+                                    isLoading: false);
+                                if (getAllMoverViewModel
+                                        .getMoversApiResponse.status ==
+                                    Status.COMPLETE) {
+                                  widget.response = getAllMoverViewModel
+                                      .getMoversApiResponse.data;
+                                  setState(() {});
+                                }
                               },
-                              // onTap: () async {
-                              //   // controller.updateLike(
-                              //   //     response.data![index].isLiked!);
-                              //   if (response.data![index].
-                              //           .isLiked ==
-                              //       false) {
-                              //     await moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeViewModel(
-                              //             body: {
-                              //           "type": "like",
-                              //           "newsId":
-                              //               "${response.data![index].id}"
-                              //         });
-                              //
-                              //     if (moversLikeUnLikeViewModel
-                              //             .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.COMPLETE) {}
-                              //     if (moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.ERROR) {
-                              //       // CommonWidget.getSnackBar(
-                              //       //     color: Colors.red,
-                              //       //     duration: 2,
-                              //       //     colorText:
-                              //       //         Colors.white,
-                              //       //     title:
-                              //       //         "Something went wrong",
-                              //       //     message:
-                              //       //         'Try Again.');
-                              //     }
-                              //   } else if (response
-                              //           .data![index]
-                              //           .isLiked ==
-                              //       true) {
-                              //     await moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeViewModel(
-                              //             body: {
-                              //           "type": "unlike",
-                              //           "newsId":
-                              //               "${response.data![index].id}"
-                              //         });
-                              //     if (moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.COMPLETE) {}
-                              //     if (moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.ERROR) {
-                              //       // CommonWidget.getSnackBar(
-                              //       //     color: Colors.red,
-                              //       //     duration: 2,
-                              //       //     colorText:
-                              //       //         Colors.white,
-                              //       //     title:
-                              //       //         "Something went wrong",
-                              //       //     message:
-                              //       //         'Try Again.');
-                              //     }
-                              //   }
-                              //   await getAllMoverViewModel
-                              //       .getMoversViewModel(
-                              //           isLoading: false
-                              //   );
-                              //   if (getAllMoverViewModel
-                              //           .getMoversApiResponse
-                              //           .status ==
-                              //       Status.COMPLETE) {}
-                              //   if (getAllMoverViewModel
-                              //       .getMoversApiResponse
-                              //           .status ==
-                              //       Status.ERROR) {
-                              //     CommonWidget.getSnackBar(
-                              //         color: Colors.red,
-                              //         duration: 2,
-                              //         colorText:
-                              //             Colors.white,
-                              //         title:
-                              //             "Refresh Page",
-                              //         message:
-                              //             'Try Again.');
-                              //   }
-                              // },
                               child: Icon(
-                                widget.isFavourite == true
+                                widget.response.data![widget.index]!.isLiked ==
+                                        true
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 color: CommonColor.yellowColorFFB800,
@@ -533,131 +488,70 @@ class _MoverWidgetState extends State<MoverWidget> {
                           children: [
                             CommonWidget.commonSizedBox(height: 10),
                             CommonText.textBoldWight700(
-                                text: '${resp.data![index]!.title}',
+                                text: '${resp.data![index].title}',
                                 color: Colors.black),
                             CommonWidget.commonSizedBox(height: 15),
                             CommonText.textBoldWight400(
                                 text:
-                                    '${resp.data![index]!.companyId!.shortName!.toUpperCase()}',
+                                    '${resp.data![index].companyId!.shortName!.toUpperCase()}',
                                 color: Colors.black),
                             CommonWidget.commonSizedBox(height: 15),
                             CommonText.textBoldWight500(
                                 color: Color(0xff394452),
                                 fontSize: 10.sp,
-                                text: resp.data![index]!.description!.length >
+                                text: resp.data![index].description!.length >
                                         200
-                                    ? "${resp.data![index]!.description!.substring(0, 200)}..."
-                                    : "${resp.data![index]!.description}"),
-                            // CommonText.textBoldWight500(
-                            //     color: Color(0xff394452),
-                            //     fontSize: 10.sp,
-                            //     text:
-                            //         "${widget.response.data![widget.index]!.description}"),
+                                    ? "${resp.data![index].description!.substring(0, 200)}..."
+                                    : "${resp.data![index].description}"),
                             CommonWidget.commonSizedBox(height: 16),
-                            // CommonText.textBoldWight500(
-                            //     fontSize: 10.sp,
-                            //     color:
-                            //         Color(0xff394452),
-                            //     text:
-                            //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                            // CommonWidget.commonSizedBox(
-                            //     height: 10),
-
                             Row(
                               children: [
                                 InkResponse(
-                                  onTap: () {
-                                    setState(() {
-                                      widget.isFavourite = !widget.isFavourite;
-                                    });
+                                  onTap: () async {
+                                    if (GetStorageServices
+                                            .getUserLoggedInStatus() ==
+                                        true) {
+                                      if (resp.data![index].isLiked == false) {
+                                        await likeUnLikeViewModel
+                                            .likeUnLikeViewModel(body: {
+                                          "type": "like",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      } else if (resp.data![index].isLiked ==
+                                          true) {
+                                        await likeUnLikeViewModel
+                                            .likeUnLikeViewModel(body: {
+                                          "type": "unlike",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      }
+                                    } else {
+                                      CommonWidget.getSnackBar(
+                                          color: Colors.red.withOpacity(.5),
+                                          duration: 2,
+                                          colorText: Colors.white,
+                                          title: "Want to like news ??",
+                                          message:
+                                              'Need to login first, Please complete login steps');
+                                    }
+                                    await searchNewsViewModel
+                                        .searchNewsViewModel(
+                                            companyId: widget
+                                                .response
+                                                .data![widget.index]!
+                                                .companyId!
+                                                .id!,
+                                            isLoading: false);
+                                    if (searchNewsViewModel
+                                            .searchNewsApiResponse.status ==
+                                        Status.COMPLETE) {
+                                      resp = searchNewsViewModel
+                                          .searchNewsApiResponse.data;
+                                      setState(() {});
+                                    }
                                   },
-                                  // onTap: () async {
-                                  //   // controller.updateLike(
-                                  //   //     response.data![index].isLiked!);
-                                  //   if (response.data![index].
-                                  //           .isLiked ==
-                                  //       false) {
-                                  //     await moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeViewModel(
-                                  //             body: {
-                                  //           "type": "like",
-                                  //           "newsId":
-                                  //               "${response.data![index].id}"
-                                  //         });
-                                  //
-                                  //     if (moversLikeUnLikeViewModel
-                                  //             .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.COMPLETE) {}
-                                  //     if (moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.ERROR) {
-                                  //       // CommonWidget.getSnackBar(
-                                  //       //     color: Colors.red,
-                                  //       //     duration: 2,
-                                  //       //     colorText:
-                                  //       //         Colors.white,
-                                  //       //     title:
-                                  //       //         "Something went wrong",
-                                  //       //     message:
-                                  //       //         'Try Again.');
-                                  //     }
-                                  //   } else if (response
-                                  //           .data![index]
-                                  //           .isLiked ==
-                                  //       true) {
-                                  //     await moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeViewModel(
-                                  //             body: {
-                                  //           "type": "unlike",
-                                  //           "newsId":
-                                  //               "${response.data![index].id}"
-                                  //         });
-                                  //     if (moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.COMPLETE) {}
-                                  //     if (moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.ERROR) {
-                                  //       // CommonWidget.getSnackBar(
-                                  //       //     color: Colors.red,
-                                  //       //     duration: 2,
-                                  //       //     colorText:
-                                  //       //         Colors.white,
-                                  //       //     title:
-                                  //       //         "Something went wrong",
-                                  //       //     message:
-                                  //       //         'Try Again.');
-                                  //     }
-                                  //   }
-                                  //   await getAllMoverViewModel
-                                  //       .getMoversViewModel(
-                                  //           isLoading: false
-                                  //   );
-                                  //   if (getAllMoverViewModel
-                                  //           .getMoversApiResponse
-                                  //           .status ==
-                                  //       Status.COMPLETE) {}
-                                  //   if (getAllMoverViewModel
-                                  //       .getMoversApiResponse
-                                  //           .status ==
-                                  //       Status.ERROR) {
-                                  //     CommonWidget.getSnackBar(
-                                  //         color: Colors.red,
-                                  //         duration: 2,
-                                  //         colorText:
-                                  //             Colors.white,
-                                  //         title:
-                                  //             "Refresh Page",
-                                  //         message:
-                                  //             'Try Again.');
-                                  //   }
-                                  // },
                                   child: Icon(
-                                    widget.isFavourite == true
+                                    resp.data![index].isLiked == true
                                         ? Icons.favorite
                                         : Icons.favorite_border,
                                     color: CommonColor.yellowColorFFB800,
@@ -667,18 +561,59 @@ class _MoverWidgetState extends State<MoverWidget> {
                                   width: 10,
                                 ),
                                 CommonText.textBoldWight400(
-                                    text:
-                                        '${widget.response.data![widget.index]!.likes}',
+                                    text: resp.data![index].likes != null
+                                        ? '${resp.data![index].likes}'
+                                        : "0",
                                     color: Colors.black),
                                 Spacer(),
                                 InkResponse(
-                                  onTap: () {
-                                    setState(() {
-                                      widget.isFavourite = !widget.isFavourite;
-                                    });
+                                  onTap: () async {
+                                    if (GetStorageServices
+                                            .getUserLoggedInStatus() ==
+                                        true) {
+                                      if (resp.data![index].isFavourite ==
+                                          false) {
+                                        await favUnFavViewModel
+                                            .favUnFavViewModel(body: {
+                                          "type": "favourite",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      } else if (resp
+                                              .data![index].isFavourite ==
+                                          true) {
+                                        await favUnFavViewModel
+                                            .favUnFavViewModel(body: {
+                                          "type": "unfavourite",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      }
+                                    } else {
+                                      CommonWidget.getSnackBar(
+                                          color: Colors.red.withOpacity(.5),
+                                          duration: 2,
+                                          colorText: Colors.white,
+                                          title: "Want to save news ??",
+                                          message:
+                                              'Need to login first, Please complete login steps');
+                                    }
+                                    await searchNewsViewModel
+                                        .searchNewsViewModel(
+                                            companyId: widget
+                                                .response
+                                                .data![widget.index]!
+                                                .companyId!
+                                                .id!,
+                                            isLoading: false);
+                                    if (searchNewsViewModel
+                                            .searchNewsApiResponse.status ==
+                                        Status.COMPLETE) {
+                                      resp = searchNewsViewModel
+                                          .searchNewsApiResponse.data;
+                                      setState(() {});
+                                    }
                                   },
                                   child: Icon(
-                                    widget.isFavourite == true
+                                    resp.data![index].isFavourite == true
                                         ? Icons.bookmark
                                         : Icons.bookmark_outline_sharp,
                                     color: CommonColor.yellowColorFFB800,
@@ -828,6 +763,11 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
   List tmpList = [];
 
   SearchNewsViewModel searchNewsViewModel = Get.put(SearchNewsViewModel());
+  LikeUnLikeViewModel likeUnLikeViewModel = Get.put(LikeUnLikeViewModel());
+  FavUnFavViewModel favUnFavViewModel = Get.put(FavUnFavViewModel());
+  GetAllMoverViewModel getAllMoverViewModel = Get.put(GetAllMoverViewModel());
+  MoversLikeUnLikeViewModel moversLikeUnLikeViewModel =
+      Get.put(MoversLikeUnLikeViewModel());
 
   @override
   void initState() {
@@ -877,11 +817,11 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
               GestureDetector(
                 onHorizontalDragUpdate: (details) {
                   if (details.delta.dx < -sensitivity) {
-                    setState(() {
+                    /*   setState(() {
                       currentPage = 1;
                       otherContainerWidth = Get.width - 50;
                       gaugeContainerWidth = 0;
-                    });
+                    });*/
                   }
                 },
                 child: Container(
@@ -951,98 +891,51 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
                         Row(
                           children: [
                             InkResponse(
-                              onTap: () {
-                                setState(() {
-                                  widget.isFavourite = !widget.isFavourite;
-                                });
+                              onTap: () async {
+                                if (GetStorageServices
+                                        .getUserLoggedInStatus() ==
+                                    true) {
+                                  if (widget.response.data![widget.index]!
+                                          .isLiked ==
+                                      false) {
+                                    await moversLikeUnLikeViewModel
+                                        .moversLikeUnLikeViewModel(body: {
+                                      "type": "like",
+                                      "newsId":
+                                          "${widget.response.data![widget.index]!.id}"
+                                    });
+                                  } else if (widget.response
+                                          .data![widget.index]!.isLiked ==
+                                      true) {
+                                    await moversLikeUnLikeViewModel
+                                        .moversLikeUnLikeViewModel(body: {
+                                      "type": "unlike",
+                                      "newsId":
+                                          "${widget.response.data![widget.index]!.id}"
+                                    });
+                                  }
+                                } else {
+                                  CommonWidget.getSnackBar(
+                                      color: Colors.red.withOpacity(.5),
+                                      duration: 2,
+                                      colorText: Colors.white,
+                                      title: "Want to like news ??",
+                                      message:
+                                          'Need to login first, Please complete login steps');
+                                }
+                                await getAllMoverViewModel.getMoversViewModel(
+                                    isLoading: false);
+                                if (getAllMoverViewModel
+                                        .getMoversApiResponse.status ==
+                                    Status.COMPLETE) {
+                                  widget.response = getAllMoverViewModel
+                                      .getMoversApiResponse.data;
+                                  setState(() {});
+                                }
                               },
-                              // onTap: () async {
-                              //   // controller.updateLike(
-                              //   //     response.data![index].isLiked!);
-                              //   if (response.data![index].
-                              //           .isLiked ==
-                              //       false) {
-                              //     await moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeViewModel(
-                              //             body: {
-                              //           "type": "like",
-                              //           "newsId":
-                              //               "${response.data![index].id}"
-                              //         });
-                              //
-                              //     if (moversLikeUnLikeViewModel
-                              //             .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.COMPLETE) {}
-                              //     if (moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.ERROR) {
-                              //       // CommonWidget.getSnackBar(
-                              //       //     color: Colors.red,
-                              //       //     duration: 2,
-                              //       //     colorText:
-                              //       //         Colors.white,
-                              //       //     title:
-                              //       //         "Something went wrong",
-                              //       //     message:
-                              //       //         'Try Again.');
-                              //     }
-                              //   } else if (response
-                              //           .data![index]
-                              //           .isLiked ==
-                              //       true) {
-                              //     await moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeViewModel(
-                              //             body: {
-                              //           "type": "unlike",
-                              //           "newsId":
-                              //               "${response.data![index].id}"
-                              //         });
-                              //     if (moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.COMPLETE) {}
-                              //     if (moversLikeUnLikeViewModel
-                              //         .moversLikeUnLikeApiResponse
-                              //             .status ==
-                              //         Status.ERROR) {
-                              //       // CommonWidget.getSnackBar(
-                              //       //     color: Colors.red,
-                              //       //     duration: 2,
-                              //       //     colorText:
-                              //       //         Colors.white,
-                              //       //     title:
-                              //       //         "Something went wrong",
-                              //       //     message:
-                              //       //         'Try Again.');
-                              //     }
-                              //   }
-                              //   await getAllMoverViewModel
-                              //       .getMoversViewModel(
-                              //           isLoading: false
-                              //   );
-                              //   if (getAllMoverViewModel
-                              //           .getMoversApiResponse
-                              //           .status ==
-                              //       Status.COMPLETE) {}
-                              //   if (getAllMoverViewModel
-                              //       .getMoversApiResponse
-                              //           .status ==
-                              //       Status.ERROR) {
-                              //     CommonWidget.getSnackBar(
-                              //         color: Colors.red,
-                              //         duration: 2,
-                              //         colorText:
-                              //             Colors.white,
-                              //         title:
-                              //             "Refresh Page",
-                              //         message:
-                              //             'Try Again.');
-                              //   }
-                              // },
                               child: Icon(
-                                widget.isFavourite == true
+                                widget.response.data![widget.index]!.isLiked ==
+                                        true
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 color: CommonColor.yellowColorFFB800,
@@ -1056,25 +949,6 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
                                     '${widget.response.data![widget.index]!.likes}',
                                 color: Colors.black),
                             Spacer(),
-                            // InkResponse(
-                            //   onTap: () {
-                            //     setState(() {
-                            //       isFavourite1 =
-                            //           !isFavourite1;
-                            //     });
-                            //   },
-                            //   child: Icon(
-                            //     isFavourite1 == true
-                            //         ? Icons.bookmark
-                            //         : Icons
-                            //             .bookmark_outline_sharp,
-                            //     color: CommonColor
-                            //         .yellowColorFFB800,
-                            //   ),
-                            // ),
-                            // SizedBox(
-                            //   width: 10,
-                            // ),
                             InkResponse(
                               onTap: () {
                                 Share.share("Test");
@@ -1135,131 +1009,70 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
                           children: [
                             CommonWidget.commonSizedBox(height: 10),
                             CommonText.textBoldWight700(
-                                text: '${resp.data![index]!.title}',
+                                text: '${resp.data![index].title}',
                                 color: Colors.black),
                             CommonWidget.commonSizedBox(height: 15),
                             CommonText.textBoldWight400(
                                 text:
-                                    '${resp.data![index]!.companyId!.shortName!.toUpperCase()}',
+                                    '${resp.data![index].companyId!.shortName!.toUpperCase()}',
                                 color: Colors.black),
                             CommonWidget.commonSizedBox(height: 15),
                             CommonText.textBoldWight500(
                                 color: Color(0xff394452),
                                 fontSize: 10.sp,
-                                text: resp.data![index]!.description!.length >
+                                text: resp.data![index].description!.length >
                                         200
-                                    ? "${resp.data![index]!.description!.substring(0, 200)}..."
-                                    : "${resp.data![index]!.description}"),
-                            // CommonText.textBoldWight500(
-                            //     color: Color(0xff394452),
-                            //     fontSize: 10.sp,
-                            //     text:
-                            //         "${widget.response.data![widget.index]!.description}"),
+                                    ? "${resp.data![index].description!.substring(0, 200)}..."
+                                    : "${resp.data![index].description}"),
                             CommonWidget.commonSizedBox(height: 16),
-                            // CommonText.textBoldWight500(
-                            //     fontSize: 10.sp,
-                            //     color:
-                            //         Color(0xff394452),
-                            //     text:
-                            //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                            // CommonWidget.commonSizedBox(
-                            //     height: 10),
-
                             Row(
                               children: [
                                 InkResponse(
-                                  onTap: () {
-                                    setState(() {
-                                      widget.isFavourite = !widget.isFavourite;
-                                    });
+                                  onTap: () async {
+                                    if (GetStorageServices
+                                            .getUserLoggedInStatus() ==
+                                        true) {
+                                      if (resp.data![index].isLiked == false) {
+                                        await likeUnLikeViewModel
+                                            .likeUnLikeViewModel(body: {
+                                          "type": "like",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      } else if (resp.data![index].isLiked ==
+                                          true) {
+                                        await likeUnLikeViewModel
+                                            .likeUnLikeViewModel(body: {
+                                          "type": "unlike",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      }
+                                    } else {
+                                      CommonWidget.getSnackBar(
+                                          color: Colors.red.withOpacity(.5),
+                                          duration: 2,
+                                          colorText: Colors.white,
+                                          title: "Want to like news ??",
+                                          message:
+                                              'Need to login first, Please complete login steps');
+                                    }
+                                    await searchNewsViewModel
+                                        .searchNewsViewModel(
+                                            companyId: widget
+                                                .response
+                                                .data![widget.index]!
+                                                .companyId!
+                                                .id!,
+                                            isLoading: false);
+                                    if (searchNewsViewModel
+                                            .searchNewsApiResponse.status ==
+                                        Status.COMPLETE) {
+                                      resp = searchNewsViewModel
+                                          .searchNewsApiResponse.data;
+                                      setState(() {});
+                                    }
                                   },
-                                  // onTap: () async {
-                                  //   // controller.updateLike(
-                                  //   //     response.data![index].isLiked!);
-                                  //   if (response.data![index].
-                                  //           .isLiked ==
-                                  //       false) {
-                                  //     await moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeViewModel(
-                                  //             body: {
-                                  //           "type": "like",
-                                  //           "newsId":
-                                  //               "${response.data![index].id}"
-                                  //         });
-                                  //
-                                  //     if (moversLikeUnLikeViewModel
-                                  //             .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.COMPLETE) {}
-                                  //     if (moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.ERROR) {
-                                  //       // CommonWidget.getSnackBar(
-                                  //       //     color: Colors.red,
-                                  //       //     duration: 2,
-                                  //       //     colorText:
-                                  //       //         Colors.white,
-                                  //       //     title:
-                                  //       //         "Something went wrong",
-                                  //       //     message:
-                                  //       //         'Try Again.');
-                                  //     }
-                                  //   } else if (response
-                                  //           .data![index]
-                                  //           .isLiked ==
-                                  //       true) {
-                                  //     await moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeViewModel(
-                                  //             body: {
-                                  //           "type": "unlike",
-                                  //           "newsId":
-                                  //               "${response.data![index].id}"
-                                  //         });
-                                  //     if (moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.COMPLETE) {}
-                                  //     if (moversLikeUnLikeViewModel
-                                  //         .moversLikeUnLikeApiResponse
-                                  //             .status ==
-                                  //         Status.ERROR) {
-                                  //       // CommonWidget.getSnackBar(
-                                  //       //     color: Colors.red,
-                                  //       //     duration: 2,
-                                  //       //     colorText:
-                                  //       //         Colors.white,
-                                  //       //     title:
-                                  //       //         "Something went wrong",
-                                  //       //     message:
-                                  //       //         'Try Again.');
-                                  //     }
-                                  //   }
-                                  //   await getAllMoverViewModel
-                                  //       .getMoversViewModel(
-                                  //           isLoading: false
-                                  //   );
-                                  //   if (getAllMoverViewModel
-                                  //           .getMoversApiResponse
-                                  //           .status ==
-                                  //       Status.COMPLETE) {}
-                                  //   if (getAllMoverViewModel
-                                  //       .getMoversApiResponse
-                                  //           .status ==
-                                  //       Status.ERROR) {
-                                  //     CommonWidget.getSnackBar(
-                                  //         color: Colors.red,
-                                  //         duration: 2,
-                                  //         colorText:
-                                  //             Colors.white,
-                                  //         title:
-                                  //             "Refresh Page",
-                                  //         message:
-                                  //             'Try Again.');
-                                  //   }
-                                  // },
                                   child: Icon(
-                                    widget.isFavourite == true
+                                    resp.data![index].isLiked == true
                                         ? Icons.favorite
                                         : Icons.favorite_border,
                                     color: CommonColor.yellowColorFFB800,
@@ -1269,18 +1082,59 @@ class _SearchMoverWidgetState extends State<SearchMoverWidget> {
                                   width: 10,
                                 ),
                                 CommonText.textBoldWight400(
-                                    text:
-                                        '${widget.response.data![widget.index]!.likes}',
+                                    text: resp.data![index].likes != null
+                                        ? '${resp.data![index].likes}'
+                                        : "0",
                                     color: Colors.black),
                                 Spacer(),
                                 InkResponse(
-                                  onTap: () {
-                                    setState(() {
-                                      widget.isFavourite = !widget.isFavourite;
-                                    });
+                                  onTap: () async {
+                                    if (GetStorageServices
+                                            .getUserLoggedInStatus() ==
+                                        true) {
+                                      if (resp.data![index].isFavourite ==
+                                          false) {
+                                        await favUnFavViewModel
+                                            .favUnFavViewModel(body: {
+                                          "type": "favourite",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      } else if (resp
+                                              .data![index].isFavourite ==
+                                          true) {
+                                        await favUnFavViewModel
+                                            .favUnFavViewModel(body: {
+                                          "type": "unfavourite",
+                                          "newsId": "${resp.data![index].id}"
+                                        });
+                                      }
+                                    } else {
+                                      CommonWidget.getSnackBar(
+                                          color: Colors.red.withOpacity(.5),
+                                          duration: 2,
+                                          colorText: Colors.white,
+                                          title: "Want to save news ??",
+                                          message:
+                                              'Need to login first, Please complete login steps');
+                                    }
+                                    await searchNewsViewModel
+                                        .searchNewsViewModel(
+                                            companyId: widget
+                                                .response
+                                                .data![widget.index]!
+                                                .companyId!
+                                                .id!,
+                                            isLoading: false);
+                                    if (searchNewsViewModel
+                                            .searchNewsApiResponse.status ==
+                                        Status.COMPLETE) {
+                                      resp = searchNewsViewModel
+                                          .searchNewsApiResponse.data;
+                                      setState(() {});
+                                    }
                                   },
                                   child: Icon(
-                                    widget.isFavourite == true
+                                    resp.data![index].isFavourite == true
                                         ? Icons.bookmark
                                         : Icons.bookmark_outline_sharp,
                                     color: CommonColor.yellowColorFFB800,

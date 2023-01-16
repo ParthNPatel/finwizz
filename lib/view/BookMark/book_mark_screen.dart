@@ -515,6 +515,9 @@ import 'package:finwizz/Models/apis/api_response.dart';
 import 'package:finwizz/Models/responseModel/get_all_news_data.dart';
 import 'package:finwizz/constant/color_const.dart';
 import 'package:finwizz/constant/text_styel.dart';
+import 'package:finwizz/get_storage_services/get_storage_service.dart';
+import 'package:finwizz/view/SignUp_SignIn/sign_in_screen.dart';
+import 'package:finwizz/view/notification/notification_screen.dart';
 import 'package:finwizz/viewModel/fav_unFav_view_model.dart';
 import 'package:finwizz/viewModel/get_all_news_view_model.dart';
 import 'package:finwizz/viewModel/like_unlike_view_model.dart';
@@ -842,7 +845,8 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                                                     width: 10,
                                                   ),
                                                   CommonText.textBoldWight400(
-                                                      text: '120.1K',
+                                                      text:
+                                                          '${response.data![index].likes}',
                                                       color: Colors.black),
                                                   Spacer(),
                                                   InkResponse(
@@ -961,7 +965,7 @@ class _BookMarkScreenState extends State<BookMarkScreen>
                                                   height: 10),
                                               CommonText.textBoldWight400(
                                                   text:
-                                                      '${date},  ${time} ·| Source : BSE',
+                                                      '${date},  ${time} ·| ${response.data![index].source != null ? "Source : ${response.data![index].source}" : ""}',
                                                   color: Colors.black),
                                               CommonWidget.commonSizedBox(
                                                   height: 10),
@@ -994,10 +998,11 @@ class _BookMarkScreenState extends State<BookMarkScreen>
       children: [
         IconButton(
             onPressed: () {
-              globalKey.currentState!.openDrawer();
+              setState(() {});
+              controller.changeTapped(false);
             },
             icon: Icon(
-              Icons.menu_outlined,
+              Icons.arrow_back_ios,
               size: 28.sp,
               color: CommonColor.themColor9295E2,
             )),
@@ -1013,23 +1018,31 @@ class _BookMarkScreenState extends State<BookMarkScreen>
           ),
         ),
         CommonWidget.commonSizedBox(width: 10),
-        Container(
-            padding: EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                      Color(0xff6E5DE7).withOpacity(0.8),
-                    ]),
-                shape: BoxShape.circle,
-                color: CommonColor.themColor9295E2),
+        GestureDetector(
+          onTap: () {
+            GetStorageServices.getUserLoggedInStatus() == true
+                ? Get.to(NotificationScreen())
+                : Get.to(() => SignInScreen());
+          },
+          child: Container(
+            // padding: EdgeInsets.all(8),
+            // alignment: Alignment.center,
+            // decoration: BoxDecoration(
+            //     gradient: LinearGradient(
+            //         begin: Alignment.center,
+            //         end: Alignment.bottomCenter,
+            //         colors: [
+            //           Color(0xff6E5DE7).withOpacity(0.8),
+            //           Color(0xff6E5DE7).withOpacity(0.8),
+            //         ]),
+            //     shape: BoxShape.circle,
+            //     color: CommonColor.themColor9295E2),
             child: Image.asset(
               'assets/png/notification.png',
-              scale: 5,
-            )),
+              scale: 3.3,
+            ),
+          ),
+        ),
         CommonWidget.commonSizedBox(width: 10)
       ],
     );

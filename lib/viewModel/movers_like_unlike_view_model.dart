@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:finwizz/Models/repo/movers_like_unlike_repo.dart';
 import 'package:finwizz/Models/responseModel/movers_like_unlike_res_model.dart';
 import 'package:get/get.dart';
@@ -11,16 +13,19 @@ class MoversLikeUnLikeViewModel extends GetxController {
   ApiResponse get moversLikeUnLikeApiResponse => _moversLikeUnLikeApiResponse;
 
   Future<void> moversLikeUnLikeViewModel({Map<String, dynamic>? body}) async {
+
+    log("body ==== > ${body}");
+
     _moversLikeUnLikeApiResponse = ApiResponse.loading(message: 'Loading');
     update();
     try {
       MoversLikeUnlikeModel response =
           await MoversLikeUnLikeRepo.moversLikeUnlikeRepo(body: body);
-      print("MoversLikeUnlikeModel==>$response");
+      log("MoversLikeUnlikeModel==>$response");
 
       _moversLikeUnLikeApiResponse = ApiResponse.complete(response);
     } catch (e) {
-      print("MoversLikeUnlikeModel==>$e");
+      log("MoversLikeUnlikeModel==>$e");
       _moversLikeUnLikeApiResponse = ApiResponse.error(message: 'error');
     }
     update();

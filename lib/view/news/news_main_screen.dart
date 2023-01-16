@@ -119,6 +119,7 @@ class _NewsMainScreenState extends State<NewsMainScreen>
                 children: [
                   NewsScreen(
                       isCategoryVisible: catVisible,
+                      searchText: _searchController.text,
                       response: response,
                       isLoading: isLoading),
                   MoversScreen(

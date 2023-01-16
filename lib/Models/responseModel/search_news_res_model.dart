@@ -17,21 +17,21 @@ class SearchNewsResponseModel {
   });
 
   bool? flag;
-  List<Datum?>? data;
+  List<Datum>? data;
 
   factory SearchNewsResponseModel.fromJson(Map<String, dynamic> json) =>
       SearchNewsResponseModel(
         flag: json["flag"],
         data: json["data"] == null
             ? []
-            : List<Datum?>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+            : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "flag": flag,
         "data": data == null
             ? []
-            : List<dynamic>.from(data!.map((x) => x!.toJson())),
+            : List<dynamic>.from(data!.map((x) => x.toJson())),
       };
 }
 
@@ -42,12 +42,14 @@ class Datum {
     this.description,
     this.categoryId,
     this.companyId,
-    this.source,
     this.type,
     this.likes,
     this.generic,
     this.createdAt,
     this.updatedAt,
+    this.source,
+    this.isLiked,
+    this.isFavourite,
   });
 
   String? id;
@@ -55,12 +57,14 @@ class Datum {
   String? description;
   CategoryId? categoryId;
   CompanyId? companyId;
-  String? source;
   int? type;
   int? likes;
   bool? generic;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? source;
+  bool? isLiked;
+  bool? isFavourite;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["_id"],
@@ -68,12 +72,14 @@ class Datum {
         description: json["description"],
         categoryId: CategoryId.fromJson(json["categoryId"]),
         companyId: CompanyId.fromJson(json["companyId"]),
-        source: json["source"],
         type: json["type"],
         likes: json["likes"],
         generic: json["generic"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
+        source: json["source"],
+        isLiked: json["isLiked"],
+        isFavourite: json["isFavourite"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -82,12 +88,14 @@ class Datum {
         "description": description,
         "categoryId": categoryId!.toJson(),
         "companyId": companyId!.toJson(),
-        "source": source,
         "type": type,
         "likes": likes,
         "generic": generic,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
+        "source": source,
+        "isLiked": isLiked,
+        "isFavourite": isFavourite,
       };
 }
 

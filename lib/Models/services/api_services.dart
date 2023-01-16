@@ -86,13 +86,12 @@ class APIService {
       Map<String, dynamic>? body,
       Map<String, String>? header,
       bool fileUpload = false}) async {
-    Map<String, String> headers = GetStorageServices.getBarrierToken() != null
-        ? {
+    Map<String, String> headers = {
             'Authorization':
                 'Bearer eyJhbGciOiJIUzI1NiJ9.NjNiZDZkZWIyYzBjZmJkYmQxMWIzMmQ2.XxjWyJcaxqZv0VT9dYV6acZtTeipfJc0abwkkUYgVhM',
             'Content-Type': 'application/json'
           }
-        : {'Content-Type': 'application/json'};
+    ;
 
     try {
       if (apitype == APIType.aGet) {

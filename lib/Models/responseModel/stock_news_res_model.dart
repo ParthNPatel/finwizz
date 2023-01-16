@@ -1,42 +1,42 @@
 // To parse this JSON data, do
 //
-//     final getAllNewsModel = getAllNewsModelFromJson(jsonString);
+//     final stockNewsResponseModel = stockNewsResponseModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetAllNewsModel? getAllNewsModelFromJson(String str) =>
-    GetAllNewsModel.fromJson(json.decode(str));
+StockNewsResponseModel? stockNewsResponseModelFromJson(String str) =>
+    StockNewsResponseModel.fromJson(json.decode(str));
 
-String getAllNewsModelToJson(GetAllNewsModel? data) =>
+String stockNewsResponseModelToJson(StockNewsResponseModel? data) =>
     json.encode(data!.toJson());
 
-class GetAllNewsModel {
-  GetAllNewsModel({
+class StockNewsResponseModel {
+  StockNewsResponseModel({
     this.flag,
     this.data,
   });
 
   bool? flag;
-  List<News>? data;
+  List<Datum?>? data;
 
-  factory GetAllNewsModel.fromJson(Map<String, dynamic> json) =>
-      GetAllNewsModel(
+  factory StockNewsResponseModel.fromJson(Map<String, dynamic> json) =>
+      StockNewsResponseModel(
         flag: json["flag"],
         data: json["data"] == null
             ? []
-            : List<News>.from(json["data"]!.map((x) => News.fromJson(x))),
+            : List<Datum?>.from(json["data"]!.map((x) => Datum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "flag": flag,
         "data": data == null
             ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
+            : List<dynamic>.from(data!.map((x) => x!.toJson())),
       };
 }
 
-class News {
-  News({
+class Datum {
+  Datum({
     this.id,
     this.title,
     this.description,
@@ -66,7 +66,7 @@ class News {
   bool? isLiked;
   bool? isFavourite;
 
-  factory News.fromJson(Map<String, dynamic> json) => News(
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["_id"],
         title: json["title"],
         description: json["description"],

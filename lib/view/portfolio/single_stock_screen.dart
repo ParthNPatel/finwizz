@@ -241,14 +241,14 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
           response.data!.forEach((element) {
             if (widget.filterSelected != 10) {
               if (showDate.contains(
-                          element!.createdAt.toString().split(' ').first) ==
+                          element.createdAt.toString().split(' ').first) ==
                       false &&
                   element.type == widget.filterSelected) {
                 showDate.add(element.createdAt.toString().split(' ').first);
               }
             } else {
               if (showDate.contains(
-                      element!.createdAt.toString().split(' ').first) ==
+                      element.createdAt.toString().split(' ').first) ==
                   false) {
                 showDate.add(element.createdAt.toString().split(' ').first);
               }
@@ -311,9 +311,9 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
                           var time = DateFormat('kk:mm:a')
-                              .format(response.data![index]!.createdAt!);
+                              .format(response.data![index].createdAt!);
                           var date = DateFormat.yMMMEd()
-                              .format(response.data![index]!.createdAt!)
+                              .format(response.data![index].createdAt!)
                               .toString()
                               .split(', ')[1];
                           return widget.filterSelected == 10
@@ -325,9 +325,9 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                       horizontal: 20, vertical: 10),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: response.data![index]!.type == 1
+                                      color: response.data![index].type == 1
                                           ? Colors.green.shade500
-                                          : response.data![index]!.type == -1
+                                          : response.data![index].type == -1
                                               ? Colors.red.shade500
                                               : Color(0xffD1CDCD),
                                     ),
@@ -340,7 +340,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                         CommonWidget.commonSizedBox(height: 10),
                                         CommonText.textBoldWight700(
                                             text:
-                                                '${response.data![index]!.title}',
+                                                '${response.data![index].title}',
                                             color: Colors.black),
                                         CommonWidget.commonSizedBox(height: 15),
                                         CommonWidget.commonSizedBox(height: 15),
@@ -348,7 +348,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                             color: Color(0xff394452),
                                             fontSize: 10.sp,
                                             text:
-                                                "${response.data![index]!.description}"),
+                                                "${response.data![index].description}"),
                                         CommonWidget.commonSizedBox(height: 6),
                                         CommonWidget.commonSizedBox(height: 10),
                                         Row(
@@ -358,60 +358,27 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 if (GetStorageServices
                                                         .getUserLoggedInStatus() ==
                                                     true) {
-                                                  if (response.data![index]!
-                                                          .generic ==
+                                                  if (response.data![index]
+                                                          .isLiked ==
                                                       false) {
                                                     await likeUnLikeViewModel
                                                         .likeUnLikeViewModel(
                                                             body: {
                                                           "type": "like",
                                                           "newsId":
-                                                              "${response.data![index]!.id}"
+                                                              "${response.data![index].id}"
                                                         });
-
-                                                    if (likeUnLikeViewModel
-                                                            .likeUnlikeApiResponse
-                                                            .status ==
-                                                        Status.COMPLETE) {
-                                                      // await getNewsByPage(
-                                                      //     isRefresh: false,
-                                                      //     catId:
-                                                      //         "${resp.data![selected].sId}",
-                                                      //     isLike: true,
-                                                      //     index: index,
-                                                      //     like: true);
-                                                    }
-                                                    if (likeUnLikeViewModel
-                                                            .likeUnlikeApiResponse
-                                                            .status ==
-                                                        Status.ERROR) {}
                                                   } else if (response
-                                                          .data![index]!
-                                                          .generic ==
+                                                          .data![index]
+                                                          .isLiked ==
                                                       true) {
                                                     await likeUnLikeViewModel
                                                         .likeUnLikeViewModel(
                                                             body: {
                                                           "type": "unlike",
                                                           "newsId":
-                                                              "${response.data![index]!.id}"
+                                                              "${response.data![index].id}"
                                                         });
-                                                    if (likeUnLikeViewModel
-                                                            .likeUnlikeApiResponse
-                                                            .status ==
-                                                        Status.COMPLETE) {
-                                                      // await getNewsByPage(
-                                                      //     isRefresh: false,
-                                                      //     catId:
-                                                      //         "${resp.data![selected].sId}",
-                                                      //     isLike: true,
-                                                      //     index: index,
-                                                      //     like: false);
-                                                    }
-                                                    if (likeUnLikeViewModel
-                                                            .likeUnlikeApiResponse
-                                                            .status ==
-                                                        Status.ERROR) {}
                                                   }
                                                 } else {
                                                   CommonWidget.getSnackBar(
@@ -424,10 +391,14 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                       message:
                                                           'Need to login first, Please complete login steps');
                                                 }
+                                                await searchNewsViewModel
+                                                    .searchNewsViewModel(
+                                                        companyId:
+                                                            "${widget.companyId}",
+                                                        isLoading: false);
                                               },
                                               child: Icon(
-                                                response.data![index]!
-                                                            .generic ==
+                                                response.data![index].isLiked ==
                                                         true
                                                     ? Icons.favorite
                                                     : Icons.favorite_border,
@@ -438,11 +409,11 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                             SizedBox(
                                               width: 10,
                                             ),
-                                            CommonText.textBoldWight400(
-                                                text: response.data![index]!
+                                            CommonText.textBoldWight700(
+                                                text: response.data![index]
                                                             .likes !=
                                                         null
-                                                    ? '${response.data![index]!.likes}'
+                                                    ? '${response.data![index].likes}'
                                                     : "0",
                                                 color: Colors.black),
                                             Spacer(),
@@ -451,59 +422,27 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 if (GetStorageServices
                                                         .getUserLoggedInStatus() ==
                                                     true) {
-                                                  if (response.data![index]!
-                                                          .generic ==
+                                                  if (response.data![index]
+                                                          .isFavourite ==
                                                       false) {
                                                     await favUnFavViewModel
                                                         .favUnFavViewModel(
                                                             body: {
                                                           "type": "favourite",
                                                           "newsId":
-                                                              "${response.data![index]!.id}"
+                                                              "${response.data![index].id}"
                                                         });
-                                                    if (favUnFavViewModel
-                                                            .favUnFavApiResponse
-                                                            .status ==
-                                                        Status.COMPLETE) {
-                                                      // await getNewsByPage(
-                                                      //     isRefresh: false,
-                                                      //     catId:
-                                                      //         "${resp.data![selected].sId}",
-                                                      //     isFavourite: true,
-                                                      //     fav: true,
-                                                      //     index: index);
-                                                    }
-                                                    if (favUnFavViewModel
-                                                            .favUnFavApiResponse
-                                                            .status ==
-                                                        Status.ERROR) {}
                                                   } else if (response
-                                                          .data![index]!
-                                                          .generic ==
+                                                          .data![index]
+                                                          .isFavourite ==
                                                       true) {
                                                     await favUnFavViewModel
                                                         .favUnFavViewModel(
                                                             body: {
                                                           "type": "unfavourite",
                                                           "newsId":
-                                                              "${response.data![index]!.id}"
+                                                              "${response.data![index].id}"
                                                         });
-                                                    if (favUnFavViewModel
-                                                            .favUnFavApiResponse
-                                                            .status ==
-                                                        Status.COMPLETE) {
-                                                      // await getNewsByPage(
-                                                      //     isRefresh: false,
-                                                      //     catId:
-                                                      //         "${resp.data![selected].sId}",
-                                                      //     isFavourite: true,
-                                                      //     fav: false,
-                                                      //     index: index);
-                                                    }
-                                                    if (favUnFavViewModel
-                                                            .favUnFavApiResponse
-                                                            .status ==
-                                                        Status.ERROR) {}
                                                   }
                                                 } else {
                                                   CommonWidget.getSnackBar(
@@ -516,10 +455,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                       message:
                                                           'Need to login first, Please complete login steps');
                                                 }
+                                                await searchNewsViewModel
+                                                    .searchNewsViewModel(
+                                                        companyId:
+                                                            "${widget.companyId}",
+                                                        isLoading: false);
                                               },
                                               child: Icon(
-                                                response.data![index]!
-                                                            .generic ==
+                                                response.data![index]
+                                                            .isFavourite ==
                                                         true
                                                     ? Icons.bookmark
                                                     : Icons
@@ -546,13 +490,13 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                         CommonWidget.commonSizedBox(height: 10),
                                         CommonText.textBoldWight400(
                                             text:
-                                                '${date},  ${time} ·|  ${response.data![index]!.source != null ? "Source : ${response.data![index]!.source}" : ""}',
+                                                '${date},  ${time} ·|  ${response.data![index].source != null ? "Source : ${response.data![index].source}" : ""}',
                                             color: Colors.black),
                                         CommonWidget.commonSizedBox(height: 10),
                                       ]),
                                 )
                               : widget.filterSelected ==
-                                      response.data![index]!.type
+                                      response.data![index].type
                                   ? Container(
                                       margin: EdgeInsets.only(
                                           left: 20, right: 20, bottom: 20),
@@ -561,11 +505,9 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                           horizontal: 20, vertical: 10),
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color: response.data![index]!.type ==
-                                                  1
+                                          color: response.data![index].type == 1
                                               ? Colors.green.shade500
-                                              : response.data![index]!.type ==
-                                                      -1
+                                              : response.data![index].type == -1
                                                   ? Colors.red.shade500
                                                   : Color(0xffD1CDCD),
                                         ),
@@ -579,7 +521,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 height: 10),
                                             CommonText.textBoldWight700(
                                                 text:
-                                                    '${response.data![index]!.title}',
+                                                    '${response.data![index].title}',
                                                 color: Colors.black),
                                             CommonWidget.commonSizedBox(
                                                 height: 15),
@@ -589,7 +531,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 color: Color(0xff394452),
                                                 fontSize: 10.sp,
                                                 text:
-                                                    "${response.data![index]!.description}"),
+                                                    "${response.data![index].description}"),
                                             CommonWidget.commonSizedBox(
                                                 height: 6),
                                             CommonWidget.commonSizedBox(
@@ -601,60 +543,27 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                     if (GetStorageServices
                                                             .getUserLoggedInStatus() ==
                                                         true) {
-                                                      if (response.data![index]!
-                                                              .generic ==
+                                                      if (response.data![index]
+                                                              .isLiked ==
                                                           false) {
                                                         await likeUnLikeViewModel
                                                             .likeUnLikeViewModel(
                                                                 body: {
                                                               "type": "like",
                                                               "newsId":
-                                                                  "${response.data![index]!.id}"
+                                                                  "${response.data![index].id}"
                                                             });
-
-                                                        if (likeUnLikeViewModel
-                                                                .likeUnlikeApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {
-                                                          // await getNewsByPage(
-                                                          //     isRefresh: false,
-                                                          //     catId:
-                                                          //         "${resp.data![selected].sId}",
-                                                          //     isLike: true,
-                                                          //     index: index,
-                                                          //     like: true);
-                                                        }
-                                                        if (likeUnLikeViewModel
-                                                                .likeUnlikeApiResponse
-                                                                .status ==
-                                                            Status.ERROR) {}
                                                       } else if (response
-                                                              .data![index]!
-                                                              .generic ==
+                                                              .data![index]
+                                                              .isLiked ==
                                                           true) {
                                                         await likeUnLikeViewModel
                                                             .likeUnLikeViewModel(
                                                                 body: {
                                                               "type": "unlike",
                                                               "newsId":
-                                                                  "${response.data![index]!.id}"
+                                                                  "${response.data![index].id}"
                                                             });
-                                                        if (likeUnLikeViewModel
-                                                                .likeUnlikeApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {
-                                                          // await getNewsByPage(
-                                                          //     isRefresh: false,
-                                                          //     catId:
-                                                          //         "${resp.data![selected].sId}",
-                                                          //     isLike: true,
-                                                          //     index: index,
-                                                          //     like: false);
-                                                        }
-                                                        if (likeUnLikeViewModel
-                                                                .likeUnlikeApiResponse
-                                                                .status ==
-                                                            Status.ERROR) {}
                                                       }
                                                     } else {
                                                       CommonWidget.getSnackBar(
@@ -668,10 +577,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                           message:
                                                               'Need to login first, Please complete login steps');
                                                     }
+                                                    await searchNewsViewModel
+                                                        .searchNewsViewModel(
+                                                            companyId:
+                                                                "${widget.companyId}",
+                                                            isLoading: false);
                                                   },
                                                   child: Icon(
-                                                    response.data![index]!
-                                                                .generic ==
+                                                    response.data![index]
+                                                                .isLiked ==
                                                             true
                                                         ? Icons.favorite
                                                         : Icons.favorite_border,
@@ -682,11 +596,11 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 SizedBox(
                                                   width: 10,
                                                 ),
-                                                CommonText.textBoldWight400(
-                                                    text: response.data![index]!
+                                                CommonText.textBoldWight700(
+                                                    text: response.data![index]
                                                                 .likes !=
                                                             null
-                                                        ? '${response.data![index]!.likes}'
+                                                        ? '${response.data![index].likes}'
                                                         : "0",
                                                     color: Colors.black),
                                                 Spacer(),
@@ -695,8 +609,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                     if (GetStorageServices
                                                             .getUserLoggedInStatus() ==
                                                         true) {
-                                                      if (response.data![index]!
-                                                              .generic ==
+                                                      if (response.data![index]
+                                                              .isFavourite ==
                                                           false) {
                                                         await favUnFavViewModel
                                                             .favUnFavViewModel(
@@ -704,27 +618,11 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                               "type":
                                                                   "favourite",
                                                               "newsId":
-                                                                  "${response.data![index]!.id}"
+                                                                  "${response.data![index].id}"
                                                             });
-                                                        if (favUnFavViewModel
-                                                                .favUnFavApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {
-                                                          // await getNewsByPage(
-                                                          //     isRefresh: false,
-                                                          //     catId:
-                                                          //         "${resp.data![selected].sId}",
-                                                          //     isFavourite: true,
-                                                          //     fav: true,
-                                                          //     index: index);
-                                                        }
-                                                        if (favUnFavViewModel
-                                                                .favUnFavApiResponse
-                                                                .status ==
-                                                            Status.ERROR) {}
                                                       } else if (response
-                                                              .data![index]!
-                                                              .generic ==
+                                                              .data![index]
+                                                              .isFavourite ==
                                                           true) {
                                                         await favUnFavViewModel
                                                             .favUnFavViewModel(
@@ -732,24 +630,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                               "type":
                                                                   "unfavourite",
                                                               "newsId":
-                                                                  "${response.data![index]!.id}"
+                                                                  "${response.data![index].id}"
                                                             });
-                                                        if (favUnFavViewModel
-                                                                .favUnFavApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {
-                                                          // await getNewsByPage(
-                                                          //     isRefresh: false,
-                                                          //     catId:
-                                                          //         "${resp.data![selected].sId}",
-                                                          //     isFavourite: true,
-                                                          //     fav: false,
-                                                          //     index: index);
-                                                        }
-                                                        if (favUnFavViewModel
-                                                                .favUnFavApiResponse
-                                                                .status ==
-                                                            Status.ERROR) {}
                                                       }
                                                     } else {
                                                       CommonWidget.getSnackBar(
@@ -763,10 +645,15 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                           message:
                                                               'Need to login first, Please complete login steps');
                                                     }
+                                                    await searchNewsViewModel
+                                                        .searchNewsViewModel(
+                                                            companyId:
+                                                                "${widget.companyId}",
+                                                            isLoading: false);
                                                   },
                                                   child: Icon(
-                                                    response.data![index]!
-                                                                .generic ==
+                                                    response.data![index]
+                                                                .isFavourite ==
                                                             true
                                                         ? Icons.bookmark
                                                         : Icons
@@ -794,7 +681,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                 height: 10),
                                             CommonText.textBoldWight400(
                                                 text:
-                                                    '${date},  ${time} ·|  ${response.data![index]!.source != null ? "Source : ${response.data![index]!.source}" : ""}',
+                                                    '${date},  ${time} ·|  ${response.data![index].source != null ? "Source : ${response.data![index].source}" : ""}',
                                                 color: Colors.black),
                                             CommonWidget.commonSizedBox(
                                                 height: 10),
