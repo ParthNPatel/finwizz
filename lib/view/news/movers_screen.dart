@@ -348,6 +348,10 @@ class _MoverWidgetState extends State<MoverWidget> {
                             )
                           ],
                         ),
+                        CommonText.textBoldWight400(
+                            text:
+                                " Image Type - ${widget.response.data![widget.index]!.imageType}"),
+                        Spacer(),
                         Row(
                           children: [
                             InkResponse(

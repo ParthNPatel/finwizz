@@ -46,6 +46,7 @@ class Datum {
     this.currentPrice,
     this.type,
     this.likes,
+    this.imageType,
     this.createdAt,
     this.updatedAt,
     this.isLiked,
@@ -54,12 +55,13 @@ class Datum {
   String? id;
   CompanyId? companyId;
   int? percentage;
-  DateTime? startDate;
-  DateTime? endDate;
+  String? startDate;
+  String? endDate;
   int? startPrice;
   int? currentPrice;
   int? type;
   int? likes;
+  int? imageType;
   DateTime? createdAt;
   DateTime? updatedAt;
   bool? isLiked;
@@ -68,12 +70,13 @@ class Datum {
         id: json["_id"],
         companyId: CompanyId.fromJson(json["companyId"]),
         percentage: json["percentage"],
-        startDate: DateTime.parse(json["startDate"]),
-        endDate: DateTime.parse(json["endDate"]),
+        startDate: json["startDate"],
+        endDate: json["endDate"],
         startPrice: json["startPrice"],
         currentPrice: json["currentPrice"],
         type: json["type"],
         likes: json["likes"],
+        imageType: json["imageType"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         isLiked: json["isLiked"],
@@ -83,12 +86,13 @@ class Datum {
         "_id": id,
         "companyId": companyId!.toJson(),
         "percentage": percentage,
-        "startDate": startDate?.toIso8601String(),
-        "endDate": endDate?.toIso8601String(),
+        "startDate": startDate,
+        "endDate": endDate,
         "startPrice": startPrice,
         "currentPrice": currentPrice,
         "type": type,
         "likes": likes,
+        "imageType": imageType,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "isLiked": isLiked,
