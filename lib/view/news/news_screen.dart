@@ -188,19 +188,10 @@ class _NewsScreenState extends State<NewsScreen> {
 
         news.forEach(
           (element) {
-            if (controllerCat.newsIndicator != 10) {
-              if (showDate.contains(
-                          element.createdAt.toString().split(' ').first) ==
-                      false &&
-                  element.type == controllerCat.newsIndicator) {
-                showDate.add(element.createdAt.toString().split(' ').first);
-              }
-            } else {
-              if (showDate.contains(
-                      element.createdAt.toString().split(' ').first) ==
-                  false) {
-                showDate.add(element.createdAt.toString().split(' ').first);
-              }
+            if (showDate
+                    .contains(element.createdAt.toString().split(' ').first) ==
+                false) {
+              showDate.add(element.createdAt.toString().split(' ').first);
             }
           },
         );
@@ -359,14 +350,13 @@ class _NewsScreenState extends State<NewsScreen> {
                                               .format(news[index].createdAt!)
                                               .toString()
                                               .split(', ')[1];
-                                          return controllerCat.newsIndicator ==
-                                                  10
-                                              ? news[index]
-                                                          .createdAt
-                                                          .toString()
-                                                          .split(' ')
-                                                          .first ==
-                                                      showDate[index1]
+                                          return news[index]
+                                                      .createdAt
+                                                      .toString()
+                                                      .split(' ')
+                                                      .first ==
+                                                  showDate[index1]
+                                              ? news[index].type != 0
                                                   ? Container(
                                                       margin: EdgeInsets.only(
                                                           left: 20,
@@ -671,267 +661,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                     height: 10),
                                                           ]),
                                                     )
-                                                  : news[index].type ==
-                                                          controllerCat
-                                                              .newsIndicator
-                                                      ? news[index]
-                                                                  .createdAt
-                                                                  .toString()
-                                                                  .split(' ')
-                                                                  .first ==
-                                                              showDate[index1]
-                                                          ? Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      left: 20,
-                                                                      right: 20,
-                                                                      bottom:
-                                                                          20),
-                                                              width: double
-                                                                  .infinity,
-                                                              padding: EdgeInsets
-                                                                  .symmetric(
-                                                                      horizontal:
-                                                                          20,
-                                                                      vertical:
-                                                                          10),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                border:
-                                                                    Border.all(
-                                                                  color: Color(
-                                                                      0xffD1CDCD),
-                                                                ),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            14),
-                                                              ),
-                                                              child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                10),
-                                                                    CommonText.textBoldWight700(
-                                                                        text:
-                                                                            '${news[index].title}',
-                                                                        color: Colors
-                                                                            .black),
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                15),
-                                                                    // CommonText.textBoldWight400(
-                                                                    //     text: 'TANLA', color: Colors.black),
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                15),
-                                                                    CommonText.textBoldWight500(
-                                                                        color: Color(
-                                                                            0xff394452),
-                                                                        fontSize: 13
-                                                                            .sp,
-                                                                        text:
-                                                                            "${news[index].description}"),
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                6),
-                                                                    // CommonText.textBoldWight500(
-                                                                    //     fontSize: 10.sp,
-                                                                    //     color: Color(0xff394452),
-                                                                    //     text:
-                                                                    //         "ℹ️ ️️ Buyback reflects confidence of investors and is generally  positive for stock price"),
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                10),
-                                                                    Row(
-                                                                      children: [
-                                                                        InkResponse(
-                                                                          onTap:
-                                                                              () async {
-                                                                            // controller.updateLike(
-                                                                            //     response.data![index].isLiked!);
-
-                                                                            if (GetStorageServices.getUserLoggedInStatus() ==
-                                                                                true) {
-                                                                              if (news[index].isLiked == false) {
-                                                                                await likeUnLikeViewModel.likeUnLikeViewModel(body: {
-                                                                                  "type": "like",
-                                                                                  "newsId": "${news[index].id}"
-                                                                                });
-
-                                                                                if (likeUnLikeViewModel.likeUnlikeApiResponse.status == Status.COMPLETE) {
-                                                                                  await getNewsByPage(isRefresh: false, catId: "${resp.data![selected].sId}", isLike: true, index: index, like: true);
-                                                                                }
-                                                                                if (likeUnLikeViewModel.likeUnlikeApiResponse.status == Status.ERROR) {}
-                                                                              } else if (news[index].isLiked == true) {
-                                                                                await likeUnLikeViewModel.likeUnLikeViewModel(body: {
-                                                                                  "type": "unlike",
-                                                                                  "newsId": "${news[index].id}"
-                                                                                });
-                                                                                if (likeUnLikeViewModel.likeUnlikeApiResponse.status == Status.COMPLETE) {
-                                                                                  await getNewsByPage(isRefresh: false, catId: "${resp.data![selected].sId}", isLike: true, index: index, like: false);
-                                                                                }
-                                                                                if (likeUnLikeViewModel.likeUnlikeApiResponse.status == Status.ERROR) {}
-                                                                              }
-                                                                            } else {
-                                                                              CommonWidget.getSnackBar(color: Colors.red.withOpacity(.5), duration: 2, colorText: Colors.white, title: "Want to like news ??", message: 'Need to login first, Please complete login steps');
-                                                                            }
-
-                                                                            /*            if (getAllNewsViewModel.getNewsApiResponse.status ==
-                                Status.COMPLETE) {}
-                            if (getAllNewsViewModel.getNewsApiResponse.status ==
-                                Status.ERROR) {
-                              CommonWidget.getSnackBar(
-                                  color: Colors.red,
-                                  duration: 2,
-                                  colorText: Colors.white,
-                                  title: "Refresh Page",
-                                  message: 'Try Again.');
-                            }*/
-                                                                          },
-                                                                          child:
-                                                                              Icon(
-                                                                            news[index].isLiked == true
-                                                                                ? Icons.favorite
-                                                                                : Icons.favorite_border,
-                                                                            color:
-                                                                                CommonColor.yellowColorFFB800,
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              10,
-                                                                        ),
-                                                                        CommonText.textBoldWight400(
-                                                                            text: news[index].likes != null
-                                                                                ? '${news[index].likes}'
-                                                                                : "0",
-                                                                            color:
-                                                                                Colors.black),
-                                                                        Spacer(),
-                                                                        InkResponse(
-                                                                          onTap:
-                                                                              () async {
-                                                                            if (GetStorageServices.getUserLoggedInStatus() ==
-                                                                                true) {
-                                                                              if (news[index].isFavourite == false) {
-                                                                                await favUnFavViewModel.favUnFavViewModel(body: {
-                                                                                  "type": "favourite",
-                                                                                  "newsId": "${news[index].id}"
-                                                                                });
-                                                                                if (favUnFavViewModel.favUnFavApiResponse.status == Status.COMPLETE) {
-                                                                                  // CommonWidget.getSnackBar(
-                                                                                  //     color: Colors.green,
-                                                                                  //     duration: 2,
-                                                                                  //     colorText:
-                                                                                  //         Colors.white,
-                                                                                  //     title:
-                                                                                  //         "isFavourite",
-                                                                                  //     message:
-                                                                                  //         'You liked a post');
-                                                                                  await getNewsByPage(isRefresh: false, catId: "${resp.data![selected].sId}", isFavourite: true, fav: true, index: index);
-                                                                                }
-                                                                                if (favUnFavViewModel.favUnFavApiResponse.status == Status.ERROR) {
-                                                                                  // CommonWidget.getSnackBar(
-                                                                                  //     color: Colors.red,
-                                                                                  //     duration: 2,
-                                                                                  //     colorText:
-                                                                                  //         Colors.white,
-                                                                                  //     title:
-                                                                                  //         "Something went wrong",
-                                                                                  //     message:
-                                                                                  //         'Try Again.');
-                                                                                }
-                                                                              } else if (news[index].isFavourite == true) {
-                                                                                await favUnFavViewModel.favUnFavViewModel(body: {
-                                                                                  "type": "unfavourite",
-                                                                                  "newsId": "${news[index].id}"
-                                                                                });
-                                                                                if (favUnFavViewModel.favUnFavApiResponse.status == Status.COMPLETE) {
-                                                                                  await getNewsByPage(isRefresh: false, catId: "${resp.data![selected].sId}", isFavourite: true, fav: false, index: index);
-                                                                                }
-                                                                                if (favUnFavViewModel.favUnFavApiResponse.status == Status.ERROR) {
-                                                                                  // CommonWidget.getSnackBar(
-                                                                                  //     color: Colors.red,
-                                                                                  //     duration: 2,
-                                                                                  //     colorText:
-                                                                                  //         Colors.white,
-                                                                                  //     title:
-                                                                                  //         "Something went wrong",
-                                                                                  //     message:
-                                                                                  //         'Try Again.');
-                                                                                }
-                                                                              }
-                                                                            } else {
-                                                                              CommonWidget.getSnackBar(color: Colors.red.withOpacity(.5), duration: 2, colorText: Colors.white, title: "Want to save news ??", message: 'Need to login first, Please complete login steps');
-                                                                            }
-
-                                                                            /*  if (getAllNewsViewModel.getNewsApiResponse.status ==
-                                Status.COMPLETE) {}
-                            if (getAllNewsViewModel.getNewsApiResponse.status ==
-                                Status.ERROR) {
-                              CommonWidget.getSnackBar(
-                                  color: Colors.red,
-                                  duration: 2,
-                                  colorText: Colors.white,
-                                  title: "Refresh Page",
-                                  message: 'Try Again.');
-                            }*/
-                                                                          },
-                                                                          child:
-                                                                              Icon(
-                                                                            news[index].isFavourite == true
-                                                                                ? Icons.bookmark
-                                                                                : Icons.bookmark_outline_sharp,
-                                                                            color:
-                                                                                CommonColor.yellowColorFFB800,
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              10,
-                                                                        ),
-                                                                        InkResponse(
-                                                                          onTap:
-                                                                              () {
-                                                                            Share.share("Test");
-                                                                          },
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.share,
-                                                                            color:
-                                                                                CommonColor.yellowColorFFB800,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                10),
-                                                                    CommonText.textBoldWight400(
-                                                                        text:
-                                                                            '${date},  ${time} ·|  ${news[index].source != null ? "Source : ${news[index].source}" : ""}',
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            10.sp),
-                                                                    CommonWidget
-                                                                        .commonSizedBox(
-                                                                            height:
-                                                                                10),
-                                                                  ]),
-                                                            )
-                                                          : SizedBox()
-                                                      : SizedBox()
+                                                  : SizedBox()
                                               : SizedBox();
                                         },
                                       )
@@ -1130,69 +860,81 @@ class _NewsScreenState extends State<NewsScreen> {
                                                 .data![index].createdAt!)
                                             .toString()
                                             .split(', ')[1];
-                                        return Container(
-                                          margin: EdgeInsets.only(
-                                              left: 20, right: 20, bottom: 20),
-                                          width: double.infinity,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Color(0xffD1CDCD),
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                          ),
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                                CommonText.textBoldWight700(
-                                                    text:
-                                                        '${widget.response!.data![index].title}',
-                                                    color: Colors.black),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 15),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 15),
-                                                CommonText.textBoldWight500(
-                                                    color: Color(0xff394452),
-                                                    fontSize: 10.sp,
-                                                    text:
-                                                        "${widget.response!.data![index].description}"),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 6),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                                Row(
-                                                  children: [
-                                                    InkResponse(
-                                                      onTap: () async {
-                                                        if (GetStorageServices
-                                                                .getUserLoggedInStatus() ==
-                                                            true) {
-                                                          if (widget
-                                                                  .response!
-                                                                  .data![index]
-                                                                  .isLiked ==
-                                                              false) {
-                                                            await likeUnLikeViewModel
-                                                                .likeUnLikeViewModel(
-                                                                    body: {
-                                                                  "type":
-                                                                      "like",
-                                                                  "newsId":
-                                                                      "${widget.response!.data![index].id}"
-                                                                });
+                                        return news[index].type != 0
+                                            ? Container(
+                                                margin: EdgeInsets.only(
+                                                    left: 20,
+                                                    right: 20,
+                                                    bottom: 20),
+                                                width: double.infinity,
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 10),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Color(0xffD1CDCD),
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                ),
+                                                child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 10),
+                                                      CommonText.textBoldWight700(
+                                                          text:
+                                                              '${widget.response!.data![index].title}',
+                                                          color: Colors.black),
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 15),
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 15),
+                                                      CommonText.textBoldWight500(
+                                                          color:
+                                                              Color(0xff394452),
+                                                          fontSize: 10.sp,
+                                                          text:
+                                                              "${widget.response!.data![index].description}"),
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 6),
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 10),
+                                                      Row(
+                                                        children: [
+                                                          InkResponse(
+                                                            onTap: () async {
+                                                              if (GetStorageServices
+                                                                      .getUserLoggedInStatus() ==
+                                                                  true) {
+                                                                if (widget
+                                                                        .response!
+                                                                        .data![
+                                                                            index]
+                                                                        .isLiked ==
+                                                                    false) {
+                                                                  await likeUnLikeViewModel
+                                                                      .likeUnLikeViewModel(
+                                                                          body: {
+                                                                        "type":
+                                                                            "like",
+                                                                        "newsId":
+                                                                            "${widget.response!.data![index].id}"
+                                                                      });
 
-                                                            if (likeUnLikeViewModel
-                                                                    .likeUnlikeApiResponse
-                                                                    .status ==
-                                                                Status
-                                                                    .COMPLETE) {
-                                                              /*await getNewsByPage(
+                                                                  if (likeUnLikeViewModel
+                                                                          .likeUnlikeApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .COMPLETE) {
+                                                                    /*await getNewsByPage(
                                                                   isRefresh:
                                                                       false,
                                                                   catId:
@@ -1200,30 +942,32 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                   isLike: true,
                                                                   index: index,
                                                                   like: true);*/
-                                                            }
-                                                            if (likeUnLikeViewModel
-                                                                    .likeUnlikeApiResponse
-                                                                    .status ==
-                                                                Status.ERROR) {}
-                                                          } else if (widget
-                                                                  .response!
-                                                                  .data![index]
-                                                                  .isLiked ==
-                                                              true) {
-                                                            await likeUnLikeViewModel
-                                                                .likeUnLikeViewModel(
-                                                                    body: {
-                                                                  "type":
-                                                                      "unlike",
-                                                                  "newsId":
-                                                                      "${widget.response!.data![index].id}"
-                                                                });
-                                                            if (likeUnLikeViewModel
-                                                                    .likeUnlikeApiResponse
-                                                                    .status ==
-                                                                Status
-                                                                    .COMPLETE) {
-                                                              /* await getNewsByPage(
+                                                                  }
+                                                                  if (likeUnLikeViewModel
+                                                                          .likeUnlikeApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .ERROR) {}
+                                                                } else if (widget
+                                                                        .response!
+                                                                        .data![
+                                                                            index]
+                                                                        .isLiked ==
+                                                                    true) {
+                                                                  await likeUnLikeViewModel
+                                                                      .likeUnLikeViewModel(
+                                                                          body: {
+                                                                        "type":
+                                                                            "unlike",
+                                                                        "newsId":
+                                                                            "${widget.response!.data![index].id}"
+                                                                      });
+                                                                  if (likeUnLikeViewModel
+                                                                          .likeUnlikeApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .COMPLETE) {
+                                                                    /* await getNewsByPage(
                                                                   isRefresh:
                                                                       false,
                                                                   catId:
@@ -1231,210 +975,234 @@ class _NewsScreenState extends State<NewsScreen> {
                                                                   isLike: true,
                                                                   index: index,
                                                                   like: false);*/
-                                                            }
-                                                            if (likeUnLikeViewModel
-                                                                    .likeUnlikeApiResponse
-                                                                    .status ==
-                                                                Status.ERROR) {}
-                                                          }
-                                                        } else {
-                                                          CommonWidget.getSnackBar(
-                                                              color: Colors.red
-                                                                  .withOpacity(
-                                                                      .5),
-                                                              duration: 2,
-                                                              colorText:
-                                                                  Colors.white,
-                                                              title:
-                                                                  "Want to like news ??",
-                                                              message:
-                                                                  'Need to login first, Please complete login steps');
-                                                        }
-                                                        await searchNewsViewModel
-                                                            .searchNewsViewModel(
-                                                                searchText: widget
-                                                                    .searchText!,
-                                                                isLoading:
-                                                                    false);
-                                                        if (searchNewsViewModel
-                                                                .searchNewsApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {
-                                                          widget.response =
-                                                              searchNewsViewModel
-                                                                  .searchNewsApiResponse
-                                                                  .data;
-                                                          setState(() {});
-                                                        }
-                                                      },
-                                                      child: Icon(
-                                                        widget
-                                                                    .response!
-                                                                    .data![
-                                                                        index]
-                                                                    .isLiked ==
-                                                                true
-                                                            ? Icons.favorite
-                                                            : Icons
-                                                                .favorite_border,
-                                                        color: CommonColor
-                                                            .yellowColorFFB800,
+                                                                  }
+                                                                  if (likeUnLikeViewModel
+                                                                          .likeUnlikeApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .ERROR) {}
+                                                                }
+                                                              } else {
+                                                                CommonWidget.getSnackBar(
+                                                                    color: Colors
+                                                                        .red
+                                                                        .withOpacity(
+                                                                            .5),
+                                                                    duration: 2,
+                                                                    colorText:
+                                                                        Colors
+                                                                            .white,
+                                                                    title:
+                                                                        "Want to like news ??",
+                                                                    message:
+                                                                        'Need to login first, Please complete login steps');
+                                                              }
+                                                              await searchNewsViewModel
+                                                                  .searchNewsViewModel(
+                                                                      searchText:
+                                                                          widget
+                                                                              .searchText!,
+                                                                      isLoading:
+                                                                          false);
+                                                              if (searchNewsViewModel
+                                                                      .searchNewsApiResponse
+                                                                      .status ==
+                                                                  Status
+                                                                      .COMPLETE) {
+                                                                widget.response =
+                                                                    searchNewsViewModel
+                                                                        .searchNewsApiResponse
+                                                                        .data;
+                                                                setState(() {});
+                                                              }
+                                                            },
+                                                            child: Icon(
+                                                              widget
+                                                                          .response!
+                                                                          .data![
+                                                                              index]
+                                                                          .isLiked ==
+                                                                      true
+                                                                  ? Icons
+                                                                      .favorite
+                                                                  : Icons
+                                                                      .favorite_border,
+                                                              color: CommonColor
+                                                                  .yellowColorFFB800,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          CommonText.textBoldWight400(
+                                                              text: widget
+                                                                          .response!
+                                                                          .data![
+                                                                              index]
+                                                                          .likes !=
+                                                                      null
+                                                                  ? '${widget.response!.data![index].likes}'
+                                                                  : "0",
+                                                              color:
+                                                                  Colors.black),
+                                                          Spacer(),
+                                                          InkResponse(
+                                                            onTap: () async {
+                                                              if (GetStorageServices
+                                                                      .getUserLoggedInStatus() ==
+                                                                  true) {
+                                                                if (widget
+                                                                        .response!
+                                                                        .data![
+                                                                            index]
+                                                                        .isFavourite ==
+                                                                    false) {
+                                                                  await favUnFavViewModel
+                                                                      .favUnFavViewModel(
+                                                                          body: {
+                                                                        "type":
+                                                                            "favourite",
+                                                                        "newsId":
+                                                                            "${widget.response!.data![index].id}"
+                                                                      });
+                                                                  if (favUnFavViewModel
+                                                                          .favUnFavApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .COMPLETE) {
+                                                                    await getNewsByPage(
+                                                                        isRefresh:
+                                                                            false,
+                                                                        catId:
+                                                                            "${resp.data![selected].sId}",
+                                                                        isFavourite:
+                                                                            true,
+                                                                        fav:
+                                                                            true,
+                                                                        index:
+                                                                            index);
+                                                                  }
+                                                                  if (favUnFavViewModel
+                                                                          .favUnFavApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .ERROR) {}
+                                                                } else if (widget
+                                                                        .response!
+                                                                        .data![
+                                                                            index]
+                                                                        .isFavourite ==
+                                                                    true) {
+                                                                  await favUnFavViewModel
+                                                                      .favUnFavViewModel(
+                                                                          body: {
+                                                                        "type":
+                                                                            "unfavourite",
+                                                                        "newsId":
+                                                                            "${widget.response!.data![index].id}"
+                                                                      });
+                                                                  if (favUnFavViewModel
+                                                                          .favUnFavApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .COMPLETE) {
+                                                                    await getNewsByPage(
+                                                                        isRefresh:
+                                                                            false,
+                                                                        catId:
+                                                                            "${resp.data![selected].sId}",
+                                                                        isFavourite:
+                                                                            true,
+                                                                        fav:
+                                                                            false,
+                                                                        index:
+                                                                            index);
+                                                                  }
+                                                                  if (favUnFavViewModel
+                                                                          .favUnFavApiResponse
+                                                                          .status ==
+                                                                      Status
+                                                                          .ERROR) {}
+                                                                }
+                                                              } else {
+                                                                CommonWidget.getSnackBar(
+                                                                    color: Colors
+                                                                        .red
+                                                                        .withOpacity(
+                                                                            .5),
+                                                                    duration: 2,
+                                                                    colorText:
+                                                                        Colors
+                                                                            .white,
+                                                                    title:
+                                                                        "Want to save news ??",
+                                                                    message:
+                                                                        'Need to login first, Please complete login steps');
+                                                              }
+                                                              await searchNewsViewModel
+                                                                  .searchNewsViewModel(
+                                                                      searchText:
+                                                                          widget
+                                                                              .searchText!,
+                                                                      isLoading:
+                                                                          false);
+                                                              if (searchNewsViewModel
+                                                                      .searchNewsApiResponse
+                                                                      .status ==
+                                                                  Status
+                                                                      .COMPLETE) {
+                                                                widget.response =
+                                                                    searchNewsViewModel
+                                                                        .searchNewsApiResponse
+                                                                        .data;
+                                                                setState(() {});
+                                                              }
+                                                            },
+                                                            child: Icon(
+                                                              widget
+                                                                          .response!
+                                                                          .data![
+                                                                              index]
+                                                                          .isFavourite ==
+                                                                      true
+                                                                  ? Icons
+                                                                      .bookmark
+                                                                  : Icons
+                                                                      .bookmark_outline_sharp,
+                                                              color: CommonColor
+                                                                  .yellowColorFFB800,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          InkResponse(
+                                                            onTap: () {
+                                                              Share.share(
+                                                                  "Test");
+                                                            },
+                                                            child: Icon(
+                                                              Icons.share,
+                                                              color: CommonColor
+                                                                  .yellowColorFFB800,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    CommonText.textBoldWight400(
-                                                        text: widget
-                                                                    .response!
-                                                                    .data![
-                                                                        index]
-                                                                    .likes !=
-                                                                null
-                                                            ? '${widget.response!.data![index].likes}'
-                                                            : "0",
-                                                        color: Colors.black),
-                                                    Spacer(),
-                                                    InkResponse(
-                                                      onTap: () async {
-                                                        if (GetStorageServices
-                                                                .getUserLoggedInStatus() ==
-                                                            true) {
-                                                          if (widget
-                                                                  .response!
-                                                                  .data![index]
-                                                                  .isFavourite ==
-                                                              false) {
-                                                            await favUnFavViewModel
-                                                                .favUnFavViewModel(
-                                                                    body: {
-                                                                  "type":
-                                                                      "favourite",
-                                                                  "newsId":
-                                                                      "${widget.response!.data![index].id}"
-                                                                });
-                                                            if (favUnFavViewModel
-                                                                    .favUnFavApiResponse
-                                                                    .status ==
-                                                                Status
-                                                                    .COMPLETE) {
-                                                              await getNewsByPage(
-                                                                  isRefresh:
-                                                                      false,
-                                                                  catId:
-                                                                      "${resp.data![selected].sId}",
-                                                                  isFavourite:
-                                                                      true,
-                                                                  fav: true,
-                                                                  index: index);
-                                                            }
-                                                            if (favUnFavViewModel
-                                                                    .favUnFavApiResponse
-                                                                    .status ==
-                                                                Status.ERROR) {}
-                                                          } else if (widget
-                                                                  .response!
-                                                                  .data![index]
-                                                                  .isFavourite ==
-                                                              true) {
-                                                            await favUnFavViewModel
-                                                                .favUnFavViewModel(
-                                                                    body: {
-                                                                  "type":
-                                                                      "unfavourite",
-                                                                  "newsId":
-                                                                      "${widget.response!.data![index].id}"
-                                                                });
-                                                            if (favUnFavViewModel
-                                                                    .favUnFavApiResponse
-                                                                    .status ==
-                                                                Status
-                                                                    .COMPLETE) {
-                                                              await getNewsByPage(
-                                                                  isRefresh:
-                                                                      false,
-                                                                  catId:
-                                                                      "${resp.data![selected].sId}",
-                                                                  isFavourite:
-                                                                      true,
-                                                                  fav: false,
-                                                                  index: index);
-                                                            }
-                                                            if (favUnFavViewModel
-                                                                    .favUnFavApiResponse
-                                                                    .status ==
-                                                                Status.ERROR) {}
-                                                          }
-                                                        } else {
-                                                          CommonWidget.getSnackBar(
-                                                              color: Colors.red
-                                                                  .withOpacity(
-                                                                      .5),
-                                                              duration: 2,
-                                                              colorText:
-                                                                  Colors.white,
-                                                              title:
-                                                                  "Want to save news ??",
-                                                              message:
-                                                                  'Need to login first, Please complete login steps');
-                                                        }
-                                                        await searchNewsViewModel
-                                                            .searchNewsViewModel(
-                                                                searchText: widget
-                                                                    .searchText!,
-                                                                isLoading:
-                                                                    false);
-                                                        if (searchNewsViewModel
-                                                                .searchNewsApiResponse
-                                                                .status ==
-                                                            Status.COMPLETE) {
-                                                          widget.response =
-                                                              searchNewsViewModel
-                                                                  .searchNewsApiResponse
-                                                                  .data;
-                                                          setState(() {});
-                                                        }
-                                                      },
-                                                      child: Icon(
-                                                        widget
-                                                                    .response!
-                                                                    .data![
-                                                                        index]
-                                                                    .isFavourite ==
-                                                                true
-                                                            ? Icons.bookmark
-                                                            : Icons
-                                                                .bookmark_outline_sharp,
-                                                        color: CommonColor
-                                                            .yellowColorFFB800,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    InkResponse(
-                                                      onTap: () {
-                                                        Share.share("Test");
-                                                      },
-                                                      child: Icon(
-                                                        Icons.share,
-                                                        color: CommonColor
-                                                            .yellowColorFFB800,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                                CommonText.textBoldWight400(
-                                                    text:
-                                                        '${date},  ${time} ·|  ${news[index].source != null ? "Source : ${news[index].source}" : ""}',
-                                                    color: Colors.black,
-                                                    fontSize: 10.sp),
-                                                CommonWidget.commonSizedBox(
-                                                    height: 10),
-                                              ]),
-                                        );
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 10),
+                                                      CommonText.textBoldWight400(
+                                                          text:
+                                                              '${date},  ${time} ·|  ${news[index].source != null ? "Source : ${news[index].source}" : ""}',
+                                                          color: Colors.black,
+                                                          fontSize: 10.sp),
+                                                      CommonWidget
+                                                          .commonSizedBox(
+                                                              height: 10),
+                                                    ]),
+                                              )
+                                            : SizedBox();
                                       },
                                     )
                                   ],

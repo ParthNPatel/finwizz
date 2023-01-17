@@ -5,6 +5,21 @@ import 'package:get/get.dart';
 import '../Models/apis/api_response.dart';
 
 class StockNewsViewModel extends GetxController {
+  int newsIndicator = 10;
+
+  newsFilter(int value) {
+    if (value == 0) {
+      newsIndicator = 10;
+    } else if (value == 1) {
+      newsIndicator = 1;
+    } else if (value == 2) {
+      newsIndicator = -1;
+    } else {
+      newsIndicator = 0;
+    }
+    update();
+  }
+
   ApiResponse _stockNewsApiResponse =
       ApiResponse.initial(message: 'Initialization');
 

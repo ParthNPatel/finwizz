@@ -6,8 +6,8 @@ import 'package:finwizz/get_storage_services/get_storage_service.dart';
 import 'package:finwizz/view/portfolio/portfolio_news_screen.dart';
 import 'package:finwizz/view/portfolio/search_screen.dart';
 import 'package:finwizz/view/portfolio/single_stock_screen.dart';
-import 'package:finwizz/viewModel/get_all_news_categories_view_model.dart';
 import 'package:finwizz/viewModel/get_user_view_model.dart';
+import 'package:finwizz/viewModel/stock_news_view_model.dart';
 import 'package:finwizz/viewModel/stock_remove_view_model.dart';
 import 'package:finwizz/viewModel/stock_summary_view_model.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +38,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   StockSummaryViewModel stockSummaryViewModel =
       Get.put(StockSummaryViewModel());
   RemoveStockViewModel removeStockViewModel = Get.put(RemoveStockViewModel());
-  GetAllNewsCategoriesViewModel getAllNewsCategoriesViewModel =
-      Get.put(GetAllNewsCategoriesViewModel());
+  StockNewsViewModel stockNewsViewModel = Get.put(StockNewsViewModel());
   GetUserViewModel getUserViewModel = Get.put(GetUserViewModel());
 
   @override
@@ -789,28 +788,28 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                               child: Text("All"),
                               value: 0,
                               onTap: () {
-                                getAllNewsCategoriesViewModel.newsFilter(0);
+                                stockNewsViewModel.newsFilter(0);
                               },
                             ),
                             PopupMenuItem(
                               child: Text("Positive"),
                               value: 1,
                               onTap: () {
-                                getAllNewsCategoriesViewModel.newsFilter(1);
+                                stockNewsViewModel.newsFilter(1);
                               },
                             ),
                             PopupMenuItem(
                               child: Text("Negative"),
                               value: 2,
                               onTap: () {
-                                getAllNewsCategoriesViewModel.newsFilter(2);
+                                stockNewsViewModel.newsFilter(2);
                               },
                             ),
                             PopupMenuItem(
                               child: Text("Neutral"),
                               value: 3,
                               onTap: () {
-                                getAllNewsCategoriesViewModel.newsFilter(3);
+                                stockNewsViewModel.newsFilter(3);
                               },
                             ),
                           ],
