@@ -344,6 +344,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
                                         itemBuilder: (context, index) {
+                                          print(
+                                              "GENERIC===>>${news[0].generic}");
                                           var time = DateFormat('kk:mm:a')
                                               .format(news[index].createdAt!);
                                           var date = DateFormat.yMMMEd()
@@ -393,14 +395,16 @@ class _NewsScreenState extends State<NewsScreen> {
                                                             CommonWidget
                                                                 .commonSizedBox(
                                                                     height: 15),
-                                                            CommonText.textBoldWight400(
-                                                                text: news[index]
-                                                                            .companyId !=
-                                                                        null
-                                                                    ? '${news[index].companyId!.name}'
-                                                                    : "-",
-                                                                color: Colors
-                                                                    .black),
+                                                            news[index].generic ==
+                                                                    true
+                                                                ? SizedBox()
+                                                                : CommonText.textBoldWight400(
+                                                                    text: news[index].companyId !=
+                                                                            null
+                                                                        ? '${news[index].companyId!.name}'
+                                                                        : "-",
+                                                                    color: Colors
+                                                                        .black),
                                                             CommonWidget
                                                                 .commonSizedBox(
                                                                     height: 15),

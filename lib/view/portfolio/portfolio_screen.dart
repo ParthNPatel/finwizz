@@ -131,178 +131,211 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     ? MainAxisAlignment.start
                     : MainAxisAlignment.center,
                 children: [
-                  // controller.isAddShare
-                  //     ?
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: responseModel.data!.length,
-                      shrinkWrap: true,
-                      reverse: stockController.isShuffle,
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 20),
-                          child: Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Get.to(() => SingleStockSceen(
-                                      companyName:
-                                          '${responseModel.data![index].name}',
-                                      companyId:
-                                          responseModel.data![index].id!));
-                                },
-                                onLongPress: () {
-                                  Get.dialog(AlertDialog(
-                                    title: Text("Want to shuffle stocks ?"),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            stockController.wantShuffle();
-                                            Get.back();
-                                          },
-                                          child: Text(
-                                            "Yes",
-                                            style: TextStyle(
-                                                color: CommonColor
-                                                    .themColor9295E2),
-                                          )),
-                                      TextButton(
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                          child: Text("No",
-                                              style: TextStyle(
-                                                  color: CommonColor
-                                                      .themColor9295E2))),
-                                    ],
-                                  ));
-                                },
-                                child: Row(
+                  responseModel.data!.length > 0
+                      ? Expanded(
+                          child: ReorderableListView.builder(
+                            itemCount: responseModel.data!.length,
+                            shrinkWrap: true,
+                            reverse: true,
+                            physics: BouncingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                key: ValueKey(responseModel.data![index].name),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 20),
+                                child: Column(
                                   children: [
-                                    //assets/svg/empty_check_box.svg
-                                    controller.isDelete
-                                        ? InkWell(
-                                            onTap: () {
-                                              controller.setListOfPortFolio(
-                                                  shareName: responseModel
-                                                      .data![index].id!);
-                                            },
-                                            child: CommonWidget.commonSvgPitcher(
-                                                image: controller
-                                                        .listOfDeletePortFolio
-                                                        .contains(responseModel
-                                                            .data![index].id)
-                                                    ? 'assets/svg/check_box.svg'
-                                                    : 'assets/svg/empty_check_box.svg'),
-                                          )
-                                        : SizedBox(),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: CommonText.textBoldWight400(
-                                          text:
-                                              '${responseModel.data![index].name}'),
-                                    ),
-                                    Spacer(),
-
-                                    responseModel.data![index].positive! > 0 &&
-                                            responseModel
-                                                    .data![index].positive !=
-                                                null
-                                        ? Container(
-                                            alignment: Alignment.center,
-                                            width: 30.sp,
-                                            height: 30.sp,
-                                            decoration: BoxDecoration(
-                                                color: Color(0xff2ECC71)
-                                                    .withOpacity(.5),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                    color: Color(0xffEBEEF2))),
+                                    InkWell(
+                                      onTap: () {
+                                        Get.to(() => SingleStockSceen(
+                                            companyName:
+                                                '${responseModel.data![index].name}',
+                                            companyId: responseModel
+                                                .data![index].id!));
+                                      },
+                                      // onLongPress: () {
+                                      //   Get.dialog(AlertDialog(
+                                      //     title:
+                                      //         Text("Want to shuffle stocks ?"),
+                                      //     shape: RoundedRectangleBorder(
+                                      //         borderRadius:
+                                      //             BorderRadius.circular(15)),
+                                      //     actions: [
+                                      //       TextButton(
+                                      //           onPressed: () {
+                                      //             stockController.wantShuffle();
+                                      //             Get.back();
+                                      //           },
+                                      //           child: Text(
+                                      //             "Yes",
+                                      //             style: TextStyle(
+                                      //                 color: CommonColor
+                                      //                     .themColor9295E2),
+                                      //           )),
+                                      //       TextButton(
+                                      //           onPressed: () {
+                                      //             Get.back();
+                                      //           },
+                                      //           child: Text("No",
+                                      //               style: TextStyle(
+                                      //                   color: CommonColor
+                                      //                       .themColor9295E2))),
+                                      //     ],
+                                      //   ));
+                                      // },
+                                      child: Row(
+                                        children: [
+                                          //assets/svg/empty_check_box.svg
+                                          controller.isDelete
+                                              ? InkWell(
+                                                  onTap: () {
+                                                    controller
+                                                        .setListOfPortFolio(
+                                                            shareName:
+                                                                responseModel
+                                                                    .data![
+                                                                        index]
+                                                                    .id!);
+                                                  },
+                                                  child: CommonWidget.commonSvgPitcher(
+                                                      image: controller
+                                                              .listOfDeletePortFolio
+                                                              .contains(
+                                                                  responseModel
+                                                                      .data![
+                                                                          index]
+                                                                      .id)
+                                                          ? 'assets/svg/check_box.svg'
+                                                          : 'assets/svg/empty_check_box.svg'),
+                                                )
+                                              : SizedBox(),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
                                             child: CommonText.textBoldWight400(
                                                 text:
-                                                    '${responseModel.data![index].positive}'),
-                                          )
-                                        : SizedBox(),
-                                    SizedBox(width: 15.sp),
-                                    responseModel.data![index].negative! > 0 &&
-                                            responseModel
-                                                    .data![index].negative !=
-                                                null
-                                        ? Container(
-                                            alignment: Alignment.center,
-                                            width: 30.sp,
-                                            height: 30.sp,
-                                            decoration: BoxDecoration(
-                                                color: Color(0xffF43737)
-                                                    .withOpacity(.5),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                    color: Color(0xffEBEEF2))),
-                                            child: CommonText.textBoldWight400(
-                                                text:
-                                                    '${responseModel.data![index].negative}'),
-                                          )
-                                        : SizedBox(
-                                            width: 30.sp,
-                                            height: 30.sp,
+                                                    '${responseModel.data![index].name}'),
                                           ),
+                                          Spacer(),
 
-                                    SizedBox(width: 20.sp),
+                                          responseModel.data![index].positive! >
+                                                      0 &&
+                                                  responseModel.data![index]
+                                                          .positive !=
+                                                      null
+                                              ? Container(
+                                                  alignment: Alignment.center,
+                                                  width: 30.sp,
+                                                  height: 30.sp,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xff2ECC71)
+                                                          .withOpacity(.5),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      border: Border.all(
+                                                          color: Color(
+                                                              0xffEBEEF2))),
+                                                  child: CommonText
+                                                      .textBoldWight400(
+                                                          text:
+                                                              '${responseModel.data![index].positive}'),
+                                                )
+                                              : SizedBox(),
+                                          SizedBox(width: 15.sp),
+                                          responseModel.data![index].negative! >
+                                                      0 &&
+                                                  responseModel.data![index]
+                                                          .negative !=
+                                                      null
+                                              ? Container(
+                                                  alignment: Alignment.center,
+                                                  width: 30.sp,
+                                                  height: 30.sp,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xffF43737)
+                                                          .withOpacity(.5),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      border: Border.all(
+                                                          color: Color(
+                                                              0xffEBEEF2))),
+                                                  child: CommonText
+                                                      .textBoldWight400(
+                                                          text:
+                                                              '${responseModel.data![index].negative}'),
+                                                )
+                                              : SizedBox(
+                                                  width: 30.sp,
+                                                  height: 30.sp,
+                                                ),
 
-                                    /* listOfStocks[index]['updates'].length == 0
+                                          SizedBox(width: 20.sp),
+
+                                          /* listOfStocks[index]['updates'].length == 0
                                         ? CommonText.textBoldWight400(
                                             text: 'No recent updates ')
                                         :*/
-                                    // Row(
-                                    //   children: List.generate(
-                                    //       listOfStocks[index]['updates'].length,
-                                    //       (indexOf) {
-                                    //     return Padding(
-                                    //       padding: const EdgeInsets.all(8.0),
-                                    //       child: Container(
-                                    //         width: 30.sp,
-                                    //         alignment: Alignment.center,
-                                    //         padding: EdgeInsets.symmetric(
-                                    //           vertical: 8,
-                                    //         ),
-                                    //         child: CommonText.textBoldWight400(
-                                    //             text: listOfStocks[index]['updates']
-                                    //                     [indexOf]
-                                    //                 .toString()),
-                                    //         decoration: BoxDecoration(
-                                    //             borderRadius: BorderRadius.circular(8),
-                                    //             color: listOfStocks[index]['updates']
-                                    //                             .length ==
-                                    //                         2 &&
-                                    //                     indexOf == 0
-                                    //                 ? CommonColor.greenColor2ECC71
-                                    //                     .withOpacity(0.5)
-                                    //                 : CommonColor.lightRedColor3D3D3D
-                                    //                     .withOpacity(0.5)),
-                                    //       ),
-                                    //     );
-                                    //   }),
-                                    // )
+                                          // Row(
+                                          //   children: List.generate(
+                                          //       listOfStocks[index]['updates'].length,
+                                          //       (indexOf) {
+                                          //     return Padding(
+                                          //       padding: const EdgeInsets.all(8.0),
+                                          //       child: Container(
+                                          //         width: 30.sp,
+                                          //         alignment: Alignment.center,
+                                          //         padding: EdgeInsets.symmetric(
+                                          //           vertical: 8,
+                                          //         ),
+                                          //         child: CommonText.textBoldWight400(
+                                          //             text: listOfStocks[index]['updates']
+                                          //                     [indexOf]
+                                          //                 .toString()),
+                                          //         decoration: BoxDecoration(
+                                          //             borderRadius: BorderRadius.circular(8),
+                                          //             color: listOfStocks[index]['updates']
+                                          //                             .length ==
+                                          //                         2 &&
+                                          //                     indexOf == 0
+                                          //                 ? CommonColor.greenColor2ECC71
+                                          //                     .withOpacity(0.5)
+                                          //                 : CommonColor.lightRedColor3D3D3D
+                                          //                     .withOpacity(0.5)),
+                                          //       ),
+                                          //     );
+                                          //   }),
+                                          // )
+                                        ],
+                                      ),
+                                    ),
+                                    CommonWidget.commonSizedBox(height: 6),
+                                    Divider(
+                                      color: CommonColor.greyColorD1CDCD,
+                                    ),
                                   ],
                                 ),
-                              ),
-                              CommonWidget.commonSizedBox(height: 6),
-                              Divider(
-                                color: CommonColor.greyColorD1CDCD,
-                              ),
-                            ],
+                              );
+                            },
+                            onReorder: (int oldIndex, int newIndex) {
+                              final index =
+                                  newIndex > oldIndex ? newIndex - 1 : newIndex;
+
+                              final user =
+                                  responseModel.data!.removeAt(oldIndex);
+                              responseModel.data!.insert(index, user);
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                        )
+                      : Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 70.sp),
+                            child: CommonText.textBoldWight500(
+                                fontSize: 12.sp,
+                                text:
+                                    "Please add your portfolio stocks and\nkeep updated with what’s happening\n                     in the company"),
+                          ),
+                        ),
                   // : SizedBox(),
 
                   respUser.data!.addedStocks!.length == 5 &&

@@ -35,6 +35,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset("assets/png/stack_bubel.png", scale: 4.2),
+            Center(
+              child: CommonText.textBoldWight500(
+                  text:
+                      "To receive updates of your portfolio\n                stocks, please login"),
+            ),
+            CommonWidget.commonSizedBox(height: 20),
             CommonWidget.commonSizedBox(height: 20),
             CreateAccount(),
             CommonWidget.commonSizedBox(height: 40.sp),
@@ -215,7 +221,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 children: [
                   Center(
                     child: CommonText.textBoldWight600(
-                        text: 'Welcome to FinWizz', fontSize: 22.sp),
+                        text: 'Welcome!', fontSize: 22.sp),
                   ),
                   CommonWidget.commonSizedBox(height: 40.sp),
                   CommonWidget.textFormField(
