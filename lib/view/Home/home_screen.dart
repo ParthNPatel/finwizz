@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
@@ -303,6 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
         items: List.generate(
           getMovers.data!.docs!.length > 5 ? 5 : getMovers.data!.docs!.length,
           (index) {
+            var startDate = DateFormat.yMMMEd()
+                .format(
+                    DateTime.parse(getMovers.data!.docs![index]!.startDate!))
+                .toString()
+                .split(', ')[1];
+            var endDate = DateFormat.yMMMEd()
+                .format(DateTime.parse(getMovers.data!.docs![index]!.endDate!))
+                .toString()
+                .split(', ')[1];
             return Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -340,12 +350,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         children: [
                           CommonText.textBoldWight400(
-                              text:
-                                  '${getMovers.data!.docs![index]!.startDate!} - ',
+                              text: '${startDate} - ',
                               color: Colors.white,
                               fontSize: 8.sp),
                           CommonText.textBoldWight400(
-                              text: '${getMovers.data!.docs![index]!.endDate!}',
+                              text: '${endDate}',
                               color: Colors.white,
                               fontSize: 8.sp),
                         ],
