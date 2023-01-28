@@ -118,7 +118,6 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                 child: Text('Something went wrong'),
               );
             }
-
             if (stockController.stockSummaryApiResponse.status ==
                 Status.COMPLETE) {
               StockSummaryResponseModel responseModel =
@@ -129,7 +128,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: responseModel.data!.length != 0
                     ? MainAxisAlignment.start
-                    : MainAxisAlignment.center,
+                    : MainAxisAlignment.start,
                 children: [
                   responseModel.data!.length > 0
                       ? Expanded(
@@ -327,14 +326,12 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                             },
                           ),
                         )
-                      : Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 70.sp),
-                            child: CommonText.textBoldWight500(
-                                fontSize: 12.sp,
-                                text:
-                                    "Please add your portfolio stocks and\nkeep updated with what’s happening\n                     in the company"),
-                          ),
+                      : Padding(
+                          padding: EdgeInsets.only(bottom: 70.sp, top: 100.sp),
+                          child: CommonText.textBoldWight500(
+                              fontSize: 12.sp,
+                              text:
+                                  "Please add your portfolio stocks and\nkeep updated with what’s happening\n                     in the company"),
                         ),
                   // : SizedBox(),
 

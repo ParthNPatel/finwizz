@@ -85,7 +85,6 @@ class _PortfolioNewsScreenState extends State<PortfolioNewsScreen> {
             }
           },
         );
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -617,38 +616,39 @@ class _PortfolioNewsScreenState extends State<PortfolioNewsScreen> {
                             ],
                           );
                         }))
-                : Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 85.sp, bottom: 20.sp),
+                        child: Center(
                           child: CommonText.textBoldWight500(
                               fontSize: 12.sp,
                               text:
                                   "Please add your portfolio stocks and\nkeep updated with what’s happening\n                     in the company"),
                         ),
-                        SizedBox(
-                          height: 50.sp,
+                      ),
+                      SizedBox(
+                        height: 50.sp,
+                      ),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => SearchScreen());
+                          },
+                          child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 50),
+                              child: CommonText.textBoldWight700(
+                                  text: 'ADD STOCKS',
+                                  fontSize: 10.sp,
+                                  color: Colors.white),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: CommonColor.themColor9295E2)),
                         ),
-                        Center(
-                          child: InkWell(
-                            onTap: () {
-                              Get.to(() => SearchScreen());
-                            },
-                            child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 50),
-                                child: CommonText.textBoldWight700(
-                                    text: 'ADD STOCKS',
-                                    fontSize: 10.sp,
-                                    color: Colors.white),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: CommonColor.themColor9295E2)),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
           ],
         );
