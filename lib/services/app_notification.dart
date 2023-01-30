@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import '../get_storage_services/get_storage_service.dart';
 
 class AppNotificationHandler {
@@ -18,7 +16,7 @@ class AppNotificationHandler {
       importance: Importance.high,
       playSound: true);
 
-  static void showMsgHandler() {
+  static void showMsgHandler() async {
     print('call when app in fore ground');
     try {
       FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
