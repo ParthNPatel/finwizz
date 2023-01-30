@@ -219,11 +219,12 @@ class _CreateAccountState extends State<CreateAccount> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  CommonWidget.commonSizedBox(height: 10.sp),
                   Center(
                     child: CommonText.textBoldWight600(
                         text: 'Welcome!', fontSize: 22.sp),
                   ),
-                  CommonWidget.commonSizedBox(height: 40.sp),
+                  CommonWidget.commonSizedBox(height: 15.sp),
                   CommonWidget.textFormField(
                       prefix: SizedBox(
                         width: 60.sp,

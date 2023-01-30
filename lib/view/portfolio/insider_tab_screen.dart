@@ -38,6 +38,7 @@ class _InsiderTabScreenState extends State<InsiderTabScreen> {
       'post': null
     },
   ];
+
   List<Map> listOfShareDetailsView = [
     {'status': 'Shares bought', 'shares': '5000', 'followed': '2', 'post': '1'},
     {
